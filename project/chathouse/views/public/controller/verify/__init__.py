@@ -1,4 +1,4 @@
-from chathouse.utilities.security.controller_handler.controller import Controller
-from chathouse.views.public.controller.verify.handler import VerifyHandler
+from chathouse.utilities.security.controller_strategy.controller import Controller
+from chathouse.views.public.controller.verify.strategy import VerifyStrategy
 
-VerifyController=Controller(VerifyHandler())
+VerifyController=Controller(VerifyStrategy())

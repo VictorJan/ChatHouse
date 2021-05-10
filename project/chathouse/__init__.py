@@ -28,7 +28,8 @@ def create_app():
 	app.register_blueprint(authorized)
 
 	#rest api resources
-	#
+	from chathouse.rest import api
+	api.init_app(app)
 	
 	from chathouse.socket import socket
 	socket.init_app(app)

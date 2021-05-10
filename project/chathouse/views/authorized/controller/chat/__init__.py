@@ -1,4 +1,4 @@
-from chathouse.utilities.security.controller_handler.controller import Controller
-from chathouse.views.authorized.controller.chat.handler import ChatHandler
+from chathouse.utilities.security.controller_strategy.controller import Controller
+from chathouse.views.authorized.controller.chat.strategy import ChatStrategy
 
-ChatController=Controller(ChatHandler())
+ChatController=Controller(ChatStrategy())

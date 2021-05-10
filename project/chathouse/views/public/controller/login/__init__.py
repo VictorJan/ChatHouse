@@ -1,4 +1,4 @@
-from chathouse.utilities.security.controller_handler.controller import Controller
-from chathouse.views.public.controller.login.handler import LogInHandler
+from chathouse.utilities.security.controller_strategy.controller import Controller
+from chathouse.views.public.controller.login.strategy import LogInStrategy
 
-LogInController=Controller(LogInHandler())
+LogInController=Controller(LogInStrategy())

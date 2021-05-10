@@ -1,4 +1,4 @@
-from chathouse.utilities.security.controller_handler.controller import Controller
-from chathouse.views.public.controller.start.handler import StartHandler
+from chathouse.utilities.security.controller_strategy.controller import Controller
+from chathouse.views.public.controller.start.strategy import StartStrategy
 
-StartController=Controller(StartHandler())
+StartController=Controller(StartStrategy())

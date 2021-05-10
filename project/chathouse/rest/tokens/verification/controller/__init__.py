@@ -1,0 +1,1 @@
+from chathouse.rest.tokens.verification.controller.post import PostVerificationController
