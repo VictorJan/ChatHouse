@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link type="text/css" rel="stylesheet" href="{{ url_for('static',filename='css/public/start.css')}}">
+	{%block links%}{%endblock%}
+	<title>{%block title%} {%endblock%}</title>
+</head>
+<body>
+	<div class="layout">
+    	<div class="grid_layout">
+    		<div class="header_item">
+    			<a href="/start">ChatHouse</a>
+    		</div>
+    		<div class="route_item">
+    			{%block route%}
+    			If one wishes to continue,then they have to be authenticated and authorized.
+    			{%endblock%}
+    		</div>
+    		<div class="content_item">
+    			{%block content%}
+    			<input class="button signup" type="button" onclick="window.location='/signup';" value="signUp">
+    			<input class="button login" type="button" onclick="window.location='/login';" value="logIn">
+    			{%endblock%}
+    		</div>
+    	</div>
+    </div>
+</body>
+</html>

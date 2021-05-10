@@ -1,0 +1,32 @@
+{% extends "/public/start.html" %}
+
+{%set verify = route=='verify'%}
+
+{%block links%}
+<link type="text/css" rel="stylesheet" href="{{ url_for('static',filename='css/public/auth.css')}}">
+{%endblock%}
+
+{%block route%}
+{%if not verify%}
+	Enter the following data to identify yourself. Then an email shall be sent to you.
+{% else %}
+	Enter the password to proceed further.
+{%endif%}
+{%endblock%}
+
+{%block content%}
+	{%if not verify %}
+		{%if route=='signup'%}
+			<input type="text" placeholder="Thy email">
+			<input type="text" placeholder="Thy username">
+			<input type="text" placeholder="Thy name">
+			<input type="text" placeholder="About yourself">
+		{%elif route=='login'%}
+			<input type="text" placeholder="Thy email or username">
+		{%endif%}
+		<input class="button identify" type="button" value="identify">
+	{%else%}
+		<input type="password" placeholder="Thy password">
+		<input class="button verify" type="button" value="verify">
+	{%endif%}
+{%endblock%}

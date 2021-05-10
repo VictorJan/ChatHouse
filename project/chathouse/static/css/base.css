@@ -1,0 +1,268 @@
+:root{
+	--move_to_chat:&#10159;;
+	--remove:&#10008;
+	--add:&#9998;
+}
+
+body{
+	background-color:#2b2b2b;
+	margin:0;
+}
+
+.layout{
+	height: 100%;
+	margin:0 auto;
+	width:90%;
+	height: 100%;
+}
+.grid_layout{
+	display: grid;
+	grid-column-gap: 20px;
+	grid-row-gap: 1vh;
+	grid-template-areas: 
+	'header chat chat search'
+	'users chat chat search'
+	'users chat chat search';
+}
+.item{
+	background-color:#2e2e2f;
+	color:white;
+	box-shadow: 0px 5px 10px #222123;
+}
+
+.header_item{
+	grid-area: header;
+	height:5vh;
+}
+.users_item{
+grid-area: users;
+height:89vh;
+overflow-y: scroll;
+}
+.chat_item{
+grid-area: chat;
+height:95vh;
+display: grid;
+grid-template-areas:
+'chat_header'
+'chat_content'
+'chat_bottom';
+}
+.search_item{
+grid-area: search;
+height:95vh;
+}
+
+/*Chat/Prechat start*/
+.chat_header{
+text-align: left;
+grid-area: chat_header;
+display: grid;
+height:5vh;
+line-height: 5vh;
+padding:10px 0;
+overflow-wrap: anywhere;
+max-width: fit-content;
+}
+/*Resumed chat start*/
+.chat_content{
+height:auto;
+grid-area: chat_content;
+overflow-y: scroll;
+background-color:#2b2b2b;
+padding:20px;
+}
+
+.sent{
+margin-left:auto;
+margin-right:0;
+background-color:#2f2f2f;
+}
+
+.received{
+margin-left:0;
+margin-right:auto;
+background-color:#272727;
+}
+
+.chat_message{
+	display: grid;
+	grid-template-areas:
+	'user_info user_info dnt'
+	'message_content message_content message_content';
+	grid-row-gap:20px;
+	grid-column-gap:10px;
+	box-shadow: 0px 5px 10px #222123;
+	border-radius: 10px;
+	padding:5px;
+	margin-top:5px;
+	margin-bottom:5px;
+	max-width:fit-content;
+	font-family: consolas;
+	color:#cecece;
+	width:60%;
+}
+
+.user_info{
+	grid-area: user_info;
+	overflow-wrap: break-word;
+	padding:5px;
+	font-family: consolas;
+	font-weight: bold;
+}
+
+.message_content{
+	grid-area:message_content;
+	overflow-wrap: break-word;
+	padding:10px;
+}
+.dnt{
+	text-align:right;
+	grid-area: dnt;
+	padding:5px;
+}
+
+/*Chat bottom*/
+.chat_bottom{
+display: grid;
+height:20vh;
+grid-area: chat_bottom;
+grid-template-areas:
+'message_input'
+'send_message_button';
+padding:20px;
+}
+
+.message_input{
+	grid-area:message_input;
+	overflow-y: auto;
+    border: none;
+    resize: none;
+    border-bottom: 2.5px solid #fd4d4d;
+    width: 100%;
+    height: 100px;
+    background-color:#2f2f2f;
+    padding-bottom: 10px;
+    color:white;
+}
+
+.send_message_button{
+	transition: 0.3s;
+    color: #2e2e2f;
+    width: fit-content;
+    padding: 3px 20px;
+    cursor: pointer;
+    font-size: 35px;
+    border-radius: 20px;
+    font-family: Agency FB;
+    border: 1px solid #fd4d4d;
+    background-color: #fd4d4d;
+    grid-area: send_message_button;
+}
+.send_message_button:hover{
+	border: 1px solid #fd4d4d;
+    color: #fd4d4d;
+    background-color: #2e2e2f;
+}
+.send_message_button:active{
+	color: #2e2e2f;
+	background-color: #fd4d4d;
+	border: 1px solid #fd4d4d;
+	box-shadow: 2px 1px 10px #f74037;
+}
+/*End Chat Bottom*/
+/*Chat end*/
+
+/*User list starts*/
+.users_list{
+	height:auto;
+	overflow-y: scroll;
+	background-color:#2b2b2b;
+	padding:20px;
+	display: grid;
+
+}
+.user_block{
+	color: white;
+    transition: .5s;
+    display: grid;
+    grid-template-areas: 'user_info notification';
+    padding: 10px;
+    margin: 20px;
+    border-radius: 20px 30px;
+}
+.user_block:hover{
+	background-color:#27272791;
+	box-shadow: 1px 1px 10px #fd4d4d; 
+}
+
+.notification{
+	grid-area: notification;
+	color:#fd4d4d;
+	font-size:30px;
+	text-align: center;
+}
+/*User list ends*/
+
+/*Search start*/
+input[type="search"]
+{
+	transition:0.5s;
+   margin:5px 0px;
+   width:90%;
+   padding:10px;
+   background-color:#e8e8e8;
+   border:none;
+   border-radius: 30px;
+   width:100%;
+   box-shadow:0px 2px 5px #5757574a;
+   color:#5e5e5e;
+
+}
+input:focus[type="search"]
+{
+	background-color: white;
+   box-shadow:0px 2px 5px #5757574a;
+}
+
+input:hover[type="search"]
+{
+	background-color: white;
+   box-shadow:0px 2px 5px #5757574a;
+}
+input[type="search"]::-webkit-search-cancel-button {
+  display: none;
+}
+/*End Search*/
+
+
+.user_link{
+	color:#fd4d4d;
+	transition: .5s;
+}
+.user_link:hover{
+	color:white;
+}
+
+a{
+	text-decoration: none;
+}
+a:hover{
+	color:white;
+}
+
+*:focus {
+    outline: none;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2e2e2f; 
+}
+
+::-webkit-scrollbar-thumb {
+  background: #272727; 
+}

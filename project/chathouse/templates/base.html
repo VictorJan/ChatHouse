@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{{title}}</title>
+	<link type="text/css" rel="stylesheet" href="{{ url_for('static',filename='css/base.css')}}">
+</head>
+<body>
+	<div class="layout">
+    	<div class="grid_layout">
+    		<div class="item header_item">
+    			chatHouse
+    		</div>
+			<div class="item users_item">
+				{%for i in range(20)%}
+					<a href="/">
+						<div class="user_block">
+							<div class="user_info">User_{{i}}</div>
+							<div class="notification">&bull;</div>
+						</div>
+					</a>
+				{%endfor%}
+    		</div>
+			<div class="item chat_item">
+				<div class="chat_header">
+					chat header
+				</div>
+				<div class="chat_content">
+					{%for i in range(100)%}
+						<div class="{{'sent ' if (i%2)==0 else 'received '}}chat_message">
+							<div class="user_info"><a class="user_link" href="/">user{{i%2}}</a></div>
+							<div class="dnt">2012.04.02</div>
+							<div class="message_content">message {{i}}</div>
+						</div>
+					{%endfor%}
+				</div>
+				<div class="chat_bottom">
+					<textarea class="message_input"></textarea>
+					<input type="button" class="send_message_button" value="send">
+				</div>
+    		</div>
+    		<div class="item search_item">
+    			<input type="search">
+    		</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,1 @@
+from chathouse.views.authorized.controller.chat import ChatController

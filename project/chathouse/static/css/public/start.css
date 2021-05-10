@@ -1,0 +1,106 @@
+body{
+	background-color:#2b2b2b;
+	margin:0;
+}
+
+.layout{
+	display: grid;
+	margin:0 auto;
+	height: 100vh;
+}
+.grid_layout{
+	place-self: center;
+	display: grid;
+	grid-template-areas:
+		'header_item'
+		'route_item'
+		'content_item';
+	justify-items: center;
+	padding: 20px 40px;
+	border-radius: 20px;
+	background-color: #313131;
+	font-family: Segoe UI,Agency FB;
+	box-shadow: 0px 0px 20px #fd4d4d;
+	max-width: 30%;
+	width: fit-content;
+}
+.item{
+	background-color:#2e2e2f;
+	color:white;
+	box-shadow: 0px 5px 10px #222123;
+}
+
+.header_item{
+	grid-area: header_item;
+	font-size: x-large;
+	display: grid;
+	place-self: center;
+	color: #fd4d4d;
+	font-weight: 500;
+	border-bottom: 1px solid;
+	margin-bottom: 3vh;
+}
+.route_item{
+	text-align: center;
+	padding: 0px 20px;
+	grid-area: route_item;
+	font-size: 20px;
+	font-weight: 100;
+	color: #bbbbbb;
+	margin-bottom: 3vh;
+	display: grid;
+	place-self: center;
+	word-break: break-all;
+}
+.content_item{
+	display: grid;
+	grid-row-gap: 1vh;
+	padding: 0px 20px;
+	grid-area: content_item;
+	width: fit-content;
+	grid-template-areas:
+		'login_button'
+		'signup_button';
+}
+
+.login{
+	grid-area: login_button;
+}
+.signup{
+	grid-area: signup_button;
+}
+.button{
+	transition: 0.3s;
+    color: #2e2e2f;
+    padding: 3px 20px;
+    cursor: pointer;
+    font-size: 35px;
+    border-radius: 20px;
+    font-family: Agency FB;
+    border: 1px solid #fd4d4d;
+    background-color: #fd4d4d;
+}
+.button:hover{
+	border: 1px solid #fd4d4d;
+    color: #fd4d4d;
+    background-color: #2e2e2f;
+}
+.button:active{
+	color: #2e2e2f;
+	background-color: #fd4d4d;
+	border: 1px solid #fd4d4d;
+	box-shadow: 2px 1px 10px #f74037;
+}
+
+a{
+	text-decoration: none;
+	color:inherit;
+	transition: .5s;
+}
+a:hover{
+	color:white;
+}
+
+*:focus {
+    outline: none;
+}
