@@ -5,12 +5,11 @@ async function identify_controller(e){
 		});
 		if (Object.keys(data).length == 4){
 			let result = await verification_call(data);
-			console.log(result)
-			if (result){
-				document.querySelector(".feedback").innerHTML="The email has been sent."
+			if (result.status == 201){
+				document.querySelector(".feedback").innerHTML="The verification email has been sent."
 			}
 			else{
-				document.querySelector(".feedback").innerHTML="Something has gone wrong."
+				document.querySelector(".feedback").innerHTML="Please enter valid data."
 			}
 		}
 	}

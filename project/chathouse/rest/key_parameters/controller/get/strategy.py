@@ -7,5 +7,5 @@ class GetKeyParametersStrategy(Strategy):
 	@authorized(token_type='verification',location='Authorization')
 	def accept(self,headers,data,**kwargs):
 		if kwargs['authorization']['verification']['valid']:
-			return dict(zip('gm',current_app.config['DH_PARAMETERS'])),200
-		return {'message':'Unauthorized'},401
+			return {'success':'True',**dict(zip('gm',current_app.config['DH_PARAMETERS']))},200
+		return {'success':'False','message':'Unauthorized'},401

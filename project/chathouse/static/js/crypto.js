@@ -10,20 +10,17 @@ class DH_Key{
 				/*{
 				G,M are believed to be valid domain parameters.
 				data: {g:value,m:value,
-				payload:{private:value} or
-				raw:{private:Object value,password:value}
+				payload:{private_key:value} or
+				raw:{private_key:Object value,password:value}
 				}
 				}
 				*/
 				this.modulus=data.m;
 				this.generator=data.g;
 
-				this.#keyring = (data.payload) ? {private:data.payload.private} : {private:await this.#parse(data.raw.private,data.raw.password)};
+				this.#keyring = (data.payload) ? {private:data.payload.private_key} : {private_key:await this.#parse(data.raw.private_key,data.raw.password)};
 
 				this.#keyring.public=this.#exp(this.generator);
-				if ((this.#keyring.private) && !(sessionStorage.getItem('keybundle'))){
-					sessionStorage.setItem('keybundle',JSON.stringify({g:this.generator,m:this.modulus,payload:{private:this.#keyring.private}}));
-				}
 				return this;
 			}
 		)();
@@ -57,7 +54,15 @@ class DH_Key{
 	async export(password){
 		//exports the public key in an open form, the private key is encrypted using the key, derived based on the password
 		let derived_key = (await new PBKDF(password)).value;
-		return {public:this.#keyring.public, private:await (await new AES_CBC(derived_key)).encrypt(this.#keyring.private), g:this.generator, m:this.modulus}
+		return {public_key:this.#keyring.public, private_key:await (await new AES_CBC(derived_key)).encrypt(this.#keyring.private), g:this.generator, m:this.modulus}
+	}
+
+	store(){
+		if ((this.#keyring.private) && !(sessionStorage.getItem('keybundle'))){
+			sessionStorage.setItem('keyring',JSON.stringify({g:this.generator,m:this.modulus,payload:{private_key:this.#keyring.private}}));
+			return true;
+		}
+		return false;
 	}
 
 }
@@ -120,7 +125,7 @@ class AES_CBC
 			this.#key,
 			encoder.encode(incoming)
 		));
-		content.iv=buffer_to_hex(data.iv);
+		content.iv=buffer_to_hex(content.iv);
 		return content;
 	}
 

@@ -142,14 +142,14 @@ class PostGrantStrategy(Strategy):
 					If the route is signup ( Note: at this point incoming_data consists of : password:str , keyring:{ public_key:str , private_key: { iv:str,data:str } } ):
 						return {
 							key_data : pop the keyring from the incoming_data
-							user_data : {unpack the <identification_data> from the preaccess_token , and unpack the incoming_data}
+							user_data : {unpack the <identification_data> from the verification token , and unpack the incoming_data}
 						}.
 					Otherwise the route is login ( Note at this point incoming_data consists of : password:str ):
 						return incoming_data.
 				Returns: a dictionary.
 
 		Generation:
-  			grant_token={user_id:user_id, token_type:"grant", token_version:user_service.token_version,dnt}
+  			grant_token={user_id: value:int, token_type: "grant":str, token_version: UserService(id=value of user_id).token_version , dnt:float}
  
 		Returns:
 			If either verification token or preaccess token(from the verification token) is invalid or the preaccess token has no route value.
@@ -164,7 +164,7 @@ class PostGrantStrategy(Strategy):
 						 Otherwise:
 						 	Return 409, 'Provided data is invalid.' if the prodived public_key doesn't already exists otherwise 'Please submit again.'
   				Otherwise if the route is login and user_service.login(appropriate payload) has been successful:
-  					Return 200, {grant_token:<grant_token>,keyring:{private_key:<encrypted private_key>, g:<G>, m:<M>}}
+  					Return 200, {grant_token:<grant_token>,keyring:{raw:{private_key:<encrypted private_key>}, g:<G>, m:<M>}}
   				Otherwise:
   					Return 401, 'Invalid authentication data.'
 
@@ -176,7 +176,7 @@ class PostGrantStrategy(Strategy):
 	#Code:
 		#Exceptions:
 		assert all(map(lambda argument: isinstance(argument,dict),(headers,data))), TypeError('Arguments , such as : headers and data - must be dictionaries')
-		assert all(map(lambda parameter: isinstance(parameter,int) ,current_app.config.get('DH_PARAMETERS',(None,)))), ValueError('Configureation of the current app must contain domain Diffie Hellman parameters.')
+		assert all(map(lambda parameter: isinstance(parameter,int) ,current_app.config.get('DH_PARAMETERS',(None,)))), ValueError('Configuration of the current app must contain domain Diffie Hellman parameters.')
 
 		#Lambda functions:
 		map_cases = lambda **data: map( lambda case: case if case.id is not None else None ,( UserService(email=data.get('email')) , UserService(username=data.get('username')) ) )
@@ -226,11 +226,12 @@ class PostGrantStrategy(Strategy):
 			elif route=='login' and user_service.login(**proper_payload(data,route)):
 				return {'success':'True',\
 				'grant_token':Token(payload_data={'user_id':user_service.id,'token_type':'grant','token_version':user_service.token_version,'exp':{'minutes':30}}).value,\
-				'keyring':{ 'private_key':user_service.keyring.private_key, **dict(zip('gm',current_app.config['DH_PARAMETERS'])) }
+				'keyring':{ 'raw':{'private_key':user_service.keyring.private_key}, **dict(zip('gm',current_app.config['DH_PARAMETERS'])) }
 				},201
 			
 			else:
 				return {'success':'False','message': 'Invalid authentication data!'},401
 
 		else:
+			print(template.validate(**data))
 			return {'success':'False','message':'Invalid payload data.'},400

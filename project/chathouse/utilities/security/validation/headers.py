@@ -94,8 +94,8 @@ def authorized(token_type,location=None):
 				#Validation:2.
 				#Validation:3 ~> valid_ownership.
 				#valid_ownership is valid if User with id of token['object']['user_id'] exists , and the token_version is equal to the one in the token
-				valid_ownership = lambda t: {'valid':True,'status_code':200, 'owner':owner} if (owner:=UserService(id=t['object'].user_id)).token_version==t['object']['token_version'] is not None else {'valid':False,'status_code':401, 'owner':None}
-				authorization[token_type] = {'token':token, **(valid_ownership(token) if token_type in ('grant_token','access_token') else {'valid':True,'status_code':200} )}
+				valid_ownership = lambda t: {'valid':True,'status_code':200, 'owner':owner} if (owner:=UserService(id=t['object']['user_id'])).token_version==t['object']['token_version'] is not None else {'valid':False,'status_code':401, 'owner':None}
+				authorization[token_type] = {'token':token, **(valid_ownership(token) if token_type in ('grant','access') else {'valid':True,'status_code':200} )}
 			else:
 				authorization[token_type] = {'valid':False,'status_code':401,'token':token}
 

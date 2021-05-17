@@ -8,8 +8,5 @@ async function verification_call(data){
 		}),
 		body:JSON.stringify(data)
 	});
-	if (response.status != 201){
-		return null;
-	}
-	return await response.json();
+	return response;
 }

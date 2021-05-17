@@ -1,7 +1,9 @@
 class Token{
 	#payload;
+	#raw;
 
 	constructor(raw){
+		this.#raw=raw;
 		this.#payload=this.#decode(raw)
 	}
 	#decode(raw_data){
@@ -14,5 +16,8 @@ class Token{
 	}
 	get payload(){
 		return this.#payload;
+	}
+	get raw(){
+		return this.#raw;
 	}
 }

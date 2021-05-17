@@ -4,4 +4,4 @@ function addGlobalEventListener(type,match,callback){
 	})
 }
 
-addGlobalEventListener('click','#identify',identify_controller)
+addGlobalEventListener('click','#verify',verification_controller);

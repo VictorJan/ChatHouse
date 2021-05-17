@@ -1,4 +1,4 @@
-from chathouse.models import db,User,Keyring
+from chathouse.models import db,User,Keyring,Chat,Participation
 import chathouse.service as service
 from copy import deepcopy
 
@@ -11,6 +11,8 @@ class UserService:
 		Arguments: identification is a key word argument, that shall only include proper unique keys.
 		'''
 		self.__instance=self.__identify(**identification) if identification else None
+
+
 
 	def remove(self):
 		'''
@@ -87,7 +89,6 @@ class UserService:
 
 					self.__instance=None
 
-					return False
 			except:
 				
 				db.session.rollback()
@@ -128,7 +129,6 @@ class UserService:
 				return True
 			except:
 				db.session.rollback()
-				return False
 		return False
 
 
