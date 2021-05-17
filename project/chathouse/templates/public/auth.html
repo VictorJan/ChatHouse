@@ -4,6 +4,7 @@
 
 {%block links%}
 <link type="text/css" rel="stylesheet" href="{{ url_for('static',filename='css/public/auth.css')}}">
+{%include 'public/{}/scripts.html'.format(route) %}
 {%endblock%}
 
 {%block route%}
@@ -17,16 +18,17 @@
 {%block content%}
 	{%if not verify %}
 		{%if route=='signup'%}
-			<input type="text" placeholder="Thy email">
-			<input type="text" placeholder="Thy username">
-			<input type="text" placeholder="Thy name">
-			<input type="text" placeholder="About yourself">
+			<input id="email" type="text" placeholder="Thy email">
+			<input id="username" type="text" placeholder="Thy username">
+			<input id="name" type="text" placeholder="Thy name">
+			<input id="about" type="text" placeholder="About yourself">
 		{%elif route=='login'%}
-			<input type="text" placeholder="Thy email or username">
+			<input id="identification" type="text" placeholder="Thy email or username">
 		{%endif%}
-		<input class="button identify" type="button" value="identify">
+		<input id="identify" class="button identify" type="button" value="identify">
 	{%else%}
-		<input type="password" placeholder="Thy password">
-		<input class="button verify" type="button" value="verify">
+		<input id="password" type="password" placeholder="Thy password">
+		<input id="verify" class="button verify" type="button" value="verify">
 	{%endif%}
+	<div class="feedback"></div>
 {%endblock%}

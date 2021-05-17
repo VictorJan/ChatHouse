@@ -13,11 +13,11 @@ class Template:
 		data may include non expecting fields, template must ignore them - store the requested ones.
 		'''
 		for key in self.__fields:
-			if (value:=data.pop(key,None)) is not None and self.__fields[key].validate(value):
+			if (value:=data.get(key,None)) is not None and self.__fields[key].validate(value): 
 				self.__data[key]=value
 			else:
 				return False
-		return True
+		return len(self.__data)==len(data)
 		
 	@property
 	def data(self):

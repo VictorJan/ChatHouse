@@ -27,6 +27,11 @@ input[type="text"]:active,input[type="password"]:active{
    color:#5e5e5e;
 }
 
+.feedback{
+   padding: 10px;
+    color: #fd4d4d;
+    font-family: inherit;
+}
 
 *:active{
 

@@ -1,0 +1,4 @@
+from chathouse.utilities.security.controller_strategy.controller import Controller
+from chathouse.rest.key_parameters.controller.get.strategy import GetKeyParametersStrategy
+
+GetKeyParametersController=Controller(GetKeyParametersStrategy())

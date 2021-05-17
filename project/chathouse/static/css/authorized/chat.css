@@ -270,7 +270,7 @@ padding:20px;
 /*User list ends*/
 
 /*Search start*/
-input[type="search"]
+input[type="search"],input[type="text"]
 {
 	transition:0.5s;
    margin:5px 0px;
@@ -284,12 +284,12 @@ input[type="search"]
 }
 
 
-input:hover[type="search"]
+input:hover[type="search"],input[type="text"]:hover
 {
    background-color: #292929;
    color:#ffffff;
 }
-input:focus[type="search"]
+input:focus[type="search"],input[type="text"]:focus
 {
 	background-color: #292929;
    color:white;
@@ -363,7 +363,7 @@ a:hover{
 background-color:#292929;
 }
 
-.user_card{
+.card{
 	position: fixed;
 	top: 50%;
 	left: 50%;
@@ -379,14 +379,14 @@ background-color:#292929;
 	transition: .5s;
 	box-shadow: 0px 0px 10px white;
 	grid-template-areas:
-		"user_card_header"
-		"user_card_body";
+		"card_header"
+		"card_body";
 	font-family: Segoe UI,Agency FB;
 }
 
-.user_card_header{
+.card_header{
 	display: grid;
-	grid-area: user_card_header;
+	grid-area: card_header;
 	place-content:center start;
 	padding: 5px;
 	border-bottom: 1.5px solid #80808038;
@@ -394,7 +394,7 @@ background-color:#292929;
 
 .user_card_body{
     display: grid;
-	grid-area: user_card_body;
+	grid-area: card_body;
 	grid-template-areas: "information_header" "information_body";
 }
 

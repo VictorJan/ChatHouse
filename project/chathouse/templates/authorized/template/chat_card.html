@@ -1,0 +1,14 @@
+<template id="chat_card_template">
+	<div id="chat_card" class="card">
+		<div class="card_header">
+			<button class="utility" onclick="close_a_card(this.parentNode.parentNode);">&times;</button>
+		</div>
+		<div class="card_body">
+			<div class="card_utilities" style="justify-content: inherit;">
+				<input type="hidden" id="participant" value="">
+				<input id="chat_name" type="text" placeholder="Come up with a name for a chat">
+				<input id="create" type="button" class="utility" style="color:white;justify-self:center;display:grid;border-radius: 10px;" value="Start a chat &#9998;...">
+			</div>
+		</div>
+	</div>
+</template>

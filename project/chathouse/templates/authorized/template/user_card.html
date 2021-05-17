@@ -1,13 +1,14 @@
 <template id="user_card_template">
-	<div id="user_card" class="user_card">
-		<div class="user_card_header">
+	<div id="user_card" class="card">
+		<div class="card_header">
 			<button class="utility" onclick="close_a_card(this.parentNode.parentNode);">&times;</button>
 		</div>
-		<div class="user_card_body">
+		<div class="card_body">
 			<div class="dark user_block">
 				<div class="user_info"><span class="link" id="username">User_{{i}}</span></div>
 				<div class="utility_block">
-					<input id="create" type="button" class="utility" value="&#9998;">
+					<input id="user_id" type="hidden">
+					<input id="kick_off_chat" type="button" class="utility" value="&#9998;">
 					<input id="chat" type="button" class="utility" value="&#10159;" onclick="window.location='/chat/2'">
 					<input id="remove" type="button" class="utility" value="&#10008;">
 				</div>

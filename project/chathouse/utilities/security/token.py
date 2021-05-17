@@ -7,7 +7,7 @@ import os
 
 class Token:
 
-	assert (__static_key:=os.environ.get('STATIC_KEY',None)) is not None, Exception('There must be a STATIC_KEY.')
+	assert (__static_key:=os.environ.get('STATIC_KEY',None)) is not None, Exception('There must be a STATIC_KEY in the environment variables.')
 
 	def __init__(self,**incoming_data):
 		self.__value = raw if (raw:=incoming_data.get('raw_data')) else (self.__generate(**payload) if (payload:=incoming_data.get('payload_data')) else None)

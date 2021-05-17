@@ -20,7 +20,7 @@ def create_app():
 
 	from chathouse.migrations import migrate
 
-	migrate.init_app(app,db)
+	migrate.init_app(app,db,render_as_batch=True)
 
 	from chathouse.views import public,authorized
 	#blueprints views

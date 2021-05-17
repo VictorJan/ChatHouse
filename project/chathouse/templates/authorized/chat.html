@@ -3,10 +3,11 @@
 <head>
 	<title>{{title}}</title>
 	<link type="text/css" rel="stylesheet" href="{{ url_for('static',filename='css/authorized/chat.css')}}">
-	<script src="{{url_for('static',filename='js/user_card.js')}}" ></script>
+	{%include 'authorized/scripts.html'%}
 </head>
 <body>
 	{%include 'authorized/template/user_card.html'%}
+	{%include 'authorized/template/chat_card.html'%}
 	<div id="overlay"></div>
 
 	<div class="layout">
@@ -16,18 +17,18 @@
 					<a class="link" href="/">chatHouse</a>
 				</div>
 				<div class="right">
-					<a class="link" onclick="build_a_card({information:{username:'user{{i}}',email:'username{{i}}@gmail.com',name:'name{{i}}',about:'about me.{{i}}.'}})">User_{{i}}</a>
+					<a class="link" id="user">User_{{i}}</a>
 				</div>
 			</div>
 			<div class="item users_item">
 				<div class="search_block">
-					<input type="search" placeholder="Search...">
+					<input id="search_field" type="search" placeholder="Search...">
 				</div>
 				<div id="chat_list" class="list">
 					{%for i in range(20)%}
 						<div class="user_block">
 							<div class="user_info">
-								<a class="link" onclick="build_a_card({information:{username:'user{{i}}',email:'username{{i}}@gmail.com',name:'name{{i}}',about:'about me.{{i}}.'}})">User_{{i}}</a>
+								<a id="user" class="link" onclick="build_a_card('user',{information:{username:'user{{i}}',email:'username{{i}}@gmail.com',name:'name{{i}}',about:'about me.{{i}}.'}})">User_{{i}}</a>
 							</div>
 							<div class="utility_block">
 								<input id="create" type="button" class="utility" value="&#9998;">
@@ -48,13 +49,17 @@
 			</div>
 			<div class="item chat_item">
 				<div class="chat_header">
-					<a class="link" onclick="build_a_card({information:{username:'user{{i}}',email:'username{{i}}@gmail.com',name:'name{{i}}',about:'about me.{{i}}.'}})">User_{{i}}</a>
+					{% if chat %}
+					<a class="link" onclick="build_a_card('user',{information:{username:'user{{i}}',email:'username{{i}}@gmail.com',name:'name{{i}}',about:'about me.{{i}}.'}})">User_{{i}}</a>
+					{% else %}
+					<span>Select a chat</span>
+					{% endif %}
 				</div>
 				<div class="chat_content">
 					{%for i in range(100)%}
 						<div class="{{'sent ' if (i%2)==0 else 'received '}}chat_message">
 							<div class="left_block">
-								<div class="user_info"><a class="link" onclick="build_a_card({information:{username:'user{{i}}',email:'username{{i}}@gmail.com',name:'name{{i}}',about:'about me.{{i}}.'}})">user{{i%2}}</a></div>
+								<div class="user_info"><a class="link" onclick="build_a_card('user',{information:{username:'user{{i}}',email:'username{{i}}@gmail.com',name:'name{{i}}',about:'about me.{{i}}.'}})">user{{i%2}}</a></div>
 								<div class="message_content">message {{i}}</div>
 							</div>
 							<div class="right_block">

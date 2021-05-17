@@ -1,4 +1,5 @@
 from chathouse.utilities.security.token import Token
+from chathouse.service import UserService,ChatService
 from functools import wraps
 import re
 
@@ -51,8 +52,8 @@ def authorized(token_type,location=None):
  		[-]If token object is invalid or doesn't correspond to the passed token_type - set authorization={'valid':False,status_code:401,'token':<token>} - resume to the Return Phase.
  		2.If the token_type is in ('access_token','grant_token') -> proceed to step 3.
  		[-]Otherwise set authorization={'valid':True,status_code:200,'token':<token>} and proceed to the Return Phase.
- 		3.Validate the existance of the "user_id" (owner), "token_version" (last granted version) keys in the token's dictionary, according to the user_id, find the assumed owner ~> using UserService instance , where (id=token[''])
- 		Then if the owner exists , check the accord of the token_version in the token with the one in the Data Base.
+ 		3.Validate the existance of the "user_id" (owner), "token_version" (last granted version) keys in the token's dictionary, according to the user_id, find the assumed owner ~> using UserService instance , where (id=token[user_id])
+ 		Then if the owner exists , check the accord of the token_version in the token with the one in the Data Base. if the ownership matches insert another key 'owner' and assign a 
  		[-]Otherwise set authorization={'valid':False,status_code:401}
 
 
@@ -64,9 +65,9 @@ def authorized(token_type,location=None):
  	 	If the headers is not a dictionary , raise TypeError
  	 	IF the authorization chain is not empty and it already contains the <token_type>, raise appropriate Exception
 
- 	Return: route(*args,*kwargs), where kwargs shall be updated with authorization[<token_type>]={valid:<True/False>,status_code:<200/401>,token:<{location:<location/None>,object:<Token/None>}>}
+ 	Return: route(*args,*kwargs), where kwargs shall be updated with authorization[<token_type>]={valid:<True/False>,status_code:<200/401>,token:<{location:<location/None>,object:<Token/None>}>, if the token is a grant/access + owner:<UserService/None>}
 	'''
-
+#Code:
 	#Exceptions
 	assert isinstance(token_type,str), TypeError('"token_type" must be a string.')
 	assert isinstance('' if location is None else location,str), TypeError('"location" must be a string or None.')
@@ -74,7 +75,7 @@ def authorized(token_type,location=None):
 	def decorator(route):
 		@wraps(route)
 		def validate(*args,**kwargs):
-			
+
 			#Exceptions
 			assert len(args)>1, Exception('No headers has been found.')
 			assert isinstance((headers:=args[1]),dict), TypeError('Headers must be a dictionary.')
@@ -92,9 +93,9 @@ def authorized(token_type,location=None):
 			if (token:=locate(location,headers) if location else either)['object'] and token['object'].is_valid and token['object']['token_type']==token_type:
 				#Validation:2.
 				#Validation:3 ~> valid_ownership.
-				#valid_ownership = if token['object']['user_id']
-				valid_ownership = {'valid':False,'status_code':401} #for now
-				authorization[token_type] = {'token':token, **(valid_ownership if token_type in ('grant_token','access_token') else {'valid':True,'status_code':200} )}
+				#valid_ownership is valid if User with id of token['object']['user_id'] exists , and the token_version is equal to the one in the token
+				valid_ownership = lambda t: {'valid':True,'status_code':200, 'owner':owner} if (owner:=UserService(id=t['object'].user_id)).token_version==t['object']['token_version'] is not None else {'valid':False,'status_code':401, 'owner':None}
+				authorization[token_type] = {'token':token, **(valid_ownership(token) if token_type in ('grant_token','access_token') else {'valid':True,'status_code':200} )}
 			else:
 				authorization[token_type] = {'valid':False,'status_code':401,'token':token}
 

@@ -10,7 +10,9 @@ class MailService:
 		Payload must contain data and recipient keys.
 		'''
 		items=('recipients','body','subject')
-		if len(parsed:=dict(filter(lambda item:item[0] in items,payload.items())))==len(items):
-			mail.send(Message(**parsed))
-			return None
+		if all(map(lambda key: key in payload,items)):
+			try:
+				mail.send(Message(**payload))
+			finally:
+				return None
 		raise Exception('Invalid payload')

@@ -14,7 +14,7 @@ class LogInStrategy(Strategy):
 		
 		response=make_response(render_template('/public/auth.html',route="login"))
 		
-		if not kwargs['authorization']['preaccess']['valid']:
+		if not kwargs['authorization']['preaccess']['valid'] or kwargs['authorization']['preaccess']['token']['object']['route']!='login':
 			response.set_cookie('preaccess_token',Token(payload_data={'route':'login','token_type':'preaccess','exp':{'minutes':30}}).value,httponly=True,samesite='Strict')
 		
 		return response
