@@ -63,6 +63,11 @@ class ChatService:
 	def __getattr__(self,attr):
 		return ( deepcopy(value) if (value:=self.__instance.__dict__.get(attr,None)) is not None else value ) if self.__instance else None
 
+	@property
+	def participants(self):
+		return [service.UserService(id=participant.id) for participant in self.__instance.participants ] if self.__instance else None
+	
+
 
 	@staticmethod
 	def __identify(**payload):

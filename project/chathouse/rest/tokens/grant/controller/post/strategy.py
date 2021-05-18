@@ -181,14 +181,17 @@ class PostGrantStrategy(Strategy):
 		#Lambda functions:
 		map_cases = lambda **data: map( lambda case: case if case.id is not None else None ,( UserService(email=data.get('email')) , UserService(username=data.get('username')) ) )
 		
-		resolve = lambda route,data: (UserService() if not any(map_cases(email=data['email'],username=data['username'])) else None ) if route=='signup'\
-		else (next(filter(lambda case:case is not None ,cases))	if any( (cases:=tuple( map_cases(email=data['identification'],username=data['identification']) ) ) ) else None)
+		resolve = lambda route,data: (UserService() if not any(map_cases(email=data.get('email',''),username=data.get('username',''))) else None ) if route=='signup'\
+		else (next(filter(lambda case:case is not None ,cases))	if any( (cases:=tuple( map_cases(email=data.get('identification',''),username=data.get('identification','') ) ) ) ) else None)
 
-		valid_dh_parameters = lambda initial_keyring: current_app.config['DH_PARAMETERS']==(initial_keyring.pop('g',None),initial_keyring.pop('m',None)) and 0<initial_keyring['public_key']<current_app.config['DH_PARAMETERS'][1] 
+		valid_dh_parameters = lambda initial_keyring: current_app.config['DH_PARAMETERS']==(initial_keyring.pop('g',None),initial_keyring.pop('m',None)) and 0<initial_keyring.get('public_key',-1)<current_app.config['DH_PARAMETERS'][1] 
 
 		proper_payload = lambda incoming_data,incoming_route: { \
-			 'key_data':incoming_data.pop('keyring'),\
-			 'user_data':{**kwargs['authorization']['verification']['token']['object']['identification_data'],**incoming_data} \
+			 'key_data':incoming_data.pop('keyring', {'public_key':None,'private_key':None}),\
+			 'user_data':{\
+			 	**kwargs['authorization']['verification']['token']['object']['identification_data'],\
+			 	**incoming_data\
+			 }\
 			 } if incoming_route=='signup' else incoming_data
 
 
@@ -209,7 +212,7 @@ class PostGrantStrategy(Strategy):
 			if route=='signup':
 		#Step 5.S.1
 				if not (dh_is_valid:=valid_dh_parameters(data['keyring'])):
-					return {'success':'False','message':'Invalid Diffie Hellman data.'},409
+					return {'success':'False','reason':'Invalid Diffie Hellman data.'},409
 		#Step 5.S.2
 				if user_service.signup(**(su_payload:=proper_payload(data,route))):
 				
@@ -220,7 +223,7 @@ class PostGrantStrategy(Strategy):
 				else:
 
 					return {'success':'False',\
-					'message': ('Please submit again.' if KeyringService(public_key=su_payload['key_data']['public_key']).id else 'Provided data is invalid.') },\
+					'reason': ('Conflict. Please submit again.' if KeyringService(public_key=su_payload['key_data']['public_key']).id else 'Provided data is invalid.') },\
 					409
 		#Step 5.L.1
 			elif route=='login' and user_service.login(**proper_payload(data,route)):
@@ -230,8 +233,8 @@ class PostGrantStrategy(Strategy):
 				},201
 			
 			else:
-				return {'success':'False','message': 'Invalid authentication data!'},401
+				return {'success':'False','reason': 'Invalid authentication data.'},401
 
 		else:
 			print(template.validate(**data))
-			return {'success':'False','message':'Invalid payload data.'},400
+			return {'success':'False','reason':'Invalid payload data.'},400

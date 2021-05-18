@@ -15,38 +15,57 @@ async function verification_controller(e){
 			if (preaccess_token.payload.route == "signup"){
 				//Generate a random dh key
 				dh_key = await ( await generate_a_keyring() );
+				if (!dh_key.keyring.private) window.location.replace(window.location.href);
 				//Exports the keyring bundle, encrypting the private key with the password , if the initial route is signup
 				data['keyring'] = await dh_key.export(clear_password);
 			}
 
 
-			let verification_response = await grant_call(data,verification_token.raw);
-			if (verification_response.status == 201){
-				let verification_json = await verification_response.json();
+
+			let grant_response = await grant_call(data,verification_token.raw);
+			let grant_json = await grant_response.json();
+
+			if (grant_response.status == 201){
 				
-				const grant_token = new Token(verification_json.grant_token);
+				const grant_token = new Token(grant_json.grant_token);
 
 				//If the initial route is login -> based on the retreived keyring - create an instance of a new DH_key. Declare a dh_key
 				if (preaccess_token.payload.route == "login"){
 
-					let login_keyring=verification_json.keyring;
+					let login_keyring=grant_json.keyring;
 					login_keyring['raw']['password']=clear_password;
 
 					dh_key = await new DH_Key(login_keyring);
 				}
-				//stores current key ring in the session storate
+				
+				//stores current keyring in the session storage
 				dh_key.store();
-
 				//call the authorized route to set the grant token as the cookie.
 
 				let view_call_response = await authorized_view_call(grant_token.raw);
-				if (view_call_response.status==200){
-					window.location.replace(`${window.location.origin}/chat`);
-				}
+				window.location.replace(`${window.location.origin}/chat`);
 
 			}
 			else{
-				document.querySelector(".feedback").innerHTML="Please enter valid data."
+				if (grant_response.status == 401){
+					if (grant_json.reason=='Invalid verification/preaccess token.'){
+						window.location.replace(`${window.location.href}/start`);
+					}
+					else if (grant_json.reason=='Invalid authentication data.'){
+						document.querySelector(".feedback").innerHTML="The password is invalid."
+					}
+				}
+				else if  (grant_response.status == 409){
+					if (grant_json.reason=='Conflict. Please submit again.'){
+						document.querySelector(".feedback").innerHTML="Please submit again."
+					}
+					else{
+						window.location.replace(window.location.href);
+					}
+				}
+				else{
+
+				}
 			}
 		}
 	}
@@ -57,7 +76,7 @@ async function generate_a_keyring(){
 	if (response.status==200){
 		let data = await response.json();
 		delete data.success;
-		data['payload']={private:random(2,data.m)};
+		data['payload']={private_key:random(2,data.m)};
 		const keyring = await new DH_Key(data);
 		return keyring;
 	}

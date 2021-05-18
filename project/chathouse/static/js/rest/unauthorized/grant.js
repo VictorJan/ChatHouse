@@ -1,6 +1,5 @@
 async function grant_call(data,token){
 	const url = `${window.location.origin}/api/tokens/grant`;
-	console.log(data,token)
 	const response = await fetch(url,{
 		method:'POST',
 		credentials:'omit',

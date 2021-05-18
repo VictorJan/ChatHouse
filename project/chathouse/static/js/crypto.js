@@ -18,7 +18,7 @@ class DH_Key{
 				this.modulus=data.m;
 				this.generator=data.g;
 
-				this.#keyring = (data.payload) ? {private:data.payload.private_key} : {private_key:await this.#parse(data.raw.private_key,data.raw.password)};
+				this.#keyring = (data.payload) ? {private:data.payload.private_key} : {private:await this.#parse(data.raw.private_key,data.raw.password)};
 
 				this.#keyring.public=this.#exp(this.generator);
 				return this;
@@ -43,6 +43,7 @@ class DH_Key{
 	}
 
 	async #parse(private_key,password){
+
 		let derived_key = (await new PBKDF(password)).value;
 		let key = (await(await new AES_CBC(derived_key)).decrypt(private_key));
 		if (key) {
@@ -58,8 +59,8 @@ class DH_Key{
 	}
 
 	store(){
-		if ((this.#keyring.private) && !(sessionStorage.getItem('keybundle'))){
-			sessionStorage.setItem('keyring',JSON.stringify({g:this.generator,m:this.modulus,payload:{private_key:this.#keyring.private}}));
+		if ((this.#keyring.private) && !(sessionStorage.getItem('keyring'))){
+			localStorage.setItem('keyring',JSON.stringify({g:this.generator,m:this.modulus,payload:{private_key:this.#keyring.private}}));
 			return true;
 		}
 		return false;
@@ -132,8 +133,8 @@ class AES_CBC
 	async decrypt(encrypted){
 		//encrypted has to be a map consisting of iv and content. Convert hex values to Arrays then into Buffers.
 		if (encrypted.iv && encrypted.data){
-			try
-			{
+			//try
+			//{
 				let decrypted_buffer = await crypto.subtle.decrypt(
 					{
 						iv:hex_to_array(encrypted.iv).buffer,
@@ -144,10 +145,10 @@ class AES_CBC
 				);
 				let array=new Uint8Array(decrypted_buffer);
 				return (new TextDecoder()).decode(array);
-			}
-			catch{
-				return null;
-			}
+			//}
+			//catch{
+			//	return null;
+			//}
 		}
 	}
 }

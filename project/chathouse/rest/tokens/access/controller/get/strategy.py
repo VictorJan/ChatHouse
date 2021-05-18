@@ -58,7 +58,7 @@ class GetAccessStrategy(Strategy):
   			access_token={user_id: <owner.id>:int, token_type: "access":str, token_version: <owner.token_version>:int , dnt:float}
  
 		Returns:
-			If the access token(the ownership,signature) is invalid:
+			If the grant token(the ownership,signature) is invalid:
   				Return 401, message:"Unauthorized!","reason":"Invalid grant token."
   			Otherwise:
   				Return 200, {access_token:<access_token>}

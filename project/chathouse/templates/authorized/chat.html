@@ -17,7 +17,7 @@
 					<a class="link" href="/">chatHouse</a>
 				</div>
 				<div class="right">
-					<a class="link" id="user">User_{{i}}</a>
+					<a class="link" id="user">{{current_user.username}}</a>
 				</div>
 			</div>
 			<div class="item users_item">
@@ -25,14 +25,14 @@
 					<input id="search_field" type="search" placeholder="Search...">
 				</div>
 				<div id="chat_list" class="list">
-					{%for i in range(20)%}
+					{% for chat in current_user.chats%}
 						<div class="user_block">
 							<div class="user_info">
-								<a id="user" class="link" onclick="build_a_card('user',{information:{username:'user{{i}}',email:'username{{i}}@gmail.com',name:'name{{i}}',about:'about me.{{i}}.'}})">User_{{i}}</a>
+								<a id="user" class="link">{{chat.name}}</a>
 							</div>
 							<div class="utility_block">
 								<input id="create" type="button" class="utility" value="&#9998;">
-								<input id="chat" type="button" class="utility" value="&#10159;" onclick="window.location='/chat/2'">
+								<input id="chat" type="button" class="utility" value="&#10159;" onclick="window.location='/chat?id={{chat.id}}'">
 								<input id="remove" type="button" class="utility" value="&#10008;">
 							</div>
 						</div>
@@ -50,7 +50,7 @@
 			<div class="item chat_item">
 				<div class="chat_header">
 					{% if chat %}
-					<a class="link" onclick="build_a_card('user',{information:{username:'user{{i}}',email:'username{{i}}@gmail.com',name:'name{{i}}',about:'about me.{{i}}.'}})">User_{{i}}</a>
+					<a class="link" chat-id="{{chat.id}}">{{chat.name}}</a>
 					{% else %}
 					<span>Select a chat</span>
 					{% endif %}

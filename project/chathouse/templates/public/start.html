@@ -2,8 +2,8 @@
 <html>
 <head>
 	<link type="text/css" rel="stylesheet" href="{{ url_for('static',filename='css/public/start.css')}}">
-	{%block links%}{%endblock%}
-	<title>{%block title%} {%endblock%}</title>
+	{%block links%}<script src="{{url_for('static',filename='js/authentication/initial.js')}}" ></script>{%endblock%}
+	<title>{%block title%}Start{%endblock%}</title>
 </head>
 <body>
 	<div class="layout">

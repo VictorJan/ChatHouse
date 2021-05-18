@@ -11,7 +11,6 @@ class VerifyStrategy(Strategy):
 		#	return redirect(url_for('public.start'))
 		if kwargs['authorization']['grant']['valid']:
 			return redirect(url_for('authorized.chat'))
-
 		if (verification_token:=Token(raw_data=kwargs['verification_token'])).is_valid:
 			return make_response(render_template('/public/auth.html',route="verify"))
 

@@ -13,7 +13,6 @@ class UserService:
 		self.__instance=self.__identify(**identification) if identification else None
 
 
-
 	def remove(self):
 		'''
 		Goal: remove the current instance of the User class.
