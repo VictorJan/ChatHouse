@@ -34,10 +34,11 @@ class ParticipationService:
 				return False
 		return False
 
-	def __getattr__(self,attr):
-		return ( deepcopy(value) if (value:=self.__instance.__dict__.get(attr,None)) is not None else value ) if self.__instance else None
-
 	def remove(self):
+		'''
+		Goal: removes the inner instance from the database.
+		Returns:True if the inner instance exists and there hasn't been any session execution exception Otherwise False. 
+		'''
 		if self.__instance:
 			try:
 				db.session.delete(self.__instance)
@@ -47,6 +48,9 @@ class ParticipationService:
 				db.session.rollback()
 				return False
 		return False
+
+	def __getattr__(self,attr):
+		return ( deepcopy(value) if (value:=self.__instance.__dict__.get(attr,None)) is not None else value ) if self.__instance else None
 
 	@staticmethod
 	def __identify(**payload):
@@ -58,7 +62,7 @@ class ParticipationService:
 			KeyError - raised when the identification key is not appropriate according to the Table constaints
 		'''
 		assert len(payload)==1, Exception('The initialization of the instance may accept only 1 identification at a time.')
-		assert any(map( lambda key: key in payload, ('id',))) , Exception('The identification payload doesn\'t correspond to any of the unique keys.')
+		assert any(map( lambda key: key in payload and isinstance(payload[key],int), ('id',))) , Exception('The identification payload doesn\'t correspond to any of the unique keys.')
 
 		return Participation.query.filter_by(**payload).first()
 

@@ -1,4 +1,4 @@
-from chathouse.rest.chats.identified.controller.get.strategy import GetIndentifiedChatStrategy
+from chathouse.rest.chats.identified.controller.get.strategy import GetIdentifiedChatStrategy
 from chathouse.utilities.security.controller_strategy.controller import Controller
 
 '''
@@ -7,8 +7,8 @@ Initilizes a proper controller, by creating an instance of a Controller and prov
 Pattern/Chain of calls:
 	Controller.handle(request_headers,request_data) -> any decorators ( Strategy.accept(request_headers,request_data,kwargs) ).
 
-In this case the Controller is the - [Get][IndentifiedChat]Controller.
+In this case the Controller is the - [Get][IdentifiedChat]Controller.
 [Get] - method GET.
 [IndentifiedChat] - REST endpoint - /chats/<identified>.
 '''
-GetIndentifiedChatController=Controller(GetIndentifiedChatStrategy())
+GetIdentifiedChatController=Controller(GetIdentifiedChatStrategy())

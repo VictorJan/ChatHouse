@@ -6,6 +6,6 @@ This file shall contain defined Resource classes for this specific [Endpoint]=To
 [IdentifiedChatMessages]Resource = /api/chats/<identified>/messages
 [IdentifiedChatPublicKeys]Resource = /api/chats/<identified>/public-keys
 '''
-#from chathouse.rest.chats.verification import ChatIdentifiedResource
-#from chathouse.rest.chats.grant import ChatIdentifiedMessages
-#from chathouse.rest.chats.access import AccessResource
+from chathouse.rest.chats.identified import IdentifiedChatResource
+from chathouse.rest.chats.identified.public_keys import IdentifiedChatPublicKeysResource
+from chathouse.rest.chats.identified.messages import IdentifiedChatMessagesResource

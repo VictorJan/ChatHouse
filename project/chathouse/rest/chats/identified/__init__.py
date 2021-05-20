@@ -6,12 +6,12 @@ This file shall contain defined Resource classes for this specific [Endpoint]=Id
 [IdentifiedChatMessages]Resource = /api/chats/<identified>/messages
 [IdentifiedChatPublicKeys]Resource = /api/chats/<identified>/public-keys
 '''
-
+from chathouse.rest.chats.identified.controller import GetIdentifiedChatController
 from flask_restful import Resource,request
 
 class IdentifiedChatResource(Resource):
 	'''
-	IdentifiedChatResource - a class, meant to handle any get requests according to the endpoint /api/chats/<identified>.
+	IdentifiedChatResource - a class, meant to handle any get requests according to the endpoint /api/chats/<identification>.
 
 	Inherits: Resource.
 	
@@ -28,4 +28,4 @@ class IdentifiedChatResource(Resource):
 		
 		Returns: response:tuple(JSON_Response:dict,status_code:int)
 		'''
-		return GetIndentifiedChatController.handle(dict(request.headers), data if isinstance((data:=request.json),dict) else {} , chat_id=identification)
+		return GetIdentifiedChatController.handle(dict(request.headers), data if (data:=request.json) else {} , identification=identification)

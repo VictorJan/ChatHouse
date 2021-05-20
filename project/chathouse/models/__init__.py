@@ -33,7 +33,8 @@ class Chat(db.Model):
 	id=db.Column(db.Integer,primary_key=True)
 	creator_id=db.Column(db.Integer,db.ForeignKey('user.id'),nullable=False)
 	name=db.Column(db.String,nullable=False)
-	dnt=db.Column(db.DateTime,default=datetime.datetime.fromtimestamp(int(time.time())))
+	creation_dnt=db.Column(db.DateTime,default=datetime.datetime.fromtimestamp(int(time.time())))
+	activity_dnt=db.Column(db.DateTime,default=datetime.datetime.fromtimestamp(int(time.time())))
 
 	messages=db.relationship('Message',backref='chat',cascade='all,delete',lazy='dynamic')
 	participations=db.relationship('Participation',backref='chat',cascade='all,delete',lazy='dynamic')

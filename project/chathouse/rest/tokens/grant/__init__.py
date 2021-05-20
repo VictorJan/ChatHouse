@@ -19,4 +19,4 @@ class GrantResource(Resource):
 		
 		Returns: response:tuple(JSON_Response:dict,status_code:int)
 		'''
-		return PostGrantController.handle(dict(request.headers), data if isinstance((data:=request.json),dict) else {} )
+		return PostGrantController.handle(dict(request.headers), data if (data:=request.json) else {} )

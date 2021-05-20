@@ -49,7 +49,7 @@ async function verification_controller(e){
 			else{
 				if (grant_response.status == 401){
 					if (grant_json.reason=='Invalid verification/preaccess token.'){
-						window.location.replace(`${window.location.href}/start`);
+						window.location.replace(`${window.location.origin}/start`);
 					}
 					else if (grant_json.reason=='Invalid authentication data.'){
 						document.querySelector(".feedback").innerHTML="The password is invalid."

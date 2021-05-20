@@ -24,13 +24,13 @@ class KeyringService:
 		assert len(payload)==3 and all(map(lambda key: key in payload and isinstance(payload[key],resolve_data_type(key)), ('owner_id','public_key','private_key'))),ValueError('The payload must contain keys for "owner_id","public_key","private_key".')
 		
 		if self.__instance is None and all(map(lambda key: key in payload['private_key'] and isinstance(payload['private_key'][key],str) ,('iv','data'))):
-			#try:
+			try:
 				self.__instance=Keyring(**payload)
 				db.session.add(self.__instance)
 				db.session.commit()
 				db.session.refresh(self.__instance)
 				return True
-			#except:
+			except:
 				self.__instance=None
 				db.session.rollback()
 				return False
@@ -41,6 +41,10 @@ class KeyringService:
 		return ( deepcopy(value) if (value:=self.__instance.__dict__.get(attr,None)) is not None else value ) if self.__instance else None
 
 	def remove(self):
+		'''
+		Goal: removes the inner instance from the database.
+		Returns:True if the inner instance exists and there hasn't been any session execution exception Otherwise False. 
+		'''
 		if self.__instance:
 			try:
 				db.session.delete(self.__instance)
@@ -51,6 +55,15 @@ class KeyringService:
 				return False
 		return False
 
+	@property
+	def owner(self):
+		'''
+		Goal:return the owner of the current keyring.
+		Returns:UserService of the user If the inner instance of the message exists else None
+		'''
+		return service.UserService(id=self.__instance.owner_id) if self.__instance else None
+	
+
 	@staticmethod
 	def __identify(**payload):
 		'''
@@ -59,8 +72,9 @@ class KeyringService:
 			SyntaxError - raised when the payload doesn't contain only one identification key.
 			KeyError - raised when the identification key is not appropriate according to the Table constaints
 		'''
+
 		assert len(payload)==1, SyntaxError('The initialization of the instance may accept only 1 identification at a time.')
-		assert any(map( lambda key: key in payload, ('id','owner_id','public_key'))) , KeyError('The identification payload doesn\'t correspond to any of the unique keys.')
+		assert any(map( lambda key: key in payload and isinstance(payload[key],int), ('id','owner_id','public_key'))) , KeyError('The identification payload doesn\'t correspond to any of the unique keys.')
 
 		return Keyring.query.filter_by(**payload).first()
 

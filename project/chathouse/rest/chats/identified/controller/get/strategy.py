@@ -1,8 +1,5 @@
 from chathouse.utilities.security.controller_strategy.strategy import Strategy
 from chathouse.utilities.security.validation.headers import authorized
-from chathouse.utilities.security.token import Token
-from chathouse.service import UserService
-from flask import current_app
 
 class GetIdentifiedChatStrategy(Strategy):
 	'''
@@ -35,7 +32,7 @@ class GetIdentifiedChatStrategy(Strategy):
 		data : meant to store any data that's passed into the request - in this case, data is irrelevant:
 			
 		kwargs: meant to store any data passed into the accept method, from the initial requrest, up to the authorization steps. In particular stores :
-		The chat_id at : { chat_id:int }
+		The identification at : { identification:int }
 		The authorization key , which on it's own stores shall store more nested information related to a token_type.
 		In this instance the token_type is the access one - so kwargs shall store:{
 			authorization:{
@@ -51,32 +48,76 @@ class GetIdentifiedChatStrategy(Strategy):
 			}
 		}
 
+		Lambda functions:
+			user_payload:
+				Goal: return a dictionary containing some unique information about the user.
+				Arguments: user:UserService. 
+				Returns: dict('id':<id>,'username':<username>)
+
+			participants_payload:
+				Goal: return a list containing some unique data about the participants using the user_payload.
+				Arguments: participants:tuple(UserServices). 
+				Returns: dict('id':<id>,'username':<username>)
+
+			data_payload:
+				Goal: structure and return a dictionary meant for the data key in the response.
+				Arguments: chat:ChatService
+				Returns: a dictionary of (id:<chat.id:int>,name:<chat.name:str>,created:<chat.created_dnt:str>, activity:<chat.activity_dnt:str>, creator:<creator_payload(chat.creator):dict>, participants:<participants_payload(chat.participations):list>)
+
 
 	 	Full verification:
 	  		0.Verify the access_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided token_version with the current one related to the UserService :
   			1.Verify the relationship/participation of the owner and the chat
-  				If 0. is invalid respond with 401, message:"Invalid grant token.";
+  				If 0.|1. is invalid respond with 401, message:"Invalid access token.";
 	  			Otherwise head to the generation phase.
   			
 		Generation:
-  			chat_data={user_id: <owner.id>:int, token_type: "access":str, token_version: <owner.token_version>:int , dnt:float}
+  			data={
+  				id:<int>,
+  				name:<name>,
+  				created:<creation_dnt>,
+  				activity:<activity_dnt>,
+	  			creator:{
+					id:<int>.
+					name:<str>
+	  			},
+				participants:[{id:<int>,name:<str>},...]
+	  		}
  
 		Returns:
-			If the grant token(the ownership,signature) is invalid:
-  				Return 401, message:"Unauthorized!","reason":"Invalid grant token."
+			If the access_token(the ownership,signature) is invalid:
+  				Return 401, message:"Unauthorized!","reason":"Invalid access token."
   			Otherwise:
-  				Return 200, {access_token:<access_token>}
+  				Return 200, data:<data_payload>
 
   		Exceptions:
   			Raises:
   				TypeError - if headers and data arguments are not dictionaries.
+  				TyperError - if the identification argument is not provided or the datatype of the value is not an integer.
 		'''
 	#Code:
 		#Exceptions:
 		assert all(map(lambda argument: isinstance(argument,dict),(headers,data))), TypeError('Arguments , such as : headers and data - must be dictionaries')
+		assert isinstance(kwargs.get('identification',None),int), TypeError('The identification argument hasn\'t been submited or the data type is invalid.')
+
+
+		#Lambda functions:
+		user_payload = lambda user: {'id':user.id,'username':user.username}
+		
+		participants_payload = lambda participations: [ user_payload(participant) for participant in participations ]
+		
+		data_payload = lambda chat: {\
+		'id':chat.id,
+		'name':chat.name,
+		'created':str(chat.creation_dnt),
+		'activity':str(chat.activity_dnt),
+		'creator':user_payload(requested_chat.creator),
+		'participants':participants_payload(requested_chat.participations)\
+		}
 
 		#Step 0.
-		if not kwargs['chat_id'].isnumeric() or not kwargs['authorization']['access']['valid'] or (owner:=kwargs['authorization']['access']['owner']) is None or (chat:=owner.get_a_chat(kwargs['chat_id'])) is None:
+		#Step 1.
+		if not isinstance(kwargs['identification'],int) or not kwargs['authorization']['access']['valid'] or (owner:=kwargs['authorization']['access']['owner']) is None or (requested_chat:=owner.get_a_chat(kwargs['identification'])) is None:
 			return {'success':'False','message':'Unauthorized!','reason':'Invalid access token.'},401
-		#chat_data={'id':chat.id,'name':chat.name,'participants':}
-		return {'success':'True','data':{'id':chat.id,'name':chat.name,'participants':[]}},200
+
+		return {'success':'True','data':data_payload(requested_chat)},200
