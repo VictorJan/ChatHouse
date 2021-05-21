@@ -1,0 +1,39 @@
+/*source is refered to a source_block - the user and chat blocks*/
+.source_block{
+	color: white;
+	transition: .5s;
+	display: grid;
+	grid-template-columns: 3fr 1fr;
+	padding: 10px;
+	height:5vh;
+}
+
+.left_source_block{
+	transition: .5s;
+	overflow-wrap: break-word;
+	padding:5px;
+	font-family: consolas;
+	font-weight: bold;
+	display: grid;
+	place-self:center start;
+	overflow-x: auto;
+	max-width: 90%;
+}
+.left_source_block:hover{
+	color:#f74037;
+	cursor: pointer;
+}
+.right_source_block{
+	display: grid;
+	place-items:center;
+}
+
+.list_item:hover{
+	background-color:#272727;
+}
+
+.list_item:hover .head_button{
+	color:#fd4d4d;
+	background-color: #272727;
+	border:1px solid #272727;
+}

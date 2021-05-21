@@ -5,8 +5,13 @@ function addGlobalEventListener(type,match,callback){
 }
 
 
-addGlobalEventListener('click','#user',user_card_controller);
+addGlobalEventListener('click','#source_link',source_card_controller);
 
-addGlobalEventListener('click','#kick_off_chat',ko_chat_card_controller);
+addGlobalEventListener('keyup','#search_field',search_list_controller)
 
-addGlobalEventListener('keyup','#search_field',try_);
+addGlobalEventListener('click','#close_button',close_parent);
+
+addGlobalEventListener('click','#logout_button',logout);
+
+
+addGlobalEventListener('click','.source_block, .message_content_block,.message_block',select_message_controller)

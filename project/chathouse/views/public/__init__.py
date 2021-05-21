@@ -20,3 +20,4 @@ def login():
 @public.route('/verify/<token>')
 def verify(token):
 	return VerifyController.handle(dict(request.headers),request.data,verification_token=token)
+

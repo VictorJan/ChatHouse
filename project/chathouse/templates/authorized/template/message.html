@@ -1,14 +1,15 @@
 <template id="message">
-	<div class="chat_message">
-		<div class="left_block">
-			<div id="sender" class="user_info"><a class="link" onclick="build_a_card()">user{{i%2}}</a></div>
-			<div id="message_content" class="message_content">message {{i}}</div>
+	<div class="message_block">
+		<div class="source_block">
+			<div data-source id="source_link" class="left_source_block">
+					Source
+			</div>
+			<div class="right_source_block">
+				04:20:30 am
+			</div>
 		</div>
-		<div class="right_block">
-			<div id="readeble_dnt" class="dnt"></div>
-			<input id="dnt" type="hidden">
-			<input id="message_id" type="hidden">
-			<div id="remove_message" class="utility_block"><input type="button" class="utility" value="&times;"></div>
+		<div id="message_content" class="message_content_block">
+			dsadsadabdhsbajdbsahdbsahjdbsabdjsabdhba
 		</div>
 	</div>
 </template>

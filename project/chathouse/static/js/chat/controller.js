@@ -1,17 +1,30 @@
-async function user_card_controller(e){
-	if ( (typeof access_token !== "undefined") && (typeof e.target.innerHTML !== "undefined") && (e.target.innerHTML!=="") ) {
-		//get_user_data(access_token,e.target.innerHTML)
-		build_a_card('user',{information:{username:'username1',email:'username@gmail.com',name:'name',about:'about me.'}})
+let selected=[];
+
+async function select_message_controller(e){
+	let message = (e.target.dataset.message_id) ? e.target : e.target.parentNode;
+	if (message.dataset.message_id)
+	{
+		if ( (index=selected.indexOf(message_id = Number(message.dataset.message_id))) != -1){
+			selected.splice(index,1);
+			message.classList.remove("selected");
+		}
+		else{
+			selected.push(message_id);
+			message.classList.add("selected");
+		}
+		
+		if (selected.length==0){
+
+		}
+		else{
+			document.querySelector("")
+		}
 	}
 }
 
-async function ko_chat_card_controller(e){
-	if ( (typeof access_token !== "undefined") && (e.target.parentNode.parentNode.querySelector('#user') !== null) ) {
-		//get_user_data(access_token,e.target.innerHTML)
-		build_a_card('chat',{information:{username:e.target.parentNode.parentNode.querySelector('#user').innerHTML}})
-	}
-}
+function build_chat_bottom(template){
 
+}
 
 async function get_logout(){
 	const url = `${window.location.origin}/logout`;
@@ -38,4 +51,40 @@ async function prepare_access() {
 		//the has expired -> try to logout
 		await logout();
 	}
+}
+
+async function prepare_chats(token){
+
+	let response = await chats_call(token);
+	if (response.status==200){
+		let json_response = await response.json();
+	}
+	else{
+		access_token_promise = prepare_access();
+		token = await access_token_promise;
+		if ((response = await chats_call(token.raw) ).status == 200 ) json_response = await response.json(); else logout(); 
+	}
+	list('chat',json_response.data);
+}
+
+async function get_promised(promise){
+	return await promise.then((promised)=>{
+		return promised
+	});
+}
+
+async function prepare_other_public_key(token_object,identification){
+	//if the client has loaded in a page with a chat:
+	//send GET to the /chat/<identification>/public-keys => thus getting the
+	let public_keys_response = await chat_call(token_object.raw,identification,'public-keys');
+	if (public_keys_response.status==200){
+		let public_keys_json = await public_keys_response.json();
+		//filter through the poublic keys and store the one , which is not yours;
+		return public_keys_json.data.participants.filter(user=>user.id!=token_object.payload.user_id);
+	}
+	else{
+		//reload
+		window.location.replace(window.location.href);
+	}
+
 }

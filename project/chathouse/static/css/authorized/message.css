@@ -1,0 +1,32 @@
+.message_block{
+	display: grid;
+	grid-template-rows: auto auto;
+	grid-row-gap:20px;
+	box-shadow: 0px 5px 10px #222123;
+	border-radius: 10px;
+	padding: 5px;
+	margin: 20px 30px;
+	font-family: consolas;
+	color:#cecece;
+	background-color:#2e2e2f;
+}
+
+.message_block:hover{
+	background-color:#272727;
+	cursor: pointer;
+}
+
+.message_content_block{
+	word-break: break-all;
+	padding: 20px;
+	height: fit-content;
+}
+
+.selected{
+	transition: .5s;
+	background-color: #1f1f1f
+}
+.selected:hover{
+	background-color:#2e2e2f; 
+}
+}

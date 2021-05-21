@@ -1,0 +1,23 @@
+.search_block{
+	display: grid;
+	height: 4vh;
+	border-bottom: 1px solid #fd4d4d;
+	grid-auto-flow: column;
+	grid-template-columns: 10fr 1fr;
+}
+.list{
+	display: grid;
+	grid-template-rows: 5vh 1fr;
+}
+.list_header{
+	display: grid;
+    place-content: center;
+    font-family: Agency fb;
+    font-weight: 100;
+    border-bottom: 1px solid #fd4d4d;
+}
+.list_body{
+	padding:5px;
+	overflow-y: auto;
+	max-height:75vh;
+}

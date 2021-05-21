@@ -48,7 +48,9 @@ grid-area: search;
 }
 /*header item ends here*/
 
-.users_item{display: grid;grid-area: users;grid-row-gap: 1vh;/* height: 85vh; *//* overflow-y: scroll; */}
+.left_item{
+	display: grid;grid-area: users;grid-row-gap: 1vh;
+}
 .chat_item{
 grid-area: chat;
 height:95vh;

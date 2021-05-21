@@ -113,6 +113,7 @@ class GetIdentifiedUserStrategy(Strategy):
 		'username':other.username,
 		'name':other.name,
 		'email':other.email,
+		'about':other.about,
 		'common_chats':common_payload(requester.common_ground_with(id=other.id))
 		}
 

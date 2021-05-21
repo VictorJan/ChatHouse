@@ -2,22 +2,123 @@
 <html>
 <head>
 	<title>{{title}}</title>
-	<link type="text/css" rel="stylesheet" href="{{ url_for('static',filename='css/authorized/chat.css')}}">
+	<link type="text/css" rel="stylesheet" href="{{ url_for('static',filename='css/authorized/init.css')}}">
 	{%include 'authorized/scripts.html'%}
 </head>
 <body>
-	{%include 'authorized/template/user_card.html'%}
-	{%include 'authorized/template/chat_card.html'%}
+	{%include 'authorized/template/card.html'%}
+	{%include 'authorized/template/source.html'%}
+	{%include 'authorized/template/list.html'%}
+	{%include 'authorized/template/chat_bottom_content.html'%}
 	<div id="overlay"></div>
 
 	<div class="layout">
 		<div class="grid_layout">
+			<div class="item header_layout">
+				<div class="left">
+					<a class="link" href="/">chatHouse</a>
+				</div>
+				<div class="right">
+					<div data-user_id={{current_user.id}} id="source_link" class="left_source_block">
+						{{current_user.username}}
+					</div>
+				</div>
+			</div>
+			<div class="item left_layout">
+				<div class="search_block">
+					<input id="search_field" type="search" placeholder="Search...">
+					<input id="clear_search_button" type="button"  class="close_button" value="✕">
+				</div>
+				<div class="list">
+					<div class="list_header">
+						Users
+					</div>
+					<div class="list_body">
+						{%for i in range(100)%}
+							<div class="dark source_block list_item">
+								<!-- left source block should contain a attribute for the data-[user_id/chat_id/identification] , then this could be reached from the js as element.dataset!-->
+								<div data-source={{i}} id="source_link" class="left_source_block">
+									Source{{i}}
+								</div>
+								<div class="right_source_block">
+									<input data-source id="head_to_source" type="button" class="head_button" value="&#10159;" onclick="window.location='/chat/2'">
+								</div>
+							</div>
+						{%endfor%}
+					</div>
+				</div>
+			</div>
+			<div class="item chat_layout">
+				
+				<div class="chat_header">
+					{%if current_chat%}
+						<div data-chat_id={{current_chat.id}} id="source_link" class="left_source_block">
+							{{current_chat.name}}
+						</div>
+					{%else%}
+						Select a chat.
+					{%endif%}
+				</div>
+				
+				<div class="chat_content">
+					{% for i in range(100) %}
+						<div data-message_id={{i}} id="message" class="message_block">
+					<div class="source_block">
+						<div data-source id="source_link" class="left_source_block">
+								Source
+						</div>
+						<div class="right_source_block">
+							04:20:30 am
+						</div>
+					</div>
+					<div class="message_content_block">
+						dsadsadabdhsbajdbsahdbsahjdbsabdjsabdhba
+					</div>
+				</div>
+					{%endfor%}
+				</div>
+				
+				<div class="chat_bottom">
+					<textarea class="message_input"></textarea>
+					<div class="chat_utilities">
+						<input id="send_message" type="button" class="utility_button" value="&#8689;">
+						<input data-message_id id="delete_message" type="button" class="utility_button" value="Delete">
+					</div>
+				</div>
+
+			</div>
+			<div class="item notification_layout">
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+
+
+<!--
+				<div class="message_block">
+					<div class="source_block">
+						<div data-source id="source_link" class="left_source_block">
+								Source
+						</div>
+						<div class="right_source_block">
+							04:20:30 am
+						</div>
+					</div>
+					<div class="message_content_block">
+						dsadsadabdhsbajdbsahdbsahjdbsabdjsabdhba
+					</div>
+				</div>
+
+
+
+<div class="grid_layout">
 			<div class="item header_item">
 				<div class="left">
 					<a class="link" href="/">chatHouse</a>
 				</div>
 				<div class="right">
-					<a class="link" id="user">{{current_user.username}}</a>
+					<a data-user_id=1 class="link" id="user">{{current_user.username}}</a>
 				</div>
 			</div>
 			<div class="item users_item">
@@ -28,7 +129,7 @@
 					{% for chat in current_user.chats%}
 						<div class="user_block">
 							<div class="user_info">
-								<a id="user" class="link">{{chat.name}}</a>
+								<a user_id=1 id="user" class="link">{{chat.name}}</a>
 							</div>
 							<div class="utility_block">
 								<input id="create" type="button" class="utility" value="&#9998;">
@@ -55,28 +156,27 @@
 					<span>Select a chat</span>
 					{% endif %}
 				</div>
-				<div class="chat_content">
-					{%for i in range(100)%}
-						<div class="{{'sent ' if (i%2)==0 else 'received '}}chat_message">
-							<div class="left_block">
-								<div class="user_info"><a class="link" onclick="build_a_card('user',{information:{username:'user{{i}}',email:'username{{i}}@gmail.com',name:'name{{i}}',about:'about me.{{i}}.'}})">user{{i%2}}</a></div>
-								<div class="message_content">message {{i}}</div>
+				{% if chat %}
+					<div class="chat_content">
+						{%for i in range(100)%}
+							<div class="{{'sent ' if (i%2)==0 else 'received '}}chat_message">
+								<div class="left_block">
+									<div class="user_info"><a class="link" onclick="build_a_card('user',{information:{username:'user{{i}}',email:'username{{i}}@gmail.com',name:'name{{i}}',about:'about me.{{i}}.'}})">user{{i%2}}</a></div>
+									<div class="message_content">message {{i}}</div>
+								</div>
+								<div class="right_block">
+									<div class="dnt">2012.04.02</div>
+									<div class="utility_block"><input type="button" class="utility" value="&times;"></div>
+								</div>
 							</div>
-							<div class="right_block">
-								<div class="dnt">2012.04.02</div>
-								<div class="utility_block"><input type="button" class="utility" value="&times;"></div>
-							</div>
-						</div>
-					{%endfor%}
-				</div>
-				<div class="chat_bottom">
-					<textarea class="message_input"></textarea>
-					<div class="chat_utilities">
-						<input type="button" class="send_message_button" value="&#8689;">
+						{%endfor%}
 					</div>
-				</div>
+					<div class="chat_bottom">
+						<textarea class="message_input"></textarea>
+						<div class="chat_utilities">
+							<input type="button" class="send_message_button" value="&#8689;">
+						</div>
+					</div>
+				{% endif %}
 			</div>
-		</div>
-	</div>
-</body>
-</html>
+		</div>!-->

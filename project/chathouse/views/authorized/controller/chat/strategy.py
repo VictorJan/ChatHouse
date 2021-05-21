@@ -12,7 +12,7 @@ class ChatStrategy(Strategy):
 		or ( ( (chat:=owner.get_a_chat(int(kwargs['chat_id']))) is None if kwargs['chat_id'].isnumeric() else True ) if kwargs['chat_id'] is not None else False ) :
 			return redirect(url_for('public.start'))
 
-		response=make_response(render_template('authorized/chat.html',current_user=kwargs['authorization']['grant']['owner'],chat = chat if kwargs['chat_id'] is not None else None))
+		response=make_response(render_template('authorized/chat.html',current_user=kwargs['authorization']['grant']['owner'],current_chat = chat if kwargs['chat_id'] is not None else None))
 
 		response.delete_cookie('preaccess_token')
 

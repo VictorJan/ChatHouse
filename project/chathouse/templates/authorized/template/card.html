@@ -1,0 +1,51 @@
+<template id="user_card_template">
+	<div class="card">
+		<div class="card_tab">
+			<input id="close_button" type="button" class="close_button" style="border-radius:20px;" value="✕">
+		</div>
+		<div class="card_header">
+			<div id="identification">
+			</div>
+		</div>
+		<div class="card_body">
+			Information:
+			{% for key in ['email','name','about'] %}
+				<div class="information_block">
+					<label>{{key}}:</label><span id="{{key}}"></span>
+				</div>
+			{% endfor %}
+		</div>
+		<div class="card_links">
+			Common chats:
+			<div class="list_body">
+			</div>
+		</div>
+		<div class="card_utilities">
+			<input data-participant_ids="" id="kick_off_button" type="button" class="utility_button" value="&#9993;">
+			<input id="logout_button" type="button" class="utility_button" value="&#9735;">
+		</div>
+	</div>
+</template>
+
+<template id="chat_card_template">
+	<div class="card">
+		<div class="card_tab">
+			<input id="close_button" type="button" class="close_button" value="✕">
+		</div>
+		<div class="card_header">
+			<div id="identification">
+			</div>
+		</div>
+		<div class="card_body">
+			Information:
+		</div>
+		<div class="card_links">
+			Participants:
+			<div class="list_body">
+			</div>
+		</div>
+		<div class="card_utilities">
+			<input id="eliminate_button" type="button" class="utility_button" value="&#9746;">
+		</div>
+	</div>
+</template>

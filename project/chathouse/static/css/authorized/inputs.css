@@ -1,0 +1,48 @@
+input[type="search"],input[type="text"]
+{
+   transition:0.5s;
+   padding:10px;
+   background-color:#2e2e2f;
+   border:none;
+   color:#5e5e5e;
+   text-align: center;
+}
+
+
+input:hover[type="search"],input[type="text"]:hover
+{
+   background-color: #292929;
+   color:#ffffff;
+}
+input:focus[type="search"],input[type="text"]:focus
+{
+   background-color: #292929;
+   color:white;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+  display: none;
+}
+
+a{
+   text-decoration: none;
+}
+a:hover{
+   color:white;
+}
+
+*:focus {
+    outline: none;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2e2e2f;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #272727;
+}

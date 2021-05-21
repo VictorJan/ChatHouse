@@ -1,0 +1,65 @@
+/*&#9736; - logout
+&#10159; - head to;
+
+*/
+.utility_button{
+    transition: 0.3s;
+    color: #2e2e2f;
+    width: fit-content;
+    padding: 3px 20px;
+    cursor: pointer;
+    font-size: 35px;
+    border-radius: 20px;
+    font-family: Agency FB;
+    border: 1px solid #fd4d4d;
+    background-color: #fd4d4d;
+}
+.utility_button:hover{
+    border: 1px solid #fd4d4d;
+    color: #fd4d4d;
+    background-color: #2e2e2f;
+}
+.utility_button:active{
+    color: #2e2e2f;
+    background-color: #fd4d4d;
+    border: 1px solid #fd4d4d;
+    box-shadow: 2px 1px 10px #f74037;
+}
+
+
+.head_button{
+    transition: .5s;
+    padding: 0px 15px;
+    font-size: 25px;
+    width: fit-content;
+    cursor: pointer;
+    border-radius: 20px;
+    border: 1px solid #2e2e2f;
+    background-color: #2e2e2f;
+    color:#2e2e2f;
+}
+
+.head_button:hover{
+    color:#fd4d4d;
+    box-shadow: 0px 1px 10px #f74037;
+}
+
+.close_button{
+    transition: 0.3s;
+    color: #2e2e2f;
+    cursor: pointer;
+    font-family: Agency FB;
+    border: none;
+    background-color: #fd4d4d;
+}
+
+.close_button:hover{
+    color: #fd4d4d;
+    background-color: #2e2e2f;
+}
+.close_button:active{
+    color: #2e2e2f;
+    background-color: #fd4d4d;
+    border: 1px solid #fd4d4d;
+    box-shadow: 2px 1px 10px #f74037;
+}

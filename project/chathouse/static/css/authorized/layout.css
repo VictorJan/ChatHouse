@@ -1,0 +1,70 @@
+/*@import "style2.css";*/
+#overlay{
+	position: fixed;
+	background-color: #00000047;
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
+	opacity: 0;
+	pointer-events: none;
+	transition: .5s;
+}
+
+#overlay.active{
+	opacity: 1;
+	pointer-events: all;
+}
+
+.layout{
+	height: 100%;
+	margin:0 auto;
+	width:80%;
+	height: 100%;
+}
+.grid_layout{
+	display: grid;
+	grid-column-gap: 20px;
+	grid-row-gap: 1vh;
+	grid-template-columns: minmax(200px,30%) 1fr;
+	grid-template-rows: 5vh 1fr;
+	grid-template-areas:
+		'header chat chat'
+		'left chat chat'
+		'left chat chat'
+		'notification notification notification';
+}
+.item{
+	background-color:#2e2e2f;
+	color:white;
+	box-shadow: 0px 5px 10px #222123;
+}
+
+.header_layout{
+	grid-area: header;
+	height:5vh;
+	display: grid;
+	grid-template-columns: auto auto;
+	place-items:center;
+	font-family: Segoe UI,Agency FB;
+}
+
+.left_layout{
+	grid-area: left;
+	display: grid;
+	grid-template-rows: 4vh 1fr;
+}
+.chat_layout{
+grid-area: chat;
+height:95vh;
+display: grid;
+grid-template-rows: 5vh 2fr 1fr;
+grid-template-areas:
+'chat_header'
+'chat_content'
+'chat_bottom';
+}
+
+.notification_layout{
+	grid-area: notification;
+}

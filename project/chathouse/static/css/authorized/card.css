@@ -1,0 +1,71 @@
+.card{
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	z-index: 20;
+	border-radius: 20px;
+	background-color: #2e2e2f;
+	color: white;
+	max-width: 30%;
+	width: 50%;
+	display: grid;
+	opacity: 1;
+	transition: .5s;
+	box-shadow: 0px 0px 10px white;
+	grid-template-areas:
+		"card_tab"
+		"card_header"
+		"card_body"
+		"card_links"
+		"card_utilities";
+	font-family: Segoe UI,Agency FB;
+}
+
+.card_tab{
+	display: grid;
+	grid-area: card_tab;
+	place-content: center end;
+	border-radius: 20px 20px 0px 0px;
+	padding: 10px;
+	border-bottom: 1.5px solid #80808038;
+}
+
+.card_header{
+	display: grid;
+	grid-area: card_header;
+	place-content:center start;
+	padding: 5px;
+	border-bottom: 1.5px solid #80808038;
+}
+
+.information_block{
+    font-family: agency fb;
+    overflow-wrap: anywhere;
+    padding: 10px;
+}
+
+.card_body{
+	grid-area:card_body;
+    padding:10px;
+    display:grid;
+    grid-row-gap:5px;
+    color: #5f5f5f;
+    font-size: 20px;
+}
+.card_utilities{
+	display:grid;
+	grid-area:card_utilities;
+	padding: 10px;
+	grid-auto-flow:column;
+	justify-items: center;
+	grid-row-gap: 5px;
+	background-color: #292929;
+	border-radius: 0px 0px 20px 20px;
+}
+
+.card_links{
+	display: grid;
+	grid-area:card_links;
+	padding: 10px;
+}
