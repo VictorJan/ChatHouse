@@ -2,14 +2,14 @@ from chathouse.utilities.security.controller_strategy.strategy import Strategy
 from chathouse.utilities.security.validation.headers import authorized
 from chathouse.service.user import UserService
 
-class GetIdentifiedUserStrategy(Strategy):
+class GetIdentifiedUserParticipationsStrategy(Strategy):
 	'''
-	GetIdentifiedUserStrategy - a class, meant to be used to perform the required actions according to the defined strategy in the accept method.
+	GetIdentifiedUserParticipationsStrategy - a class, meant to be used to perform the required actions according to the defined strategy in the accept method.
 
 	Inherits: Strategy class.
 	
 	Methods:
-		accept - meant to perform the acceptance of the request headers and data (initated in the GetIdentifiedUserController.handle(some headers,some data)),
+		accept - meant to perform the acceptance of the request headers and data (initated in the GetIdentifiedUserParticipationsController.handle(some headers,some data)),
 		Core action:
 			validation:
 				headers with the help of authorized decorator. 
@@ -20,7 +20,7 @@ class GetIdentifiedUserStrategy(Strategy):
 	@authorized(token_type='access',location='Authorization')
 	def accept(self,headers,data,**kwargs):
 		'''
-		Goal : Retreive all public/common data about a certain user, based on the provided identification and the authority of the requester.
+		Goal : Retreive all linking data for each chat , where the owner of the request is established as a participant.
 
 		Arguments:headers:dict, data:dict, kwargs:key-word-argument.
 
@@ -54,29 +54,25 @@ class GetIdentifiedUserStrategy(Strategy):
 				Arguments: chat:ChatService. 
 				Returns: dict('id':<id>,'name':<username>)
 
-			common_payload:
-				Goal: return a list of common chats, which contains some data about a chat from the chat_payload.
-				Arguments: common:tuple(of ChatServices, where both users are stated as participants | empty). 
-				Returns: list(for each chat <chat_payload(chat):dict>,...) if common is not empty, otherwise list(Empty)
+			participations_payload:
+				Goal: return a list of related chats, which contains some data about a chat from the chat_payload.
+				Arguments: participations:tuple(of ChatServices, where the requester is stated as participants | empty). 
+				Returns: list(for each chat <chat_payload(chat):dict>,...) if participations is not empty, otherwise list(Empty)
 
 			data_payload:
 				Goal: structure and return a dictionary meant for the data key in the response.
-				Arguments: requester:UserService - the owner of the access token , other:UserService - the requested/other user.
-				Returns: a dictionary of (id:<user's id:int>,username:<user's username:str>, name:<user's name:str>, email:<user's email:str>, about:<user's about:str>, common_chats:<common_payload(requester.common_groud_with(id=other user's id)):list>)
+				Arguments: requester:UserService - the owner of the access token.
+				Returns: a dictionary of (participations:<participations_payload(requester.chats):list>)
 
 	 	Full verification:
 	  		0.Verify the access_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided token_version with the current one related to the UserService :
-  				If 0. is invalid respond with 401, message:"Invalid access token.";
+  			1.Make sure that the requeter's/owner's id is the same as the provided identification.
+  				If 0.|1. is invalid respond with 401, message:"Invalid access token.";
 	  			Otherwise head to the generation phase.
 	  		
 		Generation:
   			data={
-					id:<user's id:int>,
-					username:<user's username:str>,
-					email:<user's email:str>
-					name:<user's name:str>,
-					about:<user's about:str>
-					common_chats:[
+					participations:[
 						{
 							id:<chat's id:int>,
 							name:<chat's name:str>
@@ -86,10 +82,8 @@ class GetIdentifiedUserStrategy(Strategy):
 				}
  
 		Returns:
-			If the access_token(the ownership,signature) is invalid:
+			If the access_token(the ownership,signature) is invalid or the owner's id is not equal to the one provided in the URL:
   				Return 401, message:"Unauthorized!","reason":"Invalid access token."
-  			Otherwise if the requested user doesn't:
-  				Return 404, message:"Not found!","reason":"A user with such id doesn't exist."
   			Otherwise:
   				Return 200, data:<data_payload>
 
@@ -106,22 +100,14 @@ class GetIdentifiedUserStrategy(Strategy):
 		#Lambda functions:
 		chat_payload = lambda chat: {'id':chat.id,'name':chat.name}
 
-		common_payload = lambda common: [ chat_payload(chat) for chat in common ] if common else []
+		participations_payload = lambda participations: [ chat_payload(chat) for chat in participations ] if participations else []
 		
-		data_payload = lambda requester,other: {
-		'id':other.id,
-		'username':other.username,
-		'name':other.name,
-		'email':other.email,
-		'about':other.about,
-		'common_chats':common_payload(requester.common_ground_with(id=other.id))
+		data_payload = lambda requester: {
+			'participations':participations_payload(requester.chats)
 		}
 
 		#Step 0.
-		if not kwargs['authorization']['access']['valid'] or (owner:=kwargs['authorization']['access']['owner']) is None:
+		if not kwargs['authorization']['access']['valid'] or (owner:=kwargs['authorization']['access']['owner']) is None or owner.id!=kwargs['identification']:
 			return {'success':'False','message':'Unauthorized!','reason':'Invalid access token.'},401
-		#Step 1.
-		if not (user:=UserService(id=kwargs['identification'])).id:
-			return {'success':'False','message':'Not found!','reason':'A user with such id doesn\'t exist.'},404
 
-		return {'success':'True','data':data_payload(owner,user)},200
+		return {'success':'True','data':data_payload(owner)},200

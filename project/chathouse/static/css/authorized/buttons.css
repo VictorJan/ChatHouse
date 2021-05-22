@@ -60,6 +60,5 @@
 .close_button:active{
     color: #2e2e2f;
     background-color: #fd4d4d;
-    border: 1px solid #fd4d4d;
     box-shadow: 2px 1px 10px #f74037;
 }

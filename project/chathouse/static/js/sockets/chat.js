@@ -14,7 +14,6 @@ class ChatSocket{
 
 		this.socket.on('disconnect',() =>{
 			//try to resolve the token
-			console.log(this.token.raw)
 			access_token_promise=prepare_access();
 			access_token_promise.then((token)=>{
 				this.token=token;

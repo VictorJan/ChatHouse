@@ -15,6 +15,7 @@
 	box-shadow: 0px 0px 10px white;
 	grid-template-areas:
 		"card_tab"
+		"card_title"
 		"card_header"
 		"card_body"
 		"card_links"
@@ -31,27 +32,48 @@
 	border-bottom: 1.5px solid #80808038;
 }
 
+.card_title{
+	display: grid;
+    grid-area: card_title;
+    place-content: center start;
+    padding: 5px;
+    font-family: revert;
+    font-weight: 100;
+    justify-content: center;
+    color: #ffffff;
+    background-color: #292929;
+    border-bottom: 1.5px solid #80808038;
+    border-radius: 0px 0px 0px 0px;
+}
 .card_header{
 	display: grid;
 	grid-area: card_header;
 	place-content:center start;
 	padding: 5px;
+	font-family: Consolas;
+	font-weight: 100;
+	justify-content: center;
+	color: #2e2e2f;
+	background-color: #ffffff;
 	border-bottom: 1.5px solid #80808038;
+	border-radius: 0px 0px 0px 0px;
 }
 
 .information_block{
-    font-family: agency fb;
+    font-weight: 100;
     overflow-wrap: anywhere;
     padding: 10px;
 }
 
 .card_body{
 	grid-area:card_body;
-    padding:10px;
-    display:grid;
-    grid-row-gap:5px;
-    color: #5f5f5f;
-    font-size: 20px;
+	padding:10px;
+	display:grid;
+	grid-row-gap:5px;
+	color: #ffffff;
+	font-size: 20px;
+	font-family: Agency fb;
+	font-weight: bolder;
 }
 .card_utilities{
 	display:grid;
@@ -68,4 +90,7 @@
 	display: grid;
 	grid-area:card_links;
 	padding: 10px;
+	font-family: agency fb;
+	font-weight: bolder;
+	font-size: 20px;
 }

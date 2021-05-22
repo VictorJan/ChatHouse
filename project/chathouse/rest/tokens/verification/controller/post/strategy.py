@@ -61,6 +61,7 @@ class PostVerificationStrategy(Strategy):
 	  			Otherwise resume with the next steps.
   			1.Extract the route value from the token and create a proper template.
   			2.Verify that the data is a dictionary an proceed to validate the data against the proper template.
+  			3.Resolve the user's email and token_version using the resolve function, which returns a : dictionary of {'email':str,'current_token_version':int} | None , based on the route and identification data.
   			3.Resolve the user's email using the resolve function, which returns a str|None , based on the route and identification data.
 	  		If the email has been resolved :
 	  			Proceed to send the email and respond accordingly with 201.
@@ -68,9 +69,18 @@ class PostVerificationStrategy(Strategy):
 				Respond accordingly with 400.
 	   
 	   	Lambda functions:
+	   		[Note each lambda function shall be called from bottom up.]
+
+			find_case:
+
+				Goal: return the very first case of existing UserService from the submited search cases.
+				Arguments: cases:map of cases:UserService|None.
+				Returns: very first UserService instance.
+				[Note at this point there must be a UserService instance, with the help of explicit validation with any(). But if there isn't one - error will not arise due to the tuple verification]
+
 	   		map_cases: 
 
-	   			Goal:create a map object of iterated UserService instances for email and username cases. Iteration itself checks if the instance has an id -> returns the email if instance has an id else None.
+	   			Goal:create a map object of iterated UserService instances for email and username cases. Iteration itself checks if the instance has an id -> returns the UserService if instance has an id else None.
 	   			Arguments: data:key word argument.
 	   			Returns: map object.
 
@@ -79,16 +89,18 @@ class PostVerificationStrategy(Strategy):
 	   			Goal: resolve email based on the identification data , by verify if the such data is appropriate according to a certain route.
 	   			If the route is signup:
 	   				Get respected map_cases, then :
-	   					If not even one case (not any function) is valid return email from the provided data
+	   					If not even one case (not any function) is valid return:
+	   						{'email':as email from the provided data, 'current_token_version': as 0}
 	   					Otherwise return None
 				Otherwise:
 					Get respected map_cases, then convert cases into a tuple:
-						If any case isn't None - then return next element of the filtered cases , where every case must not be a None - thus returning an email.
+						If there is a case, which isn't None - then return the very next element of the filtered cases , where every case must not be a None - thus returning:
+							{'email':resolved user's email, 'current_token_version':current token version of the resolved user}.
 						Otherwise return None.
-				Returns: str|None , str - represents an email value.    
+				Returns: {email:str,current_token_version:int}|None.    
 
 		Generation:
-	  		verification_token={identification_data:<identification_data>,token_type:"verification",dnt,preaccess:<preaccess_token>}.
+	  		verification_token={identification_data:<identification_data>,token_type:"verification", current_token_version:<current_grant_token_version>, dnt,preaccess:<preaccess_token>}.
 
 	 	Returns:
 	 		If verified: 201,{success:True,email_sent:True}
@@ -96,8 +108,18 @@ class PostVerificationStrategy(Strategy):
 	   			Failed to verify the token: 401,{success:False,message:"Unauthorized."}
 	   			Failed to validate the json body: 400,{success:False,message:"Incorrect json data."}
 		'''
-
+	#Code
+		#Exceptions
 		assert all(map(lambda argument:isinstance(argument,dict),(headers,data))), TypeError('Arguments , such as : headers and data - must be dictionaries')
+
+		#Lambda functions
+		find_case = lambda cases: next(iter(tupled)) if (tupled:=(tuple(filter(lambda case:case is not None ,cases)))) else None
+
+		map_cases = lambda **credentials: map(lambda identification: case if (case:=UserService(**{identification:credentials[identification]})).id else None,credentials)
+
+		resolve = lambda route,data: ( {'email':data['email'],'current_token_version':0} if not any(map_cases(email=data['email'],username=data['username'])) else None ) if route=='signup' \
+	else ({'email':case.email, 'current_token_version':case.token_version} if any( (cases:=tuple( map_cases(email=data['identification'],username=data['identification']) ) ) ) and (case:=find_case(cases)) else None)
+
 		
 		#Step 0.
 		if not kwargs['authorization']['preaccess']['valid']:
@@ -106,19 +128,19 @@ class PostVerificationStrategy(Strategy):
 		#Step 1.
 		template = create_a_template(route:=kwargs['authorization']['preaccess']['token']['object']['route'])
 		
-		map_cases = lambda **data: map( lambda case: case.email if case.id is not None else None ,( UserService(email=data.get('email')) , UserService(username=data.get('username')) ) )
-
-
-		resolve = lambda route,data: (data['email'] if not any(map_cases(email=data['email'],username=data['username'])) else None ) if route=='signup' \
-	else (next(filter(lambda case:case is not None ,cases))	if any( (cases:=tuple( map_cases(email=data['identification'],username=data['identification']) ) ) ) else None)
-
 		#Step 2.
 		#Step 3.
-		if isinstance(data,dict) and template.validate(**data) and (email:=resolve(route,(data:=template.data))) is not None:
+		if isinstance(data,dict) and template.validate(**data) and (resolution:=resolve(route,(data:=template.data))) is not None:
 
-			verification_token=Token(payload_data={'identification_data':data,'token_type':'verification','preaccess':kwargs['authorization']['preaccess']['token']['object'].value,'exp':{'minutes':2}})
+			verification_token=Token(payload_data={
+				'identification_data':data,
+				'token_type':'verification',
+				'current_token_version':resolution['current_token_version'],
+				'preaccess':kwargs['authorization']['preaccess']['token']['object'].value,
+				'exp':{'minutes':2}
+				})
 
-			MailService.send(recipients=[email],body=f"There has been a request to {route}, using this email. If you wish to proceed with the verification , follow this url http://127.0.0.1:5000/verify/{verification_token.value} .\nOtherwise please ignore this email.",subject="Verification email.")
+			MailService.send(recipients=[resolution['email']],body=f"There has been a request to {route}, using this email. If you wish to proceed with the verification , follow this url http://127.0.0.1:5000/verify/{verification_token.value} .\nOtherwise please ignore this email.",subject="Verification email.")
 
 			return {'success':'True','message':'Email has been sent.'},201
 		else:

@@ -37,3 +37,9 @@
 	background-color: #272727;
 	border:1px solid #272727;
 }
+
+.single{
+    grid-auto-flow: column;
+    place-content: center;
+    grid-template-columns: none;
+}

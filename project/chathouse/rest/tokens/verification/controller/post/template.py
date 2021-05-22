@@ -26,14 +26,14 @@ def create_a_template(route):
 
 	PostVerificationTemplateBuilder=TemplateBuilder()
 	if  route=='signup':
-		PostVerificationTemplateBuilder.add(Field('email',regex='^(?=[\w_\-\.]+\@\w+\.\w+)[\w_\-\.@]{5,60}$',data_type=str)) #^(?=[\w_\-\.]+\@\w+\.\w+)[\w_\-\.@]{5,40}$
+		PostVerificationTemplateBuilder.add(Field('email',regex='^(?=[\w_\-\.]+\@\w+\.\w+)[\w_\-\.@]{5,60}$',data_type=str))
 		PostVerificationTemplateBuilder.add(Field('username',regex='^\w{6,30}$',data_type=str))
 		PostVerificationTemplateBuilder.add(Field('name',regex='[a-zA-Z]{3,25}',data_type=str))
 		PostVerificationTemplateBuilder.add(Field('about',data_type=str))
 
 		return PostVerificationTemplateBuilder.template
 
-	PostVerificationTemplateBuilder.add(Field('identification',regex='^((?:\w{6,30})|(?:(?=[\w_\-\.]+\@\w+\.\w+)[\w_\-\.@]{5,40}))$',data_type=str))
+	PostVerificationTemplateBuilder.add(Field('identification',regex='^((?:\w{6,30})|(?:(?=[\w_\-\.]+\@\w+\.\w+)[\w_\-\.@]{5,60}))$',data_type=str))
 
 	return PostVerificationTemplateBuilder.template
 

@@ -6,12 +6,32 @@
 	{%include 'authorized/scripts.html'%}
 </head>
 <body>
-	{%include 'authorized/template/card.html'%}
-	{%include 'authorized/template/source.html'%}
-	{%include 'authorized/template/list.html'%}
-	{%include 'authorized/template/chat_bottom_content.html'%}
+
 	<div id="overlay"></div>
 
+	<div class="card">
+		<div class="card_tab">
+			<input id="close_button" type="button" class="close_button" style="border-radius:20px;" value="✕">
+		</div>
+		<div class="card_title">
+			NEW CHAT
+		</div>
+		<div class="card_header">
+			<input id="chat_name" type="text" class="">
+		</div>
+		<div class="card_body">
+			Select a participant:
+			<div class="search_block">
+				<input id="search_field" type="search" placeholder="Search...">
+			</div>
+			<div class="list">
+			</div>
+		</div>
+		<div class="card_utilities">
+			<input id="eliminate_button" type="button" class="utility_button" value="&#9746;">
+		</div>
+	</div>
+	
 	<div class="layout">
 		<div class="grid_layout">
 			<div class="item header_layout">
@@ -27,25 +47,8 @@
 			<div class="item left_layout">
 				<div class="search_block">
 					<input id="search_field" type="search" placeholder="Search...">
-					<input id="clear_search_button" type="button"  class="close_button" value="✕">
 				</div>
 				<div class="list">
-					<div class="list_header">
-						Users
-					</div>
-					<div class="list_body">
-						{%for i in range(100)%}
-							<div class="dark source_block list_item">
-								<!-- left source block should contain a attribute for the data-[user_id/chat_id/identification] , then this could be reached from the js as element.dataset!-->
-								<div data-source={{i}} id="source_link" class="left_source_block">
-									Source{{i}}
-								</div>
-								<div class="right_source_block">
-									<input data-source id="head_to_source" type="button" class="head_button" value="&#10159;" onclick="window.location='/chat/2'">
-								</div>
-							</div>
-						{%endfor%}
-					</div>
 				</div>
 			</div>
 			<div class="item chat_layout">
@@ -80,10 +83,6 @@
 				
 				<div class="chat_bottom">
 					<textarea class="message_input"></textarea>
-					<div class="chat_utilities">
-						<input id="send_message" type="button" class="utility_button" value="&#8689;">
-						<input data-message_id id="delete_message" type="button" class="utility_button" value="Delete">
-					</div>
 				</div>
 
 			</div>
@@ -91,6 +90,12 @@
 			</div>
 		</div>
 	</div>
+
+	{%include 'authorized/template/card.html'%}
+	{%include 'authorized/template/source.html'%}
+	{%include 'authorized/template/list.html'%}
+	{%include 'authorized/template/chat_utilities.html'%}
+
 </body>
 </html>
 

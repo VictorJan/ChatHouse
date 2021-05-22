@@ -1,13 +1,14 @@
 '''
 [Endpoint]Resource
-This file shall contain defined Resource classes for this specific [Endpoint]=Users=/api/users:
+This file shall contain defined Resource classes for this specific [Endpoint]=Users=/api/users/<identification>:
 [Users]Resource = /api/users
 [IdentifiedUser]Resource = /api/users/<identification>
 '''
 from chathouse.rest.users.controller.get import GetUsersController
 from flask_restful import Resource,request
 
-from chathouse.rest.users.identified import IdentifiedUserResource
+
+from chathouse.rest.users.identified import IdentifiedUserResource,IdentifiedUserParticipationsResource
 
 class UsersResource(Resource):
 	'''

@@ -18,11 +18,13 @@ access_token_promise.then((token_object)=>{
 	//Set up the notification socket
 	notification_socket = new NotificationSocket(token_object);
 
-	//Prepare current chats on the left side
-	prepare_chats(token_object.raw)
+	//Prepare current chats - particioations on the left side
+	prepare_participations(token_object.raw,token_object.payload.user_id)
 	
 	//If the page consists of a chat, perform next steps
 	if (chat_id){
+		//Build idle chat utilities
+		chat_utilities('idle');
 		//Set up the chat socket, which would perfrom the logout/dis
 		chat_socket = new ChatSocket(token_object,chat_id);
 		//Await to get the promised Diffie Hellman keyring

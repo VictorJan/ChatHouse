@@ -3,7 +3,7 @@
 	height: 4vh;
 	border-bottom: 1px solid #fd4d4d;
 	grid-auto-flow: column;
-	grid-template-columns: 10fr 1fr;
+	grid-template-columns: 2fr;
 }
 .list{
 	display: grid;

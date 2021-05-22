@@ -8,7 +8,7 @@ class Token{
 	}
 	#decode(raw_data){
 		try{
-			return JSON.parse(window.atob(raw_data.split('.')[1]));
+			return JSON.parse(window.atob(raw_data.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
 		}
 		catch{
 			return null;

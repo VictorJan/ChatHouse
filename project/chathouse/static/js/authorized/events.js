@@ -6,10 +6,12 @@ function addGlobalEventListener(type,match,callback){
 
 
 addGlobalEventListener('click','#source_link',source_card_controller);
-
-addGlobalEventListener('keyup','#search_field',search_list_controller)
-
 addGlobalEventListener('click','#close_button',close_parent);
+
+addGlobalEventListener('keyup','#search_field',search_list_controller);
+addGlobalEventListener('click','#clear_search_button',clear_search);
+
+addGlobalEventListener('click','#head_to_source',head_controller);
 
 addGlobalEventListener('click','#logout_button',logout);
 

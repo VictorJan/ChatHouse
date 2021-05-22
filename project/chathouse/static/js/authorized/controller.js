@@ -1,30 +1,50 @@
-let selected=[];
+let selected_messages = new Set();
 
 async function select_message_controller(e){
 	let message = (e.target.dataset.message_id) ? e.target : e.target.parentNode;
 	if (message.dataset.message_id)
 	{
-		if ( (index=selected.indexOf(message_id = Number(message.dataset.message_id))) != -1){
-			selected.splice(index,1);
+		if (selected_messages.has((message_id = Number(message.dataset.message_id)))){
+			selected_messages.delete(message_id);
 			message.classList.remove("selected");
 		}
 		else{
-			selected.push(message_id);
+			selected_messages.add(message_id);
 			message.classList.add("selected");
 		}
 		
-		if (selected.length==0){
-
-		}
-		else{
-			document.querySelector("")
-		}
+		let amount;
+		if ((amount=selected_messages.size)<2) chat_utilities((amount==0)?'idle':'active');
 	}
 }
 
-function build_chat_bottom(template){
 
+let selected_partipants = new Set();
+
+async function select_participant_controller(e){
+	let message = (e.target.dataset.message_id) ? e.target : e.target.parentNode;
+	if (message.dataset.message_id)
+	{
+		if (selected_messages.has((message_id = Number(message.dataset.message_id)))){
+			selected_messages.delete(message_id);
+			message.classList.remove("selected");
+		}
+		else{
+			selected_messages.add(message_id);
+			message.classList.add("selected");
+		}
+		
+		let amount;
+		if ((amount=selected_messages.size)<2) chat_utilities((amount==0)?'idle':'active');
+	}
 }
+
+
+async function head_controller(e){
+	let chat;
+	if (chat=e.target.dataset.chat_id) window.location.replace(`${window.origin}/chat?id=${chat}`);
+}
+
 
 async function get_logout(){
 	const url = `${window.location.origin}/logout`;
@@ -53,18 +73,19 @@ async function prepare_access() {
 	}
 }
 
-async function prepare_chats(token){
+async function prepare_participations(token,identification){
 
-	let response = await chats_call(token);
+	let response = await user_call(token,identification,'participations');
+	let json_response;
 	if (response.status==200){
-		let json_response = await response.json();
+		json_response = await response.json();
 	}
 	else{
 		access_token_promise = prepare_access();
 		token = await access_token_promise;
-		if ((response = await chats_call(token.raw) ).status == 200 ) json_response = await response.json(); else logout(); 
+		if ((response = await user_call(token,identification,'participations')).status == 200 ) json_response = await response.json(); else logout(); 
 	}
-	list('chat',json_response.data);
+	list('chat',json_response.data.participations,document.querySelector('.left_layout'));
 }
 
 async function get_promised(promise){

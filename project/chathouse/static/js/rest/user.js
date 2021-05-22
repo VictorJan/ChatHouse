@@ -1,6 +1,6 @@
-async function user_call(token,identification){
+async function user_call(token,identification,endpoint=null){
 
-	const url = `${window.location.origin}/api/users/${identification}`;
+	const url = `${window.location.origin}/api/users/${identification}${(endpoint)?"/"+endpoint:""}`;
 	
 	let credentials_field = 'omit';
 

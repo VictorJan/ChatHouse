@@ -3,6 +3,9 @@
 		<div class="card_tab">
 			<input id="close_button" type="button" class="close_button" style="border-radius:20px;" value="✕">
 		</div>
+		<div class="card_title">
+			USER CARD
+		</div>
 		<div class="card_header">
 			<div id="identification">
 			</div>
@@ -30,7 +33,10 @@
 <template id="chat_card_template">
 	<div class="card">
 		<div class="card_tab">
-			<input id="close_button" type="button" class="close_button" value="✕">
+			<input id="close_button" type="button" class="close_button" style="border-radius:20px;" value="✕">
+		</div>
+		<div class="card_title">
+			CHAT CARD
 		</div>
 		<div class="card_header">
 			<div id="identification">
@@ -42,6 +48,31 @@
 		<div class="card_links">
 			Participants:
 			<div class="list_body">
+			</div>
+		</div>
+		<div class="card_utilities">
+			<input id="eliminate_button" type="button" class="utility_button" value="&#9746;">
+		</div>
+	</div>
+</template>
+
+<template id="start_chat_card_template">
+	<div class="card">
+		<div class="card_tab">
+			<input id="close_button" type="button" class="close_button" style="border-radius:20px;" value="✕">
+		</div>
+		<div class="card_title">
+			NEW CHAT
+		</div>
+		<div class="card_header">
+			<input id="chat_name" type="text" class="">
+		</div>
+		<div class="card_body">
+			Select a participant:
+			<div class="search_block">
+				<input id="search_field" type="search" placeholder="Search...">
+			</div>
+			<div class="list">
 			</div>
 		</div>
 		<div class="card_utilities">

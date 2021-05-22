@@ -9,6 +9,7 @@ async function identify_controller(e){
 				document.querySelector(".feedback").innerHTML="The verification email has been sent."
 			}
 			else{
+				if (result.status==401) window.location.replace(window.location.href);
 				document.querySelector(".feedback").innerHTML="Please enter valid data."
 			}
 		}

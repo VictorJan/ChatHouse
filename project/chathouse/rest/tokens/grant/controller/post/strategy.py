@@ -179,10 +179,12 @@ class PostGrantStrategy(Strategy):
 		assert all(map(lambda parameter: isinstance(parameter,int) ,current_app.config.get('DH_PARAMETERS',(None,)))), ValueError('Configuration of the current app must contain domain Diffie Hellman parameters.')
 
 		#Lambda functions:
-		map_cases = lambda **data: map( lambda case: case if case.id is not None else None ,( UserService(email=data.get('email')) , UserService(username=data.get('username')) ) )
-		
+		find_case = lambda cases: next(iter(tupled)) if (tupled:=tuple(filter(lambda case: case is not None,cases))) else None
+
+		map_cases = lambda **credentials: map(lambda identification: case if (case:=UserService(**{identification:credentials[identification]})).id else None,credentials)
+
 		resolve = lambda route,data: (UserService() if not any(map_cases(email=data.get('email',''),username=data.get('username',''))) else None ) if route=='signup'\
-		else (next(filter(lambda case:case is not None ,cases))	if any( (cases:=tuple( map_cases(email=data.get('identification',''),username=data.get('identification','') ) ) ) ) else None)
+		else (case if any( (cases:=tuple( map_cases(email=data.get('identification',''),username=data.get('identification','') ) ) ) ) and (case:=find_case(cases)) else None)
 
 		valid_dh_parameters = lambda initial_keyring: current_app.config['DH_PARAMETERS']==(initial_keyring.pop('g',None),initial_keyring.pop('m',None)) and 0<initial_keyring.get('public_key',-1)<current_app.config['DH_PARAMETERS'][1] 
 
@@ -236,5 +238,4 @@ class PostGrantStrategy(Strategy):
 				return {'success':'False','reason': 'Invalid authentication data.'},401
 
 		else:
-			print(template.validate(**data))
 			return {'success':'False','reason':'Invalid payload data.'},400

@@ -19,6 +19,7 @@ api.add_resource(IdentifiedChatResource,'/api/chats/<int:identification>')
 api.add_resource(IdentifiedChatPublicKeysResource,'/api/chats/<int:identification>/public-keys')
 api.add_resource(IdentifiedChatMessagesResource,'/api/chats/<int:identification>/messages')
 
-from chathouse.rest.users import UsersResource,IdentifiedUserResource
+from chathouse.rest.users import UsersResource,IdentifiedUserResource,IdentifiedUserParticipationsResource
 api.add_resource(UsersResource,'/api/users')
 api.add_resource(IdentifiedUserResource,'/api/users/<int:identification>')
+api.add_resource(IdentifiedUserParticipationsResource,'/api/users/<int:identification>/participations')

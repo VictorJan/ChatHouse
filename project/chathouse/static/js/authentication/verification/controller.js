@@ -63,9 +63,6 @@ async function verification_controller(e){
 						window.location.replace(window.location.href);
 					}
 				}
-				else{
-
-				}
 			}
 		}
 	}
@@ -80,7 +77,7 @@ async function generate_a_keyring(){
 		const keyring = await new DH_Key(data);
 		return keyring;
 	}
-	return null;
+	window.location.replace(`${window.location.origin}/chat`)
 }
 
 async function authorized_view_call(token){

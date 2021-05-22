@@ -19,7 +19,7 @@ async function source_card_controller(e){
 				if ((response = await user_call(token.raw,identification.user) ).status == 200 ) json_response = await response.json(); else logout(); 
 			}
 			
-			let data = {information:json_response.data,current_user: token.payload.id==json_response.id}
+			let data = {information:json_response.data,current_user: token.payload.user_id==json_response.data.id}
 
 			user_card(data);
 
@@ -37,7 +37,7 @@ async function source_card_controller(e){
 				if ((response = await chat_call(token.raw,identification.chat) ).status == 200 ) json_response = await response.json(); else logout(); 
 			}
 			
-			let data = {information:json_response.data,current_user: token.payload.id==json_response.id}
+			let data = {information:json_response.data}
 
 			chat_card(data);
 		}

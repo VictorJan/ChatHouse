@@ -1,6 +1,6 @@
 from hashlib import sha256
 from copy import deepcopy
-from base64 import b64decode
+from base64 import urlsafe_b64decode
 import jwt,json,datetime,time
 import os
 
@@ -33,7 +33,7 @@ class Token:
 	def __getitem__(self,key):
 		try:
 			pad=lambda data:f'{data}{(4-(len(data)%4))*"="}'
-			return json.loads(b64decode(pad(self.__value.split('.')[1]))).get(key,None)
+			return json.loads(urlsafe_b64decode(pad(self.__value.split('.')[1]))).get(key,None)
 		except:
 			return None
 
