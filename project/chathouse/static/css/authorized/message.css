@@ -26,7 +26,3 @@
 	transition: .5s;
 	background-color: #1f1f1f
 }
-.selected:hover{
-	background-color:#2e2e2f; 
-}
-}

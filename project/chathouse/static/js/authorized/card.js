@@ -45,6 +45,24 @@ async function source_card_controller(e){
 }
 
 
+async function account_card_controller(e){
+	//Verify if there is a access_token_promise
+	if (typeof access_token_promise !== "undefined") {
+		
+		let token = await access_token_promise;
+		account_card();
+	}
+}
+
+async function new_chat_card_controller(e){
+	//Verify if there is a access_token_promise
+	if (typeof access_token_promise !== "undefined") {
+		
+		let token = await access_token_promise;
+		new_chat_card();
+	}
+}
+
 
 function build_a_card(type,data={}){
 	//data:{information:{username:...,email:...,name:...,about:...},current_user:bool}

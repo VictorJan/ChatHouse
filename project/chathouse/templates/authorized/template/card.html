@@ -1,3 +1,21 @@
+<template id="account_card_template">
+	<div class="card">
+		<div class="card_tab">
+			<input id="close_button" type="button" class="close_button" style="border-radius:20px;" value="✕">
+		</div>
+		<div class="card_title">
+			UTILITIES
+		</div>
+		<div class="card_header">
+			Here you may perform actions,related to thy account.
+		</div>
+		<div class="card_utilities">
+			<input id="new_chat_button" type="button" class="utility_button" value="&#128490;">
+			<input id="logout_button" type="button" class="utility_button" value="&#9735;">
+		</div>
+	</div>
+</template>
+
 <template id="user_card_template">
 	<div class="card">
 		<div class="card_tab">
@@ -24,8 +42,7 @@
 			</div>
 		</div>
 		<div class="card_utilities">
-			<input data-participant_ids="" id="kick_off_button" type="button" class="utility_button" value="&#9993;">
-			<input id="logout_button" type="button" class="utility_button" value="&#9735;">
+			<input id="account_button" type="button" class="utility_button" value="&#128100;">
 		</div>
 	</div>
 </template>
@@ -44,6 +61,11 @@
 		</div>
 		<div class="card_body">
 			Information:
+			{% for key in ('creator',) %}
+				<div class="information_block">
+					<label>{{key}}:</label><span id="{{key}}"></span>
+				</div>
+			{% endfor %}
 		</div>
 		<div class="card_links">
 			Participants:
@@ -51,12 +73,12 @@
 			</div>
 		</div>
 		<div class="card_utilities">
-			<input id="eliminate_button" type="button" class="utility_button" value="&#9746;">
+			<input id="eliminate_button" type="button" class="utility_button" value="&#128465;">
 		</div>
 	</div>
 </template>
 
-<template id="start_chat_card_template">
+<template id="new_chat_card_template">
 	<div class="card">
 		<div class="card_tab">
 			<input id="close_button" type="button" class="close_button" style="border-radius:20px;" value="✕">
@@ -65,18 +87,15 @@
 			NEW CHAT
 		</div>
 		<div class="card_header">
-			<input id="chat_name" type="text" class="">
+			<input id="chat_name" type="text" placeholder="Enter a name for the chat.">
 		</div>
 		<div class="card_body">
-			Select a participant:
 			<div class="search_block">
-				<input id="search_field" type="search" placeholder="Search...">
-			</div>
-			<div class="list">
+				<input data-type="participant" id="search_field" type="search" placeholder="Search for a interlocutor.">
 			</div>
 		</div>
 		<div class="card_utilities">
-			<input id="eliminate_button" type="button" class="utility_button" value="&#9746;">
+			<input data-participant_id='' id="establish_chat_button" type="button" class="utility_button" value="&#128221;" disabled>
 		</div>
 	</div>
 </template>

@@ -7,31 +7,7 @@
 </head>
 <body>
 
-	<div id="overlay"></div>
-
-	<div class="card">
-		<div class="card_tab">
-			<input id="close_button" type="button" class="close_button" style="border-radius:20px;" value="✕">
-		</div>
-		<div class="card_title">
-			NEW CHAT
-		</div>
-		<div class="card_header">
-			<input id="chat_name" type="text" class="">
-		</div>
-		<div class="card_body">
-			Select a participant:
-			<div class="search_block">
-				<input id="search_field" type="search" placeholder="Search...">
-			</div>
-			<div class="list">
-			</div>
-		</div>
-		<div class="card_utilities">
-			<input id="eliminate_button" type="button" class="utility_button" value="&#9746;">
-		</div>
-	</div>
-	
+	<div id="overlay"></div>	
 	<div class="layout">
 		<div class="grid_layout">
 			<div class="item header_layout">
@@ -46,7 +22,7 @@
 			</div>
 			<div class="item left_layout">
 				<div class="search_block">
-					<input id="search_field" type="search" placeholder="Search...">
+					<input data-type="user" id="search_field" type="search" placeholder="Search...">
 				</div>
 				<div class="list">
 				</div>
@@ -54,15 +30,15 @@
 			<div class="item chat_layout">
 				
 				<div class="chat_header">
-					{%if current_chat%}
+					{% if current_chat %}
 						<div data-chat_id={{current_chat.id}} id="source_link" class="left_source_block">
 							{{current_chat.name}}
 						</div>
-					{%else%}
+					{% else %}
 						Select a chat.
-					{%endif%}
+					{% endif %}
 				</div>
-				
+				{% if current_chat %}
 				<div class="chat_content">
 					{% for i in range(100) %}
 						<div data-message_id={{i}} id="message" class="message_block">
@@ -84,6 +60,7 @@
 				<div class="chat_bottom">
 					<textarea class="message_input"></textarea>
 				</div>
+				{% endif %}
 
 			</div>
 			<div class="item notification_layout">

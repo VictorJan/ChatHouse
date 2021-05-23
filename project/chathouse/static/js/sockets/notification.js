@@ -13,13 +13,20 @@ class NotificationSocket{
 		});
 
 		this.socket.on('disconnect',() =>{
-			//try to resolve the token
+			//try to resolve the acess token
 			access_token_promise=prepare_access();
+			//If the resolution was successful -> reconnect using the new token.
 			access_token_promise.then((token)=>{
 				this.token=token;
+				//Change the Authorization headers, injecting a new access token
 				this.socket.io.opts["extraHeaders"]["Authorization"]=`Bearer ${token.raw}`;
 				this.socket.connect();
 			});
 		})
+	}
+
+	start_chat(data){
+		//data: {participant_id:<Number>,<name>:<str>}
+		this.socket.emit('start_a_chat',{'a':2})
 	}
 }

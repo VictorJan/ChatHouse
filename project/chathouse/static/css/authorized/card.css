@@ -13,19 +13,20 @@
 	opacity: 1;
 	transition: .5s;
 	box-shadow: 0px 0px 10px white;
-	grid-template-areas:
+	grid-auto-flow: row;
+	/*grid-template-areas:
 		"card_tab"
 		"card_title"
 		"card_header"
 		"card_body"
 		"card_links"
-		"card_utilities";
+		"card_utilities";*/
 	font-family: Segoe UI,Agency FB;
 }
 
 .card_tab{
 	display: grid;
-	grid-area: card_tab;
+	/*grid-area: card_tab;*/
 	place-content: center end;
 	border-radius: 20px 20px 0px 0px;
 	padding: 10px;
@@ -34,27 +35,27 @@
 
 .card_title{
 	display: grid;
-    grid-area: card_title;
+    /*grid-area: card_title;*/
     place-content: center start;
     padding: 5px;
     font-family: revert;
     font-weight: 100;
     justify-content: center;
-    color: #ffffff;
-    background-color: #292929;
+    color: #292929;
+    background-color: #ffffff;
     border-bottom: 1.5px solid #80808038;
     border-radius: 0px 0px 0px 0px;
 }
 .card_header{
 	display: grid;
-	grid-area: card_header;
+	/*grid-area: card_header;*/
 	place-content:center start;
 	padding: 5px;
 	font-family: Consolas;
 	font-weight: 100;
 	justify-content: center;
-	color: #2e2e2f;
-	background-color: #ffffff;
+	color: #ffffff;
+	background-color:  #292929;
 	border-bottom: 1.5px solid #80808038;
 	border-radius: 0px 0px 0px 0px;
 }
@@ -66,7 +67,7 @@
 }
 
 .card_body{
-	grid-area:card_body;
+	/*grid-area:card_body;*/
 	padding:10px;
 	display:grid;
 	grid-row-gap:5px;
@@ -77,7 +78,7 @@
 }
 .card_utilities{
 	display:grid;
-	grid-area:card_utilities;
+	/*grid-area:card_utilities;*/
 	padding: 10px;
 	grid-auto-flow:column;
 	justify-items: center;
@@ -88,7 +89,7 @@
 
 .card_links{
 	display: grid;
-	grid-area:card_links;
+	/*grid-area:card_links;*/
 	padding: 10px;
 	font-family: agency fb;
 	font-weight: bolder;

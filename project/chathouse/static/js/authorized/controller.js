@@ -1,41 +1,22 @@
-let selected_messages = new Set();
-
 async function select_message_controller(e){
 	let message = (e.target.dataset.message_id) ? e.target : e.target.parentNode;
 	if (message.dataset.message_id)
 	{
-		if (selected_messages.has((message_id = Number(message.dataset.message_id)))){
-			selected_messages.delete(message_id);
-			message.classList.remove("selected");
-		}
-		else{
-			selected_messages.add(message_id);
-			message.classList.add("selected");
-		}
-		
-		let amount;
-		if ((amount=selected_messages.size)<2) chat_utilities((amount==0)?'idle':'active');
+		if (!document.querySelector("#delete_message_button")) chat_utilities('active');
+
+		let dataset_storage = document.querySelector("#delete_message_button");
+
+		select('message',message,dataset_storage);
 	}
 }
 
-
-let selected_partipants = new Set();
-
 async function select_participant_controller(e){
-	let message = (e.target.dataset.message_id) ? e.target : e.target.parentNode;
-	if (message.dataset.message_id)
+	let participant = (e.target.dataset.participant_id) ? e.target : null;
+	if ((participant) && (participant.dataset.participant_id))
 	{
-		if (selected_messages.has((message_id = Number(message.dataset.message_id)))){
-			selected_messages.delete(message_id);
-			message.classList.remove("selected");
-		}
-		else{
-			selected_messages.add(message_id);
-			message.classList.add("selected");
-		}
-		
-		let amount;
-		if ((amount=selected_messages.size)<2) chat_utilities((amount==0)?'idle':'active');
+		let dataset_storage = document.querySelector("#establish_chat_button");
+
+		select('participant',participant,dataset_storage);
 	}
 }
 
