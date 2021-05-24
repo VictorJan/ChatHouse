@@ -31,10 +31,15 @@ class UserService:
 
 	def refresh(self):
 		'''
+		Goal: refreshes state of the inner instance.
+		Returns:True if the inner instance exists and there hasn't been any exceptions Otherwise False. 
 		'''
 		if self.__instance:
-			db.session.refresh(self.__instance)
-			return True
+			try:
+				db.session.refresh(self.__instance)
+				return True
+			except:
+				pass
 		return False
 
 
@@ -179,7 +184,7 @@ class UserService:
 				ValueError - if the data type of the identification is not an integer.
 		'''
 				
-		assert instance(identification,int), ValueError('Chat identification shall be an integer.')
+		assert isinstance(identification,int), ValueError('Chat identification shall be an integer.')
 
 		return True if self.__instance and (chat:=self.get_a_chat(identification)) and chat.remove() else False
 		
@@ -196,8 +201,8 @@ class UserService:
 				ValueError - if the data type of the identification is not an integer.
 		'''
 		assert len(payload)==2 and all(map(lambda key:key in payload and isinstance(payload[key],(int if key=='chat_id' else dict)) ,('chat_id','content'))), ValueError('The payload must contain keys for "chat_id":<int> , "content":<dict>.')
-
-		return True if self.__instance and (chat:=self.get_a_chat(payload['chat_id'])) and service.MessageService().create(chat_id=chat.id,sender_id=self.__instance.id,content=payload['content']) else False
+		refreshed = lambda *instances: all(map(lambda instance:instance.refresh(), instances))
+		return True if self.__instance and (chat:=self.get_a_chat(payload['chat_id'])) and service.MessageService().create(chat_id=chat.id,sender_id=self.__instance.id,content=payload['content']) and refreshed(chat)  else False
 
 
 	def remove_a_message(self,**payload):
@@ -212,8 +217,10 @@ class UserService:
 				ValueError - if the data type of the identification is not an integer.
 		'''
 		assert len(payload)==2 and all(map(lambda key:key in payload and isinstance(payload[key],int) ,('chat_id','message_id'))), ValueError('The payload must contain keys for "chat_id":<int> , "message_id":<dict>.')
-
-		return True if self.__instance and (chat:=self.get_a_chat(payload['chat_id'])) and (message:=service.MessageService(id=payload['message_id'])).id and message.remove() else False
+		
+		refreshed = lambda *instances: all(map(lambda instance:instance.refresh(), instances))
+		
+		return True if self.__instance and (chat:=self.get_a_chat(payload['chat_id'])) and (message:=service.MessageService(id=payload['message_id'])).id and message.remove() and refreshed(chat) else False
 
 
 

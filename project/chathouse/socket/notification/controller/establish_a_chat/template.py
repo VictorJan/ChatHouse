@@ -8,7 +8,7 @@ def create_a_template():
 	Goal: create a template for validating data , depending on th initial event, aimed at the /notification [establish_a_chat].
 
 	Actions:
-		Using the TemplateBuilder class - create an instance of Establish_a_chatTemplateBuilder.
+		Using the TemplateBuilder class - create an instance of Establish_a_ChatTemplateBuilder.
 		Add a neccessary field "name" with proper requirements : a string of at least 4 characters/spaces long , 30 characters/spaces max and with at least 4 characters in it. 
 		Add a non required field "participant_id" : value of which must be an integer;
 		[!Note!] - the latter field - "participant_id" is set up as non required, due to the permitions to start chats without any participants.

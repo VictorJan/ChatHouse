@@ -55,9 +55,12 @@ class NotificationSocket{
 			//make sure that the chat list and the list body exists.
 			if ( (chat_list = document.querySelector('#chats_list')) && (list_body=chat_list.querySelector('.list_body')) ) {
 				//update the chat list by removing the "stale" block and prepending the "fresh" one
-				let discharged_chat = list_body.querySelector(`#source_block,[data-chat_id=${data.id}]`);
+				let discharged_chat = list_body.querySelector(`#source_block,[data-chat_id='${data.id}']`);
 
 				if (discharged_chat) list_body.removeChild(discharged_chat);
+
+				//If the recipeint is currently on the page - refresh the page
+				if (chat_id) window.location.replace(window.location.href); 
 			}
 		});
 
@@ -75,5 +78,11 @@ class NotificationSocket{
 		if (identification=Number(data.participant_id)) payload.participant_id=identification;
 
 		this.#socket.emit('establish_a_chat', payload);
+	}
+
+	discharge_a_chat(data){
+		//data: {participant_id:<Number>,<name>:<str>}
+		let identification;
+		if ((identification=Number(data.id))) this.#socket.emit('discharge_a_chat', {id:identification});
 	}
 }

@@ -75,7 +75,7 @@ const chat_card = (data)=>{
 	}
 
 	//Set up the 
-	clone.querySelector("#eliminate_button").dataset['card_id']=data.information.id;
+	clone.querySelector("#discharge_chat_button").dataset['chat_id']=data.information.id;
 
 	//remove other cards
 	document.querySelectorAll(".card").forEach(card=>{
@@ -124,7 +124,8 @@ const list = (type,data,parent) =>{
 
 	//Set up the identification for the list = "users|chats|participants_list"
 	clone.firstElementChild.setAttribute("id",(list_identification=`${type}s_list`));
-	
+	if (type=='participant') clone.firstElementChild.style.gridTemplateRows="none";
+
 	let header=clone.querySelector(".list_header");
 	if (type=='participant') header.parentNode.removeChild(header); else header.innerText=`${type}s`.toUpperCase();
 	
@@ -132,6 +133,9 @@ const list = (type,data,parent) =>{
 	data.forEach((item)=>{
 		body.append(source_block(type,item));
 	});
+
+	//header.parentNode.style.gridTemplateRows = (type=='participant')?"1fr":header.parentNode.style.gridTemplateRows;
+	body.style.maxHeight=(type=='participant')?'30vh':'75vh';
 
 	let previous_list;
 	

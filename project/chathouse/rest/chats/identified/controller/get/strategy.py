@@ -68,7 +68,8 @@ class GetIdentifiedChatStrategy(Strategy):
 	 	Full verification:
 	  		0.Verify the access_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided token_version with the current one related to the UserService :
   			1.Verify the relationship/participation of the owner and the chat
-  				If 0.|1. is invalid respond with 401, message:"Invalid access token.";
+  				If 0. is invalid respond with 401, message:"Invalid access token.";
+  				Otherwise if 1. is invalid , respond with 401, message:"Access has been denied."
 	  			Otherwise head to the generation phase.
   			
 		Generation:
@@ -87,6 +88,8 @@ class GetIdentifiedChatStrategy(Strategy):
 		Returns:
 			If the access_token(the ownership,signature) is invalid:
   				Return 401, message:"Unauthorized!","reason":"Invalid access token."
+  			Otherwise if the owner is not related to the chat in any shape of form:
+  				Return 401, message:"Unauthorized!","reason":"Access has been denied."
   			Otherwise:
   				Return 200, data:<data_payload>
 
@@ -116,8 +119,11 @@ class GetIdentifiedChatStrategy(Strategy):
 		}
 
 		#Step 0.
-		#Step 1.
-		if not isinstance(kwargs['identification'],int) or not kwargs['authorization']['access']['valid'] or (owner:=kwargs['authorization']['access']['owner']) is None or (requested_chat:=owner.get_a_chat(kwargs['identification'])) is None:
+		if not isinstance(kwargs['identification'],int) or not kwargs['authorization']['access']['valid'] or (owner:=kwargs['authorization']['access']['owner']) is None:
 			return {'success':'False','message':'Unauthorized!','reason':'Invalid access token.'},401
+
+		#Step 1.
+		if (requested_chat:=owner.get_a_chat(kwargs['identification'])) is None:
+			return {'success':'False','message':'Unauthorized!','reason':'Access has been denied.'},401
 			
 		return {'success':'True','data':data_payload(requested_chat)},200

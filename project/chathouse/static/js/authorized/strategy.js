@@ -4,7 +4,7 @@ const dh_keyring_promise = (async()=>{
 })();
 
 let access_token_promise=prepare_access();
-let chat_id = Number(new URL(window.location.href).searchParams.get('id'));
+const chat_id = Number(new URL(window.location.href).searchParams.get('id'));
 
 let notification_socket;
 let chat_socket;

@@ -5,10 +5,10 @@ async function source_card_controller(e){
 		let identification = (dataset.user_id) ? {'user':dataset.user_id} : {'chat':dataset.chat_id};
 		
 		let token = await access_token_promise;
+		let response,json_response;
 		//Branch to different api routes
 		if (identification.user){
 			//call the users/<identification> api
-			let json_response;
 			if ((response = await user_call(token.raw,identification.user) ).status == 200 ){
 				json_response = await response.json();
 			}
@@ -26,7 +26,6 @@ async function source_card_controller(e){
 		}
 		else if (identification.chat){
 			//call the chats/<identification>
-			let json_response;
 			if ((response = await chat_call(token.raw,identification.chat) ).status == 200 ){
 				json_response = await response.json();
 			}
@@ -34,7 +33,17 @@ async function source_card_controller(e){
 				//The access token has expired/invalid -> refresh it and reasign
 				access_token_promise = prepare_access();
 				token = await access_token_promise;
-				if ((response = await chat_call(token.raw,identification.chat) ).status == 200 ) json_response = await response.json(); else logout(); 
+				
+				//await the response for the same request with a new access_token
+				//In either way prepare the json response, then depending on the status code perform next steps
+				response = await user_call(token.raw,identification.user);
+				json_response = await response.json();
+				//If the status code isn't 200 - then the access_token is invalid or the access to the resource is not permitted
+				//So if the access is denied - refresh the page. Otherwise - perform a logout() ,as the token has expired/simply invalid.
+				if (response.status!=200){
+					if (json_response.reason=='Access has been denied.') window.location.replace(window.location.href);
+					logout(); 
+				} 
 			}
 			
 			let data = {information:json_response.data}

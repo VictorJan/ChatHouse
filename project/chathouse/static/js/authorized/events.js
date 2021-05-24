@@ -17,9 +17,15 @@ addGlobalEventListener('click','#head_to_source',head_controller);
 
 addGlobalEventListener('click','#logout_button',logout);
 
-//New chat
+//Chat
+
+//Selecet a participant event
 addGlobalEventListener('click','#participant_block',select_participant_controller)
+//Establish a chat button event
 addGlobalEventListener('click','#establish_chat_button',establish_chat_controller)
+
+//Discharge/remove a chat button event
+addGlobalEventListener('click','#discharge_chat_button',discharge_chat_controller)
 
 
 //Messages

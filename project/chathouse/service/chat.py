@@ -46,7 +46,6 @@ class ChatService:
 				return True
 			except:
 				db.session.rollback()
-				return False
 		return False
 
 	def get_message(self,**query):
@@ -79,11 +78,15 @@ class ChatService:
 
 	def refresh(self):
 		'''
-		Goal: refresh the inner state.
+		Goal: refreshes state of the inner instance.
+		Returns:True if the inner instance exists and there hasn't been any exceptions Otherwise False. 
 		'''
 		if self.__instance:
-			db.session.refresh(self.__instance)
-			return True
+			try:
+				db.session.refresh(self.__instance)
+				return True
+			except:
+				pass
 		return False
 
 	@property

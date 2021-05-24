@@ -36,6 +36,7 @@ async function cancel_delete_controller(e){
 	}
 }
 
+//CHAT
 //Establish a chat
 async function establish_chat_controller(e){
 	let input_field = document.querySelector('#chat_name');
@@ -45,6 +46,22 @@ async function establish_chat_controller(e){
 	}
 
 }
+//Discharge a chat
+async function discharge_chat_controller(e){
+	let chat_id;
+	if ((chat_id=Number(e.target.dataset.chat_id))) notification_socket.discharge_a_chat({id:chat_id});
+	//close the card:
+	let close_button;
+	if (close_button=document.querySelector("#close_button")){
+		let close_event = new Event('click');
+		close_button.dispatchEvent(close_event);
+		close_card(close_event);
+	}
+}
+
+
+
+
 
 
 async function head_controller(e){
