@@ -130,7 +130,7 @@ class PostVerificationStrategy(Strategy):
 		
 		#Step 2.
 		#Step 3.
-		if isinstance(data,dict) and template.validate(**data) and (resolution:=resolve(route,(data:=template.data))) is not None:
+		if template.validate(**data) and (resolution:=resolve(route,(data:=template.data))) is not None:
 
 			verification_token=Token(payload_data={
 				'identification_data':data,

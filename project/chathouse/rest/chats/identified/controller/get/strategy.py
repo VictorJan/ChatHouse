@@ -62,7 +62,7 @@ class GetIdentifiedChatStrategy(Strategy):
 			data_payload:
 				Goal: structure and return a dictionary meant for the data key in the response.
 				Arguments: chat:ChatService
-				Returns: a dictionary of (id:<chat.id:int>,name:<chat.name:str>,created:<chat.created_dnt:str>, activity:<chat.activity_dnt:str>, creator:<creator_payload(chat.creator):dict>, participants:<participants_payload(chat.participations):list>)
+				Returns: a dictionary of (id:<chat.id:int>,name:<chat.name:str>,created:<chat.created_dnt:str>, activity:<chat.activity_dnt:str>, creator:<creator_payload(chat.creator):dict>, participants:<participants_payload(chat.participants):list>)
 
 
 	 	Full verification:
@@ -104,7 +104,7 @@ class GetIdentifiedChatStrategy(Strategy):
 		#Lambda functions:
 		user_payload = lambda user: {'id':user.id,'username':user.username}
 		
-		participants_payload = lambda participations: [ user_payload(participant) for participant in participations ]
+		participants_payload = lambda participants: [ user_payload(participant) for participant in participants ]
 		
 		data_payload = lambda chat: {\
 		'id':chat.id,
@@ -112,12 +112,12 @@ class GetIdentifiedChatStrategy(Strategy):
 		'created':str(chat.creation_dnt),
 		'activity':str(chat.activity_dnt),
 		'creator':user_payload(requested_chat.creator),
-		'participants':participants_payload(requested_chat.participations)\
+		'participants':participants_payload(requested_chat.participants)\
 		}
 
 		#Step 0.
 		#Step 1.
 		if not isinstance(kwargs['identification'],int) or not kwargs['authorization']['access']['valid'] or (owner:=kwargs['authorization']['access']['owner']) is None or (requested_chat:=owner.get_a_chat(kwargs['identification'])) is None:
 			return {'success':'False','message':'Unauthorized!','reason':'Invalid access token.'},401
-
+			
 		return {'success':'True','data':data_payload(requested_chat)},200

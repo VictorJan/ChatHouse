@@ -106,7 +106,7 @@ const new_chat_card = () =>{
 
 
 
-const close_parent = (event) => {
+const close_card = (event) => {
 	let element = event.target;
 	element.parentNode.parentNode.parentNode.removeChild(element.parentNode.parentNode);
 	document.body.querySelector('#overlay').classList.remove('active');
@@ -124,8 +124,10 @@ const list = (type,data,parent) =>{
 
 	//Set up the identification for the list = "users|chats|participants_list"
 	clone.firstElementChild.setAttribute("id",(list_identification=`${type}s_list`));
-
-	clone.querySelector(".list_header").innerText=`${type}s`.toUpperCase();
+	
+	let header=clone.querySelector(".list_header");
+	if (type=='participant') header.parentNode.removeChild(header); else header.innerText=`${type}s`.toUpperCase();
+	
 	let body=clone.querySelector(".list_body");
 	data.forEach((item)=>{
 		body.append(source_block(type,item));
@@ -177,6 +179,7 @@ const source_block = (type,data)=>{
 		block.removeChild(head_to_button.parentNode);
 	}
 	else{
+		block.dataset['chat_id']=data.id;
 		head_to_button.dataset['chat_id']=data.id;
 	}
 
@@ -186,7 +189,6 @@ const source_block = (type,data)=>{
 const chat_utilities = (type) =>{
 	//type:idle - meant to build an idle state of the utilities (send message)
 	//type:active - meant to build an active state of the utilities (having selected messages - allow to delete them)
-	console.log(type)
 	let current=document.querySelector(".chat_utilities");
 	let chat_bottom=document.querySelector(".chat_bottom");
 	let clone=document.querySelector(`#chat_utilities_${type}`).content.cloneNode(true);
@@ -194,4 +196,12 @@ const chat_utilities = (type) =>{
 	if (type=='active') chat_bottom.firstElementChild.setAttribute('disabled',true); else chat_bottom.firstElementChild.removeAttribute('disabled');
 	if (current) chat_bottom.removeChild(current); 
 	chat_bottom.appendChild(clone);
+}
+
+
+
+
+const message = (data) => {
+	//data is encrypted -> get the template first
+	let clone = document.querySelector("#message_tepmlate").content.cloneNode(true);
 }

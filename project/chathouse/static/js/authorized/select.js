@@ -12,7 +12,7 @@ function select(identification,element,storage){
 			if (storage.dataset[`${identification}_id`]==value){
 				storage.dataset[`${identification}_id`]='';
 				element.classList.remove("selected");
-				storage.disabled=true;
+				return null;
 			}
 			else{
 				
@@ -21,7 +21,9 @@ function select(identification,element,storage){
 				
 				storage.dataset[`${identification}_id`]=value;
 				element.classList.add("selected");
-				storage.disabled=false;
+
+				// return the username of the selected participant.
+				return element.firstElementChild.innerHTML;
 			}
 		}
 		else{

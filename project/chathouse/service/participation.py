@@ -17,10 +17,9 @@ class ParticipationService:
 		Returns : True/False:bool - which indicates the result of the creation.
 		Exceptions: perform a rollback of the session and return False, if the payload wasn't appropriate.
 		'''
-
 		assert len(payload)==2, Exception('The signup requires the payload to consist of two keys.')
 		assert all(map( lambda key: key in payload and isinstance(payload[key],int), ('chat_id','participant_id'))) , ValueError('The payload must contain a chat_id:<int> and a participant_id:<int>.')
- 		
+
 		if self.__instance is None and service.UserService(id=payload['participant_id']).get_a_chat(payload['chat_id']) is None:
 			try:
 				self.__instance=Participation(**payload)
@@ -49,8 +48,21 @@ class ParticipationService:
 				return False
 		return False
 
+	def refresh(self):
+		'''
+		'''
+		if self.__instance:
+			db.session.refresh(self.__instance)
+			return True
+		return False
+
 	def __getattr__(self,attr):
 		return ( deepcopy(value) if (value:=self.__instance.__dict__.get(attr,None)) is not None else value ) if self.__instance else None
+
+	@property
+	def participant(self):
+		return service.UserService(id=self.__participant.id) if self.__instance else None
+	
 
 	@staticmethod
 	def __identify(**payload):

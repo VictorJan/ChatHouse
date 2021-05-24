@@ -1,4 +1,4 @@
-from chathouse.socket.notification.controller import ConnectNotificationController
+from chathouse.socket.notification.controller import ConnectNotificationController,Establish_a_ChatNotificationController
 from flask_socketio import Namespace
 from flask import request
 
@@ -22,11 +22,11 @@ class NotificationNamespace(Namespace):
 	def on_connect(self):
 		ConnectNotificationController.handle(dict(request.headers), data if (data:=request.json) is not None else {} )
 
-	def on_start_a_chat(self,data):
+	def on_establish_a_chat(self,data):
 		'''
 		data:dict
 		'''
-		pass
+		Establish_a_ChatNotificationController.handle(dict(request.headers), data if isinstance(data,dict) else {} )
 
 	def on_disconnect(self):
 		pass

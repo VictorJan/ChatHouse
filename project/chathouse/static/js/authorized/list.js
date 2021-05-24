@@ -38,7 +38,7 @@ async function clear_search_controller(e){
 
 function clear_search (parent) {
 	let current_list,clear_button;
-	if (current_list=parent.querySelector(".list")) parent.removeChild(current_list);
+	//if (current_list=parent.querySelector(".list")) parent.removeChild(current_list);
 	if (clear_button=parent.querySelector("#clear_search_button")) parent.firstElementChild.removeChild(clear_button);
 	parent.querySelector("#search_field").value="";
 }

@@ -207,7 +207,7 @@ class PostGrantStrategy(Strategy):
 
 		#Step 3.
 		#Step 4.
-		if isinstance(data,dict) and template.validate(**data) and (user_service:=resolve(route,kwargs['authorization']['verification']['token']['object']['identification_data'])) is not None:
+		if template.validate(**data) and (user_service:=resolve(route,kwargs['authorization']['verification']['token']['object']['identification_data'])) is not None:
 			
 			data=template.data
 		#Step 5.

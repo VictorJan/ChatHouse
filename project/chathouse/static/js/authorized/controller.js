@@ -16,8 +16,34 @@ async function select_participant_controller(e){
 	{
 		let dataset_storage = document.querySelector("#establish_chat_button");
 
-		select('participant',participant,dataset_storage);
+		let username = select('participant',participant,dataset_storage);
+		if (username) document.querySelector("#search_field[data-type='participant']").value=username;
 	}
+}
+
+async function cancel_delete_controller(e){
+	let utilities = e.target.parentNode;
+	let delete_button;
+	if (delete_button=utilities.querySelector('#delete_message_button')){
+		//remove from all selected messages - the selected class
+		console.log(delete_button.dataset.message_id)
+		delete_button.dataset.message_id.split(',').forEach((message_id)=>{
+			document.querySelector(`#message[data-message_id='${message_id}']`).classList.remove("selected");
+		})
+		delete_button.dataset.message_id='';
+		//set the utilities to idle
+		chat_utilities('idle');
+	}
+}
+
+//Establish a chat
+async function establish_chat_controller(e){
+	let input_field = document.querySelector('#chat_name');
+	if ((input_field) && (input_field.value!='')){
+		let payload = {participant_id:e.target.dataset.participant_id, name: input_field.value}
+		notification_socket.establish_a_chat(payload);
+	}
+
 }
 
 
@@ -77,7 +103,7 @@ async function get_promised(promise){
 
 async function prepare_other_public_key(token_object,identification){
 	//if the client has loaded in a page with a chat:
-	//send GET to the /chat/<identification>/public-keys => thus getting the
+	//send GET to the /chat/<identification>/public-keys => thus getting the participants public key
 	let public_keys_response = await chat_call(token_object.raw,identification,'public-keys');
 	if (public_keys_response.status==200){
 		let public_keys_json = await public_keys_response.json();
@@ -90,3 +116,18 @@ async function prepare_other_public_key(token_object,identification){
 	}
 
 }
+
+async function prepare_messages(token_object,identification){
+	//Send the GET request to the API to get the last few messages
+	let response = await chat_call(token_object.raw,identification,'messages?amount=asdsa');
+	if (response.status==200){
+		let json_response = await response.json();
+		console.log(json_response);
+	}
+}
+
+
+async function decrypt(content){
+	await cipher.decrypt(content);
+}
+

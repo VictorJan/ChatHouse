@@ -11,7 +11,6 @@ class ChatService:
 		'''
 		self.__instance=self.__identify(**identification) if identification else None
 
-
 	def create(self,**payload):
 		'''
 		Arguments: payload - a key word argument, that shall only contain data appropriate for the Chat table constraints.
@@ -78,14 +77,30 @@ class ChatService:
 		
 		return tuple(service.MessageService(id=message.id) for message in self.__instance.messages.filter(Message.dnt<dnt).order_by(Message.dnt.desc()).limit(amount)) if self.__instance else None
 
-	
+	def refresh(self):
+		'''
+		Goal: refresh the inner state.
+		'''
+		if self.__instance:
+			db.session.refresh(self.__instance)
+			return True
+		return False
+
 	@property
 	def participations(self):
+		'''
+		Goal:return a tuple of the participations.
+		Returns:tuple(of ParticipantServices for each participation of the chat) If the inner instance exists else None
+		'''
+		return tuple(service.ParticipationService(id=participation.id) for participation in self.__instance.participations.all()) if self.__instance else None
+	
+	@property
+	def participants(self):
 		'''
 		Goal:return a tuple of the participants.
 		Returns:tuple(of UserServices for each participant of the chat) If the inner instance exists else None
 		'''
-		return tuple(service.UserService(id=participant.id) for participant in self.__instance.participations) if self.__instance else None
+		return tuple(service.UserService(id=participation.participant_id) for participation in self.__instance.participations.all()) if self.__instance else None
 	
 
 	@property
@@ -111,5 +126,4 @@ class ChatService:
 		'''
 		assert len(payload)==1, SyntaxError('The initialization of the instance may accept only 1 identification at a time.')
 		assert any(map( lambda key: key in payload and isinstance(payload[key],int), ('id',))) , KeyError('The identification payload doesn\'t correspond to any of the unique keys.')
-
 		return Chat.query.filter_by(**payload).first()

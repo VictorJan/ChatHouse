@@ -64,6 +64,5 @@ class ConnectNotificationStrategy(Strategy):
 		if not kwargs['authorization']['access']['valid'] or (owner:=kwargs['authorization']['access']['owner']) is None:
 			disconnect()
 			return None
-
 		join_room(owner.id)
 		return None

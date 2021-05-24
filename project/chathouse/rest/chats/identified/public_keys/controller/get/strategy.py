@@ -62,7 +62,7 @@ class GetIdentifiedChatPublicKeysStrategy(Strategy):
 			data_payload:
 				Goal: structure and return a dictionary meant for the data key in the response.
 				Arguments: chat:ChatService
-				Returns: a dictionary of (id:<chat.id:int>,participants:<public_keys_payload(chat.participations):list>)
+				Returns: a dictionary of (id:<chat.id:int>,participants:<public_keys_payload(chat.participants):list>)
 
 	 	Full verification:
 	  		0.Verify the access_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided token_version with the current one related to the UserService :
@@ -95,11 +95,11 @@ class GetIdentifiedChatPublicKeysStrategy(Strategy):
 		#Lambda functions:
 		user_keyring_payload = lambda user: {'id':user.id,'keyring':{'public_key':user.keyring.public_key}}
 		
-		public_keys_payload = lambda participations: [ user_keyring_payload(participant) for participant in participations ] if participations else []
+		public_keys_payload = lambda participants: [ user_keyring_payload(participant) for participant in participants ] if participants else []
 		
 		data_payload = lambda chat: {
 		'id':chat.id,
-		'participants':public_keys_payload(chat.participations)
+		'participants':public_keys_payload(chat.participants)
 		}
 
 		#Step 0.

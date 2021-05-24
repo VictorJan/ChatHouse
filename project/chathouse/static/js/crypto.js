@@ -203,13 +203,12 @@ class Digest
 	}
 	
 	get hex(){
-		let array=Array.from(new Uint8Array(this.value));
-		return array.map(b=>b.toString(16).padStart(2,'0')).join('');
+		return buffer_to_hex(this.value);
 	}
 
 }
 
-function buffer_to_hex(buffer){
+buffer_to_hex = (buffer) => {
 	let array=Array.from(new Uint8Array(buffer));
 	return array.map(b=>b.toString(16).padStart(2,'0')).join('');
 }

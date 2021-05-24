@@ -40,6 +40,7 @@ access_token_promise.then((token_object)=>{
 				})
 			})
 		});
-		document.querySelector(".chat_bottom")
+		//Get the messages and decrypt them:
+		prepare_messages(token_object,chat_id);
 	}
 });

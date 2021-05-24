@@ -29,6 +29,14 @@ class UserService:
 				return False
 		return False
 
+	def refresh(self):
+		'''
+		'''
+		if self.__instance:
+			db.session.refresh(self.__instance)
+			return True
+		return False
+
 
 	def signup(self,**payload):
 		'''
@@ -72,8 +80,8 @@ class UserService:
 
 				payload['key_data']['owner_id']=self.__instance.id
 
-				if (keyring:=service.KeyringService(owner_id=payload['key_data']['owner_id'])).create(**payload['key_data']) and (chat:=self.start_a_chat('Saved Messages')) and self.join_a_chat(chat.id):
-
+				if (keyring:=service.KeyringService(owner_id=payload['key_data']['owner_id'])).create(**payload['key_data']) and (chat:=self.establish_a_chat('Saved Messages')).id and self.join_a_chat(chat.id):
+					db.session.commit()
 					db.session.refresh(self.__instance)
 					return True
 
@@ -131,7 +139,7 @@ class UserService:
 
 
 
-	def start_a_chat(self,name):
+	def establish_a_chat(self,name):
 		'''
 		Aimed at the ChatService.
 		Goal: create a chat instance , by creating an instance of a ChatService.
@@ -139,7 +147,6 @@ class UserService:
 		Actions: check if the current user's isinstance exists.
 		Returns: return the instance of the ChatService - If the Actions are all valid and return True , otherwise - None
 		'''
-
 		return (running_chat if (running_chat:=service.ChatService()).create(creator_id=self.__instance.id,name=name) else None) if self.__instance else None
 
 
@@ -149,7 +156,7 @@ class UserService:
 		Goal: join an existing chat instance , by creating a Participant instance using the ParticipantService.
 		Arguments: identification:int.
 		Actions: check if the current user's isinstance exists, verify the existance of the chat with such id , after that check if the current user is not a participant of the chat, thus verifying the absence of any related participation.
-		Then create a Participation istance using the ParticipationService.
+		Then create a Participation istance using the ParticipationService and refresh the chat instance.
 		Returns: True - If the Actions are all valid and return True , otherwise - False
 		Exceptions:
 			Raises:
@@ -157,10 +164,10 @@ class UserService:
 		'''
 		
 		assert isinstance(identification,int), ValueError('Chat identification shall be an integer.')
+		refreshed = lambda *instances: all(map(lambda instance:instance.refresh(), instances))
+		return True if self.__instance and self.get_a_chat(identification) is None and (chat:=service.ChatService(id=identification)).id==identification and (participation:=service.ParticipationService()).create(participant_id=self.__instance.id,chat_id=identification) and refreshed(chat) else False
 
-		return True if self.__instance and self.get_a_chat(identification) is None and (chat:=service.ChatService(id=identification)) and (participation:=service.ParticipationService()).create(participant_id=self.__instance.id,chat_id=chat.id) else False
-
-	def delete_a_chat(self,identification):
+	def discharge_a_chat(self,identification):
 		'''
 		Aimed at the ChatService.
 		Goal: deletes a chat, where the current user is a participant.
@@ -223,7 +230,6 @@ class UserService:
 		'''
 		
 		assert isinstance(identification,int), TypeError('Chat identification shall be an integer.')
-
 		return service.ChatService(id=participation.chat_id) if self.__instance and (participation:=self.__instance.participations.filter_by(chat_id=identification).first())  else None
 
 
@@ -248,6 +254,7 @@ class UserService:
 		if self.__instance and (other:=UserService(**identification)).id and (other_chat_ids:=tuple(chat.id for chat in other.chats)):
 			return tuple(filter(lambda chat: chat.id in other_chat_ids,self.chats)) if self.__instance else None
 		return None
+
 
 	
 	def __getattr__(self,attr):
