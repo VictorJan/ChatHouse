@@ -150,11 +150,10 @@ class UserService:
 		Goal: create a chat instance , by creating an instance of a ChatService.
 		Arguments: identification:int.
 		Actions: check if the current user's isinstance exists and create a ChatService instance with provided data.
-		Then refresh the current user inner instance.
+		If such instance has been successfully created return the ChatService instance 
 		Returns: return the instance of the ChatService - If the Actions are all valid and follow the conditions , otherwise - None
 		'''
-		refreshed = lambda *instances: all(map(lambda instance:instance.refresh(), instances))
-		return (running_chat if (running_chat:=service.ChatService()).create(creator_id=self.__instance.id,name=name) else None) if self.__instance else None
+		return (chat if (chat:=service.ChatService()).create(creator_id=self.__instance.id,name=name) else None) if self.__instance else None
 
 
 	def join_a_chat(self,identification):
@@ -163,7 +162,7 @@ class UserService:
 		Goal: join an existing chat instance , by creating a Participant instance using the ParticipantService.
 		Arguments: identification:int.
 		Actions: check if the current user's isinstance exists, verify the existance of the chat with such id , after that check if the current user is not a participant of the chat, thus verifying the absence of any related participation.
-		Then create a Participation instance using the ParticipationService and refresh the chat and current user inner instances.
+		Then create a Participation instance using the ParticipationService.
 		Returns: True - If the Actions are all valid and follow the conditions , otherwise - False
 		Exceptions:
 			Raises:
@@ -171,7 +170,6 @@ class UserService:
 		'''
 		
 		assert isinstance(identification,int), ValueError('Chat identification shall be an integer.')
-		refreshed = lambda *instances: all(map(lambda instance:instance.refresh(), instances))
 		return True if self.__instance and (chat:=service.ChatService(id=identification)).id==identification and (not self in chat) and (participation:=service.ParticipationService()).create(participant_id=self.__instance.id,chat_id=identification) else False
 
 	def discharge_a_chat(self,identification):
@@ -197,15 +195,14 @@ class UserService:
 		Goal: stores a message istance using the MessageService .
 		Arguments: payload:a key word argument = dict : { chat_id:int , content:dict } .
 		Actions: check if the current user's isinstance exists, verify if the current user is a participant of the chat.
-		Then create a Message instance using the MessageService and refresh the chat instance.
+		Then create a Message instance using the MessageService.
 		Returns: message:MessageService - If the Actions are all valid and follow the conditions , otherwise - None
 		Exceptions:
 			Raises:
 				ValueError - if the payload doesn't contain/follow the structure : chat_id:<int> , content:<dict>.
 		'''
 		assert len(payload)==2 and all(map(lambda key:key in payload and isinstance(payload[key],(int if key=='chat_id' else dict)) ,('chat_id','content'))), ValueError('The payload must contain keys for "chat_id":<int> , "content":<dict>.')
-		refreshed = lambda *instances: all(map(lambda instance:instance.refresh(), instances))
-		return messsage if self.__instance and (chat:=self.get_a_chat(payload['chat_id'])) and (message:=service.MessageService().create(chat_id=chat.id,sender_id=self.__instance.id,content=payload['content'])) and refreshed(chat,self) else None
+		return messsage if self.__instance and (chat:=self.get_a_chat(payload['chat_id'])) and (message:=service.MessageService().create(chat_id=chat.id,sender_id=self.__instance.id,content=payload['content'])) else None
 
 
 	def remove_a_message(self,**payload):
@@ -222,9 +219,7 @@ class UserService:
 		'''
 		assert len(payload)==2 and all(map(lambda key:key in payload and isinstance(payload[key],int) ,('chat_id','message_id'))), ValueError('The payload must contain keys for "chat_id":<int> , "message_id":<dict>.')
 		
-		refreshed = lambda *instances: all(map(lambda instance:instance.refresh(), instances))
-		
-		return True if self.__instance and (chat:=self.get_a_chat(payload['chat_id'])) and (message:=service.MessageService(id=payload['message_id'])).id and (message in chat) and message.remove() and refreshed(chat,self) else False
+		return True if self.__instance and (chat:=self.get_a_chat(payload['chat_id'])) and (message:=service.MessageService(id=payload['message_id'])).id and (message in chat) and message.remove() else False
 
 
 

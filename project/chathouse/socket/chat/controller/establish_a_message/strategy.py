@@ -64,14 +64,20 @@ class Establish_a_MessageChatStrategy(Strategy):
 			}
 		
 		Lambda functions:
-			resolve:
-				Goal: resolve a UserService instance with existing inner user instance, based on the provided provided identification.
-				Arguments:credentials:key-word-argument. Expecting a key/value pair such as id/<int>.
-				Actions:
-					If there is a UserService instance with inner existing user instance:
-						Such participant exists - return ther UserService instance
-					Otherwise return None
-				Returns: UserService instance | None
+			sender_payload:
+				Goal: return a dictionary containing some unique information about the sender of the message.
+				Arguments: sender:UserService. 
+				Returns: dict('id':<id>,'username':<username>)
+
+			message_payload:
+				Goal: return a dictionary containing information about a message.
+				Arguments: message:MessageService. 
+				Returns: dict(id:<message id:int>,content:dict(iv:str,data:str),dnt:dict(timestamp:int,readable:str),sender:sender_payload(<message.sender>))
+
+			activity_payload:
+				Goal: return a dictionary containing information about a chat , which has been affected with the establishment.
+				Arguments: chat:ChatService. 
+				Returns: dict(id:<chat id:int>, name<chat's name:str>)
 
 	 	Full verification and actions:
 	  		0.Verify the access_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided token_version with the current one related to the UserService :
@@ -83,39 +89,40 @@ class Establish_a_MessageChatStrategy(Strategy):
 	  			Set up a template - using a custom create_template, which builds and returns a Template instance.
 	  			Validate the data against the template:
 	  				If the verification has been successful:
-	  		3.1			The message has been stored - the following step is to notify each participant in the room / the room with the <proper message payload>
-	  					Otherwise If the product of the validation / validated contains a participant_id and the resolution has returned a UserService - thus has found such user - follow the next step -> step 2.
-	  		3.			Owner starts a chat -> creates an instance of a ChatService , If everything has gone well:
-		  	3.1				On the behalf of each "soon to be participant" - join the chat.
-		  					If at any point a UserService wasn't able to join the chat:
-		  						The provided payload - was invalid : the request contained the credentials of users that already were related to the chat. 
-		  	3.1[-]				Discharge/Remove the created chat, and mention this to requester/owner.
-		  	3.2				Otherwise proceed to the notify each participant of the chat - using the participations property.
+	  		3.     		Establish/create a message , providing the chat identification and the provided encrypted content.
+	  					If the establishment has been successful:
+	  		3.1				First and foremost notify each participant in the room/ the room with the <message paylod>
+	  		3.2				Then notify each participant, whose not even in the room, about the activity , by emiting to a <notification payload> to assinged rooms.
 	  		3.[-]		Otherwise:
-	  							The chat couldn't be created - notify the owner of the request/access_token about the failure
-	  		2.[-]		Otherwise - the resolution wasn't able to figure out the user based on the credentials proceed to the mention about the failure.
-	  		2.[-]	Otherwise proceed to mention about the failure.
-
+	  						The message couldn't be created - notify the owner of the request/access_token about the failure.
+	  		2.[-]	Otherwise - the provided data payload wasn\'t valid, according to the custom template.
+	  		
 		
-		Construction:
-			proper message payload:
+		Generation:
+			message payload:
 				{
-					sender:{
-						id:<int>,
-						username:<str>
-					}
-					
+					id:<message id:int>
+					content:{ iv:<iv:str> , data:<data:str> },
+					sender:{id:<sender's id:int>, username:<sender's username:str>}
+					dnt: { timestamp:<timestamp value:int>, readable:<visually comprehensible:str> }
 				}
 
   		Exceptions:
   			Raises:
   				TypeError - if headers and data arguments are not dictionaries.
+
+  		Returns: None
 		'''
 	#Code:
 		#Exceptions:
 		assert all(map(lambda argument: isinstance(argument,dict),(headers,data))), TypeError('Arguments , such as : headers and data - must be dictionaries')
 
-		resolve = lambda **credentials:  instance if (instance:=UserService(**credentials)).id else None
+		sender_payload = lambda sender: {'id':sender.id,'username':sender.username}
+
+		message_payload = lambda message: {'id':message.id, 'content':message.content, 'dnt':{'timestamp':int(datetime.timestamp(message.dnt)), 'readable':str(message.dnt.time()) }, 'sender':sender_payload(message.sender)}
+
+		activity_payload = lambda chat: {'id':chat.id, 'name':chat.name}
+		
 
 		#Step 0.
 		#Step 1.
@@ -124,31 +131,27 @@ class Establish_a_MessageChatStrategy(Strategy):
 			return None
 
 		template = create_a_template()
-		#Step 1.
+		#Step 2.
 		if template.validate(**data):
-			#Step 2.			
-			if (chat:=owner.establish_a_chat(validated['name'])):
-			#Step 2.1
-				for instance in (owner,* ( (other_participant,) if other_participant else ()) ):
-			#Step 2.1[-]
-					if not (result:=instance.join_a_chat(chat.id)):
-						
-						owner.discharge_a_chat(chat.id)
-
-						emit('error',{'message':'Invalid payload.It seems the user is already related to the chat.'},to=owner.id)
-						
-						return None
-
-			#Step 2.2
-				for participant in chat.participants:
-					emit('established_chat',{'id':chat.id,'name':chat.name},to=participant.id)
 			
-			#Step 2.[-]
+			data=template.data
+			
+			#Step 3.
+			if (message:=owner.establish_a_message(chat_id=chat.id,content=data['content'])):
+
+				#Step 3.1.
+				emit('established_message',message_payload(message),to=chat.id)
+
+				#Step 3.2.
+				for participant in chat.participants:
+					emit('chat_activity',activity_payload(chat),namespace='/notification',to=participant.id)
+			
+			#Step 3.[-]
 			else:
-				emit('error',{'message':'Invalid payload.The chat couldn\'t be established.'},to=owner.id)
-
-		#Step 1.[-]
+				emit('error',{'message':'The message couldn\'t be established, please try again.'},namespace='/notification',to=owner.id)
+			
+		#Step 2.[-]
 		else:
-			emit('error',{'message':'Invalid payload.'},to=owner.id)
-
+			emit('error',{'message':'Please submit a valid payload.'},namespace='/notification',to=owner.id)
+		
 		return None

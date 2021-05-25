@@ -62,7 +62,7 @@ class GetIdentifiedChatMessagesStrategy(Strategy):
 				Arguments: sender:UserService. 
 				Returns: dict('id':<id>,'username':<username>)
 
-			message_paylaod:
+			message_payload:
 				Goal: return a dictionary containing information about a message.
 				Arguments: message:MessageService. 
 				Returns: dict(id:<message id:int>,content:dict(iv:str,data:str),dnt:dict(timestamp:int,readable:str),sender:sender_payload(<message.sender>))
@@ -92,7 +92,6 @@ class GetIdentifiedChatMessagesStrategy(Strategy):
 					content:{ iv:<iv:str> , data:<data:str> },
 					sender:{id:<sender's id:int>, username:<sender's username:str>}
 					dnt: { timestamp:<timestamp value:int>, readable:<visually comprehensible:str> }
-
 				},...]
 	  		}
  

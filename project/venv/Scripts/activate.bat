@@ -35,11 +35,3 @@ if defined _OLD_CODEPAGE (
 set FLASK_APP=run.py
 set FLASK_ENV=development
 set FLASK_DEBUG=1
-set ENVIRONMENT=Development
-set SECRET_KEY=0dc68955e35a6a0a881cab9d0c2befbb1cee2dba
-set STATIC_KEY=e7ad66204a66942b14669b5a28a4855856271302e46b9931b2ffacce53c5
-set SQLALCHEMY_DATABASE_URI=sqlite:///sql/database.db
-set MAIL_USERNAME=idlechathouse@gmail.com
-set MAIL_PASSWORD=e41c8f615c09495794e51000e1acd4cc0a64d9eb
-set DH_GENERATOR=9055
-set DH_MODULUS=9059
