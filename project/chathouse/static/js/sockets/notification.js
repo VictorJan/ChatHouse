@@ -60,12 +60,12 @@ class NotificationSocket{
 				if (discharged_chat) list_body.removeChild(discharged_chat);
 
 				//If the recipeint is currently on the page - refresh the page
-				if (chat_id) window.location.replace(window.location.href); 
+				if (chat_id && chat_id==data.id) window.location.replace(window.location.href); 
 			}
 		});
 
 		this.#socket.on('error',(data)=>{
-			document.querySelector('.notification_layout').innerHTML=data.message;
+			notification(data.message);
 		})
 	}
 

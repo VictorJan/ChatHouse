@@ -61,6 +61,12 @@ async function discharge_chat_controller(e){
 
 
 
+//close_notification_button
+function close_notification_controller(e){
+	let block;
+	if (block=e.target.parentNode) block.parentNode.removeChild(block);
+}
+
 
 
 
@@ -148,3 +154,5 @@ async function decrypt(content){
 	await cipher.decrypt(content);
 }
 
+//have a chat class with decrypt encrypt methods and inner private fields : for the cipher_key and chat id , that's only readable constructor initializes with the 
+//have a user class to logout or prepare the tokens?

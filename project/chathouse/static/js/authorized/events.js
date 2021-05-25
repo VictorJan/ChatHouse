@@ -10,6 +10,8 @@ addGlobalEventListener('click','#source_link',source_card_controller);
 
 addGlobalEventListener('click','#close_button',close_card);
 
+addGlobalEventListener('click','#close_notification_button',close_notification_controller);
+
 addGlobalEventListener('keyup','#search_field',search_list_controller);
 addGlobalEventListener('click','#clear_search_button',clear_search_controller);
 

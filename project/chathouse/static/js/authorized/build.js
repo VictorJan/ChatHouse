@@ -112,6 +112,17 @@ const close_card = (event) => {
 	document.body.querySelector('#overlay').classList.remove('active');
 }
 
+const notification = (data) =>{
+	let clone=document.querySelector(`#notification_template`).content.cloneNode(true);
+	clone.querySelector(".notification_message").innerText=data;
+	let notification_layout=document.querySelector(".notification_layout");
+	if (notification_layout){
+		//remove the previous notifications
+		let previous;
+		if (previous=document.querySelector(".notification_block")) notification_layout.removeChild(previous);
+		notification_layout.appendChild(clone);
+	}
+}
 
 //list:
 

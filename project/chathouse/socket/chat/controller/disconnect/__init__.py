@@ -1,4 +1,4 @@
-from chathouse.socket.chat.controller.connect.strategy import ConnectChatStrategy
+from chathouse.socket.chat.controller.disconnect.strategy import DisconnectChatStrategy
 from chathouse.utilities.security.controller_strategy.controller import Controller
 
 '''
@@ -7,9 +7,9 @@ Initilizes a proper controller, by creating an instance of a Controller and prov
 Pattern/Chain of calls:
 	Controller.handle(request_headers,request_data,chat_id in the kwargs) -> any decorators ( Strategy.accept(request_headers,request_data,kwargs) ).
 
-In this case the Controller is the - [Connect][Chat]Controller.
-[Connect] - an event.
+In this case the Controller is the - [Disconnect][Chat]Controller.
+[Disconnect] - an event.
 [Chat] - a socket endpoint - /socket/chat.
 '''
 
-ConnectChatController=Controller(ConnectChatStrategy())
+DisconnectChatController=Controller(DisconnectChatStrategy())

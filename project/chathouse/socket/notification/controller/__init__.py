@@ -6,7 +6,6 @@ This file shall contain Controllers for each [Event] for this specific [Endpoint
 [Disconnect][Notification]Controller
 [Establish_a_Chat][Notification]Controller
 [Discharge_a_Chat][Notification]Controller
-
 '''
 from chathouse.socket.notification.controller.connect import ConnectNotificationController
 from chathouse.socket.notification.controller.disconnect import DisconnectNotificationController

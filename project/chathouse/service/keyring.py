@@ -36,10 +36,6 @@ class KeyringService:
 				return False
 		return False
 
-
-	def __getattr__(self,attr):
-		return ( deepcopy(value) if (value:=self.__instance.__dict__.get(attr,None)) is not None else value ) if self.__instance else None
-
 	def remove(self):
 		'''
 		Goal: removes the inner instance from the database.
@@ -54,6 +50,20 @@ class KeyringService:
 				db.session.rollback()
 				return False
 		return False
+
+
+	def __getattr__(self,attr):
+		'''
+		Goal: get the attribute from the inner instance.
+		Arguments: attr:str
+		Actions:
+			Based on the provided attr value - search the inner instance dictionary for such attribute.
+			If the value coulnd't have been found - refresh the inner instance and perform the search again, then return the value in either way.
+			Otherwise return the value
+		Returns: value(based on the attr from the inner instance) | None
+		'''
+		get = lambda attribute: deepcopy(value) if (value:=self.__instance.__dict__.get(attribute,None)) else None
+		return ( get(attr) if (value:=get(attr)) is None and self.refresh() else value ) if self.__instance else None
 
 	@property
 	def owner(self):

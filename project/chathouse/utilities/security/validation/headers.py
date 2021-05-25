@@ -152,9 +152,9 @@ def authorized(token_type,location=None):
 
 			#Initialize lambda functions for the 1.:
 			search = lambda head,raw: match.group() if (match:=re.search(f'(?<={head})([^\s]+)',raw)) else None
-			locate = lambda l,h: {'location':l, 'object':Token(raw_data=token_raw_data(l,raw) ) } if (raw:=h.get(l)) else {'location':l,'object':None}
 			token_raw_data = lambda l,d: search('Bearer ',d) if l=='Authorization' else (search(f'{token_type}_token=',d) if l=='Cookie' else d)
-
+			locate = lambda l,h: {'location':l, 'object':Token(raw_data=token_raw_data(l,raw) ) } if (raw:=h.get(l)) else {'location':l,'object':None}
+			
 			#Initialize lambda functions for the 3.2:
 			find_case = lambda cases: next(iter(tupled)) if (tupled:=tuple(filter(lambda case: case is not None,cases))) else None
 			map_cases = lambda **credentials: map(lambda identification: case if (case:=UserService(**{identification:credentials[identification]})).id else None,credentials)

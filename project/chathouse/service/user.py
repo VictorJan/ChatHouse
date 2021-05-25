@@ -87,7 +87,7 @@ class UserService:
 
 				if (keyring:=service.KeyringService(owner_id=payload['key_data']['owner_id'])).create(**payload['key_data']) and (chat:=self.establish_a_chat('Saved Messages')).id and self.join_a_chat(chat.id):
 					db.session.commit()
-					db.session.refresh(self.__instance)
+					self.refresh()
 					return True
 
 				else:
@@ -149,9 +149,11 @@ class UserService:
 		Aimed at the ChatService.
 		Goal: create a chat instance , by creating an instance of a ChatService.
 		Arguments: identification:int.
-		Actions: check if the current user's isinstance exists.
-		Returns: return the instance of the ChatService - If the Actions are all valid and return True , otherwise - None
+		Actions: check if the current user's isinstance exists and create a ChatService instance with provided data.
+		Then refresh the current user inner instance.
+		Returns: return the instance of the ChatService - If the Actions are all valid and follow the conditions , otherwise - None
 		'''
+		refreshed = lambda *instances: all(map(lambda instance:instance.refresh(), instances))
 		return (running_chat if (running_chat:=service.ChatService()).create(creator_id=self.__instance.id,name=name) else None) if self.__instance else None
 
 
@@ -161,8 +163,8 @@ class UserService:
 		Goal: join an existing chat instance , by creating a Participant instance using the ParticipantService.
 		Arguments: identification:int.
 		Actions: check if the current user's isinstance exists, verify the existance of the chat with such id , after that check if the current user is not a participant of the chat, thus verifying the absence of any related participation.
-		Then create a Participation istance using the ParticipationService and refresh the chat instance.
-		Returns: True - If the Actions are all valid and return True , otherwise - False
+		Then create a Participation instance using the ParticipationService and refresh the chat and current user inner instances.
+		Returns: True - If the Actions are all valid and follow the conditions , otherwise - False
 		Exceptions:
 			Raises:
 				ValueError - if the data type of the identification is not an integer.
@@ -170,7 +172,7 @@ class UserService:
 		
 		assert isinstance(identification,int), ValueError('Chat identification shall be an integer.')
 		refreshed = lambda *instances: all(map(lambda instance:instance.refresh(), instances))
-		return True if self.__instance and self.get_a_chat(identification) is None and (chat:=service.ChatService(id=identification)).id==identification and (participation:=service.ParticipationService()).create(participant_id=self.__instance.id,chat_id=identification) and refreshed(chat) else False
+		return True if self.__instance and (chat:=service.ChatService(id=identification)).id==identification and (not self in chat) and (participation:=service.ParticipationService()).create(participant_id=self.__instance.id,chat_id=identification) else False
 
 	def discharge_a_chat(self,identification):
 		'''
@@ -178,7 +180,7 @@ class UserService:
 		Goal: deletes a chat, where the current user is a participant.
 		Arguments: identification:int.
 		Actions: check if the current user's isinstance exists, then verify if the current user is a participant of the chat and perform the remove process using the ChatService.
-		Returns: True - If the Actions are all valid and return True , otherwise - False
+		Returns: True - If the Actions are all valid and follow the conditions , otherwise - False
 		Exceptions:
 			Raises:
 				ValueError - if the data type of the identification is not an integer.
@@ -194,15 +196,16 @@ class UserService:
 		Aimed at the MessageService.
 		Goal: stores a message istance using the MessageService .
 		Arguments: payload:a key word argument = dict : { chat_id:int , content:dict } .
-		Actions: check if the current user's isinstance exists, then verify if the current user is a participant of the chat and perform the remove process using the ChatService.
-		Returns: True - If the Actions are all valid and return True , otherwise - False
+		Actions: check if the current user's isinstance exists, verify if the current user is a participant of the chat.
+		Then create a Message instance using the MessageService and refresh the chat instance.
+		Returns: message:MessageService - If the Actions are all valid and follow the conditions , otherwise - None
 		Exceptions:
 			Raises:
-				ValueError - if the data type of the identification is not an integer.
+				ValueError - if the payload doesn't contain/follow the structure : chat_id:<int> , content:<dict>.
 		'''
 		assert len(payload)==2 and all(map(lambda key:key in payload and isinstance(payload[key],(int if key=='chat_id' else dict)) ,('chat_id','content'))), ValueError('The payload must contain keys for "chat_id":<int> , "content":<dict>.')
 		refreshed = lambda *instances: all(map(lambda instance:instance.refresh(), instances))
-		return True if self.__instance and (chat:=self.get_a_chat(payload['chat_id'])) and service.MessageService().create(chat_id=chat.id,sender_id=self.__instance.id,content=payload['content']) and refreshed(chat)  else False
+		return messsage if self.__instance and (chat:=self.get_a_chat(payload['chat_id'])) and (message:=service.MessageService().create(chat_id=chat.id,sender_id=self.__instance.id,content=payload['content'])) and refreshed(chat,self) else None
 
 
 	def remove_a_message(self,**payload):
@@ -210,8 +213,9 @@ class UserService:
 		Aimed at the MessageService.
 		Goal: removes a message from the chat, where the current user is a participant, using the MessageService.
 		Arguments: payload:a key word argument : { chat_id:int , message_id:int } .
-		Actions: check if the current user's isinstance exists, then verify if the current user is a participant of the chat and perform the remove process using the MessageService.
-		Returns: True - If the Actions are all valid and return True , otherwise - False
+		Actions: check if the current user's isinstance exists, then verify if the current user is a participant of the chat, and make sure that the message is in the chat - by using the overriden contains method of the ChatService class.
+		Finally, perform the remove process using the MessageService and for the follow up refresh the inner chat and self instance.
+		Returns: True - If the Actions are all valid and follow the conditions , otherwise - False
 		Exceptions:
 			Raises:
 				ValueError - if the data type of the identification is not an integer.
@@ -220,7 +224,7 @@ class UserService:
 		
 		refreshed = lambda *instances: all(map(lambda instance:instance.refresh(), instances))
 		
-		return True if self.__instance and (chat:=self.get_a_chat(payload['chat_id'])) and (message:=service.MessageService(id=payload['message_id'])).id and message.remove() and refreshed(chat) else False
+		return True if self.__instance and (chat:=self.get_a_chat(payload['chat_id'])) and (message:=service.MessageService(id=payload['message_id'])).id and (message in chat) and message.remove() and refreshed(chat,self) else False
 
 
 
@@ -258,15 +262,24 @@ class UserService:
 		assert any(map(lambda key: key in identification, ('id','email','username'))) , KeyError('The identification payload doesn\'t correspond to any of the unique keys or the datatype is invalid.')
 
 
-		if self.__instance and (other:=UserService(**identification)).id and (other_chat_ids:=tuple(chat.id for chat in other.chats)):
-			return tuple(filter(lambda chat: chat.id in other_chat_ids,self.chats)) if self.__instance else None
+		if self.__instance and (other:=UserService(**identification)).id:
+			return tuple(filter(lambda chat: other in chat,self.chats)) if self.__instance else None
 		return None
 
 
 	
 	def __getattr__(self,attr):
-		return ( deepcopy(value) if (value:=self.__instance.__dict__.get(attr,None)) is not None else value ) if self.__instance else None
-
+		'''
+		Goal: get the attribute from the inner instance.
+		Arguments: attr:str
+		Actions:
+			Based on the provided attr value - search the inner instance dictionary for such attribute.
+			If the value coulnd't have been found - refresh the inner instance and perform the search again, then return the value in either way.
+			Otherwise return the value
+		Returns: value(based on the attr from the inner instance) | None
+		'''
+		get = lambda attribute: deepcopy(value) if (value:=self.__instance.__dict__.get(attribute,None)) else None
+		return ( get(attr) if (value:=get(attr)) is None and self.refresh() else value ) if self.__instance else None
 
 	@property
 	def keyring(self):

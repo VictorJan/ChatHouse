@@ -25,7 +25,10 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 a{
-   text-decoration: none;
+      font-family: Segoe UI Symbol;
+    text-decoration: none;
+    color: #fd4d4d;
+  transition: .5s;
 }
 a:hover{
    color:white;

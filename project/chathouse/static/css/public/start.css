@@ -93,8 +93,9 @@ body{
 }
 
 a{
-	text-decoration: none;
-	color:inherit;
+   font-family: Segoe UI Symbol;
+    text-decoration: none;
+    color: #fd4d4d;
 	transition: .5s;
 }
 a:hover{

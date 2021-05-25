@@ -1,0 +1,14 @@
+.notification_message
+{
+	font-family: agency fb;
+    overflow-y: auto;
+    max-height: 3vh;
+    padding: 2px 40px;
+}
+.notification_block{
+
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 5fr 0fr;
+
+}
