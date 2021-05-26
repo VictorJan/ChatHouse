@@ -3,6 +3,7 @@ class Chat{
 	#id;
 	#userInstance;
 	#cipherInstance;
+	#last_timestamp;
 
 	constructor(id,userInstance){
 		//id - chat identification
@@ -11,6 +12,10 @@ class Chat{
 		return (async() => {
 			//First make sure of the types
 			this.#id=id;
+			
+			//set the last dnt/timestamp for the message prep
+			this.#last_timestamp=(Date.now()/100).toFixed()
+
 			this.#userInstance=(userInstance instanceof User) ? userInstance : null;
 			if (this.#userInstance){
 				//Get the public key of the other participant
@@ -40,13 +45,85 @@ class Chat{
 		}
 	}
 
+	async prepare_messages(sentinel){
+		if (this.#last_timestamp!=null){
+			//send the GET request to the /api/chats/<id>/messages?&amount=10&dnt=<last_timestamp>
+			//set up the query parameters
+			let amount = 10;
+			let query = `amount=${amount}&dnt=${this.#last_timestamp}`;
+			let endpoint = 'messages';
+			//intialize the chat call
+			let response = await chat_call(this.#userInstance.accessTokenInstance.raw,this.#id,`${endpoint}?${query}`);
+			let json_response;
+			//If the status is 200, then await the json
+			if (response.status == 200){
+				json_response = await response.json()
+			}
+			else{
+				//Othewise refresh the access token and try the request again.
+				//This would log the user out if the grant token has expired or is invalid.
+				this.#userInstance.refresh_access();
+				//Send the request again
+				response = await chat_call(this.#userInstance.accessTokenInstance.raw,this.#id,`${endpoint}?${query}`);
+				//If the response is still not equal to 200 -> then the accessToken is not valid/denied -> log the user out.
+				if (response.status != 200) this.#userInstance.logout();
+				//Otherwise store the json_response
+				json_response = await response.json();
+			}
+			//Having received the json data of the response -> extract all of the messages from the "messages" key.
+			//Then for each of them "receive" the clear text -> decrypting the content, and build the message.
+			//Moreover, make sure to store the last timestamp in the last_timestamp variable.
+			//However if the amount of the messages are lesser than the requested amount, set the last_timestamp to a null -> thus the client would call the api only if there are still messages to fetch.
+			let messages = json_response.data.messages;
+			
+			let sentinel_clone = sentinel.cloneNode(true);
+
+			let chat_content = sentinel.parentNode;
+
+			messages.forEach((message_object)=>{
+				//retrieve/decrypt the message
+				this.receive(message_object.content).then((decrypted)=>{
+					if (decrypted){
+						//set the message payload
+						let message_payload = {id:message_object.id,sender:message_object.sender,content:decrypted,dnt:message_object.dnt.readable};
+						//proceed to build the message block , prepending it.
+						message(message_payload,false);
+					}
+				});
+			});
+			//If the amount of the messages is less than the requested amount, set the last timestamp to a null , otherwise extract the timestamp of the last message in the list.
+			this.#last_timestamp = (messages.length<amount) ? null : messages[messages.length-1].dnt.timestamp;
+ 		}
+	}
+
 	send(message){
 		//message:str
-		//Encrypts the message with the cipher
+		//Encrypts the message with the cipherInstance
+		try{
+			let payload = {};
+			this.#cipherInstance.encrypt(message).then((encrypted)=>{
+				payload.content=encrypted;
+				chat_socket.establish_a_message(payload);
+			});
+		}
+		catch{
+			notification('Please submit proper data.');
+		}
+
 		//calls the emit call to the socket
 	}
 
-	receive(message){
+	async receive(message){
+		/*message:{iv:str,data:str}*/
+		try{
+			//Decrypt the message with the common secret CryptoKey, set up in the AES_CBC cipherInstance 
+			return await this.#cipherInstance.decrypt(message);
+		}
+		catch{
+			//Otherwise set the notification and return null
+			notification("Couldn't decrypt the message, due to the invalid payload.")
+			return null;
+		}
 
 	}
 

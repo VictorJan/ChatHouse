@@ -3,6 +3,7 @@ from chathouse.utilities.security.validation.headers import authorized
 from chathouse.socket.chat.controller.establish_a_message.template import create_a_template
 from chathouse.service import UserService
 from flask_socketio import emit,disconnect
+from datetime import datetime
 
 class Establish_a_MessageChatStrategy(Strategy):
 	'''
@@ -144,14 +145,14 @@ class Establish_a_MessageChatStrategy(Strategy):
 
 				#Step 3.2.
 				for participant in chat.participants:
-					emit('chat_activity',activity_payload(chat),namespace='/notification',to=participant.id)
+					emit('chat_activity',activity_payload(chat),namespace='/socket/notification',to=participant.id)
 			
 			#Step 3.[-]
 			else:
-				emit('error',{'message':'The message couldn\'t be established, please try again.'},namespace='/notification',to=owner.id)
+				emit('error',{'message':'The message couldn\'t be established, please try again.'},namespace='/socket/notification',to=owner.id)
 			
 		#Step 2.[-]
 		else:
-			emit('error',{'message':'Please submit a valid payload.'},namespace='/notification',to=owner.id)
+			emit('error',{'message':'Please submit a valid payload.'},namespace='/socket/notification',to=owner.id)
 		
 		return None

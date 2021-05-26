@@ -216,7 +216,33 @@ const chat_utilities = (type) =>{
 
 
 
-const message = (data) => {
-	//data is encrypted -> get the template first
-	let clone = document.querySelector("#message_tepmlate").content.cloneNode(true);
+const message = (payload,established=true) => {
+	try{
+		//payload : {sender:{id:int,username:str}, data:str, dnt:str}
+		let clone = document.querySelector("#message_template").content.cloneNode(true);
+		//set up the message id
+		clone.firstElementChild.dataset.message_id=payload.id;
+		//set up the source-source block
+		let sender = clone.querySelector("#source_link");
+		//set the dataset for the source card
+		sender.dataset.user_id=payload.sender.id;
+		//set the inner html to the username of the sender
+		sender.innerText=payload.sender.username;
+		//set the dnt of the message
+		clone.querySelector(".right_source_block").innerText=payload.dnt;
+		//inject the decrypted message
+		clone.querySelector("#message_content").innerText=payload.content;
+
+		let chat = document.querySelector(".chat_content");
+		let sentinel = chat.querySelector("#chat_sentinel");
+		let previous_height = chat.scrollHeight;
+		//Then, if the message just have been established -> append it to the chat, otherwise prepend it to the top.
+		if (established==true) chat.appendChild(clone); else chat.insertBefore(clone,sentinel.nextSibling);
+
+		if (established==false) chat.scrollTop=chat.scrollHeight;
+	}
+	catch{
+		notification("Coudn't inject the message.")
+	}
+	
 }

@@ -123,7 +123,3 @@ class MessageService:
 		assert any(map( lambda key: key in payload and isinstance(payload[key],int), ('id',))) , Exception('The identification payload doesn\'t correspond to any of the unique keys.')
 
 		return Message.query.filter_by(**payload).first()
-
-
-
-		

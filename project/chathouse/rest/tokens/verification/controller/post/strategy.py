@@ -145,4 +145,3 @@ class PostVerificationStrategy(Strategy):
 			return {'success':'True','message':'Email has been sent.'},201
 		else:
 			return {'success':'False','message':'Data is invalid.'},400
-

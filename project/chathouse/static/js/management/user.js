@@ -14,7 +14,6 @@ class User{
 				throw "Invalida dhInstance argument."
 			}
 		})();
-		console.log(this.#dhInstance,this.#accessTokenInstance);
 	}
 	
 	async #prepare_access(){
@@ -26,11 +25,11 @@ class User{
 		}
 		else{
 			//the has expired -> try to logout
-			await this.#logout();
+			await this.logout();
 		}
 	}
 
-	async #logout(){
+	async logout(){
 		let url = `${window.location.origin}/logout`;
 		fetch(url,{
 			method:'GET',
@@ -46,7 +45,6 @@ class User{
 
 	async prepare_participations(){
 		//Await for the response from the initiated GET Request to the REST at /api/users/<identification>/participations
-		console.log(this.accessTokenInstance)
 		let response = await user_call(this.#accessTokenInstance.raw,this.#accessTokenInstance.payload.user_id,'participations');
 		let json_response;
 		
@@ -58,11 +56,16 @@ class User{
 			//If the request hasn't been successful - the accessToken could have expired, so one shall get the one
 			this.#accessTokenInstance = await this.#prepare_access();
 			//Resend the request - if the response is still not a 200 , then logout. Otherwise store the json from the response and proceed to build the list.
-			if ((response = await user_call(this.#accessTokenInstance.raw,this.#accessTokenInstance.payload.user_id,'participations')).status == 200 ) json_response = await response.json(); else this.#logout(); 
+			if ((response = await user_call(this.#accessTokenInstance.raw,this.#accessTokenInstance.payload.user_id,'participations')).status == 200 ) json_response = await response.json(); else this.logout(); 
 		}
 
 		//Build the list of participations
 		list('chat',json_response.data.participations,document.querySelector('.left_layout'));
+	}
+
+	async refresh_access(){
+		this.#accessTokenInstance = await this.#prepare_access();
+		return this.#accessTokenInstance;
 	}
 	
 	get accessTokenInstance(){
@@ -73,19 +76,4 @@ class User{
 		return this.#dhInstance;
 	}
 	
-}
-
-
-async function get_logout(){
-	const url = `${window.location.origin}/logout`;
-	const response = await fetch(url,{
-		method:'GET',
-		credentials: 'same-origin'
-	});
-	return response;
-}
-
-async function logout(){
-	let logout_response = await get_logout();
-	window.location.replace(logout_response.url);
 }

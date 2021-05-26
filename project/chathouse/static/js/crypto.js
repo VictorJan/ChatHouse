@@ -133,8 +133,8 @@ class AES_CBC
 	async decrypt(encrypted){
 		//encrypted has to be a map consisting of iv and content. Convert hex values to Arrays then into Buffers.
 		if (encrypted.iv && encrypted.data){
-			//try
-			//{
+			try
+			{
 				let decrypted_buffer = await crypto.subtle.decrypt(
 					{
 						iv:hex_to_array(encrypted.iv).buffer,
@@ -145,10 +145,10 @@ class AES_CBC
 				);
 				let array=new Uint8Array(decrypted_buffer);
 				return (new TextDecoder()).decode(array);
-			//}
-			//catch{
-			//	return null;
-			//}
+			}
+			catch{
+				return null;
+			}
 		}
 	}
 }

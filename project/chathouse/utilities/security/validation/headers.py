@@ -5,7 +5,7 @@ import re
 
 def authorized(token_type,location=None):
 	'''
-	Validate authorization, relying on the JWT tokens, that could be passed to <location>=[Cookie/Authorization/<other>/None] and <token_type>=[preaccess/verification/grant/access].
+	Goal:Validate authorization, relying on the JWT tokens, that could be passed to <location>=[Cookie/Authorization/<other>/None] and <token_type>=[preaccess/verification/grant/access].
  	Verify the signature, token_type - for certain tokens take into consideration : ownership and token_version.
 
  	Chained Authorization:

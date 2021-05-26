@@ -189,7 +189,7 @@ class UserService:
 		return True if self.__instance and (chat:=self.get_a_chat(identification)) and chat.remove() else False
 		
 
-	def create_a_message(self,**payload):
+	def establish_a_message(self,**payload):
 		'''
 		Aimed at the MessageService.
 		Goal: stores a message istance using the MessageService .
@@ -202,10 +202,10 @@ class UserService:
 				ValueError - if the payload doesn't contain/follow the structure : chat_id:<int> , content:<dict>.
 		'''
 		assert len(payload)==2 and all(map(lambda key:key in payload and isinstance(payload[key],(int if key=='chat_id' else dict)) ,('chat_id','content'))), ValueError('The payload must contain keys for "chat_id":<int> , "content":<dict>.')
-		return messsage if self.__instance and (chat:=self.get_a_chat(payload['chat_id'])) and (message:=service.MessageService().create(chat_id=chat.id,sender_id=self.__instance.id,content=payload['content'])) else None
+		return message if self.__instance and (chat:=self.get_a_chat(payload['chat_id'])) and (message:=service.MessageService()).create(chat_id=chat.id,sender_id=self.__instance.id,content=payload['content']) else None
 
 
-	def remove_a_message(self,**payload):
+	def discharge_a_message(self,**payload):
 		'''
 		Aimed at the MessageService.
 		Goal: removes a message from the chat, where the current user is a participant, using the MessageService.

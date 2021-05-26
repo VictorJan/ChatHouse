@@ -120,7 +120,7 @@ class GetIdentifiedChatMessagesStrategy(Strategy):
 
 		message_payload = lambda message: {'id':message.id, 'content':message.content, 'dnt':{'timestamp':int(datetime.timestamp(message.dnt)), 'readable':str(message.dnt.time()) }, 'sender':sender_payload(message.sender)}
 		
-		messages_payload = lambda messages: [ message_payload(participant) for message in messages ] if messages else []
+		messages_payload = lambda messages: [ message_payload(message) for message in messages ] if messages else []
 		
 		data_payload = lambda chat: {\
 		'id':chat.id,\
