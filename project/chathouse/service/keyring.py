@@ -51,6 +51,19 @@ class KeyringService:
 				return False
 		return False
 
+	def refresh(self):
+		'''
+		Goal: refreshes state of the inner instance.
+		Returns:True if the inner instance exists and there hasn't been any exceptions Otherwise False. 
+		'''
+		if self.__instance:
+			try:
+				db.session.refresh(self.__instance)
+				return True
+			except:
+				pass
+		return False
+
 
 	def __getattr__(self,attr):
 		'''

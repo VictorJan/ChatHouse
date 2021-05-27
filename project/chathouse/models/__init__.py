@@ -1,6 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
-import datetime,time
+from datetime import datetime
+from time import time
+
 
 metadata = MetaData( naming_convention = {
     "ix": 'ix_%(column_0_label)s',
@@ -33,8 +35,8 @@ class Chat(db.Model):
 	id=db.Column(db.Integer,primary_key=True)
 	creator_id=db.Column(db.Integer,db.ForeignKey('user.id'),nullable=False)
 	name=db.Column(db.String,nullable=False)
-	creation_dnt=db.Column(db.DateTime,default=lambda:datetime.datetime.fromtimestamp(time.time()))
-	activity_dnt=db.Column(db.DateTime,default=lambda:datetime.datetime.fromtimestamp(time.time()))
+	creation_dnt=db.Column(db.DateTime,default=lambda:datetime.fromtimestamp(int(time())))
+	activity_dnt=db.Column(db.DateTime,default=lambda:datetime.fromtimestamp(int(time())))
 
 	messages=db.relationship('Message',backref='chat',cascade='all,delete',lazy='dynamic')
 	participations=db.relationship('Participation',backref='chat',cascade='all,delete',lazy='dynamic')
@@ -45,7 +47,7 @@ class Message(db.Model):
 	sender_id=db.Column(db.Integer,db.ForeignKey('user.id'),nullable=False)
 	chat_id=db.Column(db.Integer,db.ForeignKey('chat.id'),nullable=False)
 	content=db.Column(db.PickleType,nullable=False)
-	dnt=db.Column(db.DateTime,default=lambda:datetime.datetime.fromtimestamp(int(time.time())))
+	dnt=db.Column(db.DateTime,default=lambda:datetime.fromtimestamp(int(time())))
 
 class Participation(db.Model):
 	id=db.Column(db.Integer,primary_key=True)
@@ -59,7 +61,7 @@ class Keyring(db.Model):
 	owner_id=db.Column(db.Integer,db.ForeignKey('user.id'),nullable=False)
 	public_key=db.Column(db.Integer,nullable=False)
 	private_key=db.Column(db.PickleType,nullable=False)
-	dnt=db.Column(db.DateTime,default=lambda:datetime.datetime.fromtimestamp(int(time.time())))
+	dnt=db.Column(db.DateTime,default=lambda:datetime.fromtimestamp(int(time())))
 
 
 

@@ -1,5 +1,7 @@
 from chathouse.models import db,Message
 import chathouse.service as service
+from datetime import datetime
+from time import time
 from copy import deepcopy
 
 class MessageService:
@@ -55,7 +57,7 @@ class MessageService:
 		if self.__instance:
 			try:
 				
-				self.__instance.chat.activity_dnt=self.__instance.dnt
+				self.__instance.chat.activity_dnt=datetime.fromtimestamp(time())
 
 				db.session.delete(self.__instance)
 

@@ -9,6 +9,6 @@
 
     display: grid;
     grid-auto-flow: column;
-    grid-auto-columns: 5fr 0fr;
-
+    grid-auto-columns: 5fr 0fr 0fr;
+    grid-column-gap: 10px;
 }

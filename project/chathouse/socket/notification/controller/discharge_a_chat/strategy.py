@@ -23,7 +23,7 @@ class Discharge_a_ChatNotificationStrategy(Strategy):
 	@authorized(token_type='access',location='Authorization')
 	def accept(self,headers,data,**kwargs):
 		'''
-		Goal : establish/create a chat instance and join the chat on the behalf of the requester and the other participant, if provided.
+		Goal : as a participant of a chat - discharge/remove/delete the provided chat - thus clearing all of the related messages and participations.
 
 		Arguments:headers:dict, data:dict, kwargs:key-word-argument.
 

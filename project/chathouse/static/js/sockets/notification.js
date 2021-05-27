@@ -15,7 +15,8 @@ class NotificationSocket{
 				this.#token=token;
 				//Change the Authorization headers, injecting a new access token
 				this.#socket.io.opts["extraHeaders"]["Authorization"]=`Bearer ${token.raw}`;
-				this.#socket.connect();
+				//If reconnection hasn't been successful - the access token could be invalid or inappropriate according to a chat - thus refresh the page.
+				if (this.#socket.connect().connected != true) window.location = window.location.href;
 			});
 		});
 
@@ -32,6 +33,10 @@ class NotificationSocket{
 
 				let fresh_chat = source_block('chat',data);
 				list_body.prepend(fresh_chat);
+
+				//Add and remove ,after 250 ms, an activity class to the block - for the visual appeal
+				list_body.firstElementChild.classList.add("activity");
+				new Promise( resolve=> setTimeout(resolve,250)).then(()=>{ list_body.firstElementChild.classList.remove("activity"); })
 			}
 			
 		});
@@ -44,6 +49,10 @@ class NotificationSocket{
 				//update the chat list by prepending the newly established chat
 				let established_block = source_block('chat',data);
 				list_body.prepend(established_block);
+
+				//Add and remove ,after 250 ms, an activity class to the block - for the visual appeal
+				list_body.firstElementChild.classList.add("activity");
+				new Promise( resolve=> setTimeout(resolve,250)).then(()=>{ list_body.firstElementChild.classList.remove("activity"); })
 			}
 		});
 

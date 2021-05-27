@@ -14,7 +14,6 @@ let userInstance;
 let notification_socket;
 let chat_socket;
 
-let observer;
 
 dh_keyring_promise.then((dhInstance)=>{
 
@@ -36,9 +35,7 @@ dh_keyring_promise.then((dhInstance)=>{
 				//Set the utilities to the idle state.
 				chat_utilities('idle');
 				//create an observer
-				console.log()
-				chat_observer = create_observer();
-				
+				create_observer();
 			});
 		}
 	});

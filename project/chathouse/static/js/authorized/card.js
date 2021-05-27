@@ -2,7 +2,7 @@ async function source_card_controller(e){
 	//Verify if there is a access_token_promise and the target contains a dataset
 	if ( (typeof userInstance !== "undefined") && ((dataset=e.target.dataset)) ) {
 		//Get the identification from dataset: if there is a user_id return an object of {user_id:<value>} otherwise return the {chat_id:<value>}, if in both cases the values are none - following steps will be ignored
-		let identification = (dataset.user_id) ? {'user':dataset.user_id} : {'chat':dataset.chat_id};
+		let identification = (dataset.user_id || dataset.participant_id) ? {'user':(dataset.user_id)?dataset.user_id:dataset.participant_id} : {'chat':dataset.chat_id};
 		
 		let token = userInstance.accessTokenInstance;
 		let response,json_response;

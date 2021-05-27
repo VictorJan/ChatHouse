@@ -1,4 +1,4 @@
-async function create_observer(){
+function create_observer(){
 	let sentinel = document.querySelector("#chat_sentinel");
 	let chat_observer = new IntersectionObserver( entries => {
 		//If sentinel is intersecting
@@ -10,5 +10,4 @@ async function create_observer(){
 		}
 	});
 	if (sentinel) chat_observer.observe(sentinel);
-	return chat_observer;
 }

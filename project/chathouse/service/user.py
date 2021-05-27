@@ -217,7 +217,7 @@ class UserService:
 			Raises:
 				ValueError - if the data type of the identification is not an integer.
 		'''
-		assert len(payload)==2 and all(map(lambda key:key in payload and isinstance(payload[key],int) ,('chat_id','message_id'))), ValueError('The payload must contain keys for "chat_id":<int> , "message_id":<dict>.')
+		assert len(payload)==2 and all(map(lambda key:key in payload and isinstance(payload[key],int) ,('chat_id','message_id'))), ValueError('The payload must contain keys for "chat_id":<int> , "message_id":<int>.')
 		
 		return True if self.__instance and (chat:=self.get_a_chat(payload['chat_id'])) and (message:=service.MessageService(id=payload['message_id'])).id and (message in chat) and message.remove() else False
 

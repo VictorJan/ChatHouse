@@ -56,6 +56,15 @@ async function establish_message_controller(e){
 	}
 }
 
+async function discharge_message_controller(e){
+	let up_for_discharge = Array.from(new Set(e.target.dataset.message_id.split(',').map((message)=>Number(message))));
+	if (up_for_discharge.length>0) chatInstance.remove(up_for_discharge); chat_utilities('idle');
+}
+
+async function clear_invalid_controller(e){
+	chatInstance.sanitize();
+}
+
 async function cancel_discharge_message_controller(e){
 	let utilities = e.target.parentNode;
 	let delete_button;
@@ -69,6 +78,7 @@ async function cancel_discharge_message_controller(e){
 		chat_utilities('idle');
 	}
 }
+
 
 
 
@@ -95,14 +105,4 @@ async function head_controller(e){
 
 async function logout_controller(e){
 	await userInstance.logout();
-}
-
-
-async function prepare_messages(token_object,identification){
-	//Send the GET request to the API to get the last few messages
-	let response = await chat_call(token_object.raw,identification,'messages?amount=asdsa');
-	if (response.status==200){
-		let json_response = await response.json();
-		console.log(json_response);
-	}
 }

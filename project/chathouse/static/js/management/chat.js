@@ -4,6 +4,7 @@ class Chat{
 	#userInstance;
 	#cipherInstance;
 	#last_timestamp;
+	#invalid;
 
 	constructor(id,userInstance){
 		//id - chat identification
@@ -12,7 +13,8 @@ class Chat{
 		return (async() => {
 			//First make sure of the types
 			this.#id=id;
-			
+			//Set up a variable to store current incorrectly encrypted/stored messages
+			this.#invalid=[]
 			//set the last dnt/timestamp for the message prep
 			this.#last_timestamp=(Date.now()/100).toFixed()
 
@@ -62,7 +64,7 @@ class Chat{
 			else{
 				//Othewise refresh the access token and try the request again.
 				//This would log the user out if the grant token has expired or is invalid.
-				this.#userInstance.refresh_access();
+				await this.#userInstance.refresh_access();
 				//Send the request again
 				response = await chat_call(this.#userInstance.accessTokenInstance.raw,this.#id,`${endpoint}?${query}`);
 				//If the response is still not equal to 200 -> then the accessToken is not valid/denied -> log the user out.
@@ -88,6 +90,12 @@ class Chat{
 						let message_payload = {id:message_object.id,sender:message_object.sender,content:decrypted,dnt:message_object.dnt.readable};
 						//proceed to build the message block , prepending it.
 						message(message_payload,false);
+					}
+					else{
+						//notify the user about the integrity alert.
+						if(!document.querySelector("#clear_invalid_button")) notification("Some messages couldn't be decrypted, due to invalid payload. These messages won't be displayed - do you wish to clear them?",true)
+						//Store the invalid messages.
+						this.#invalid.push(message_object.id)
 					}
 				});
 			});
@@ -122,9 +130,22 @@ class Chat{
 		catch{
 			//Otherwise set the notification and return null
 			notification("Couldn't decrypt the message, due to the invalid payload.")
-			return null;
+			return await null;
 		}
 
+	}
+
+	remove(messages){
+		if (messages instanceof Array){
+			chat_socket.discharge_messages({messages:messages})
+		}
+	}
+
+	sanitize(){
+		//sanitizes/clears the chat from the messages with invalid payloads
+		//call remove 
+		if (this.#invalid && this.#invalid.length>0) this.remove(this.#invalid);
+		this.#invalid=null;
 	}
 
 }

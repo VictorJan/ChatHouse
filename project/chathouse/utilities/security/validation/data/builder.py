@@ -19,7 +19,7 @@ class TemplateBuilder(Builder):
 		self.__reset()
 
 	def add(self,field):
-		assert isinstance(field,Field)
+		assert isinstance(field,Field),ValueError('The field argument shall be an instance of the Field class')
 		self.__template.add(field)
 		return None
 

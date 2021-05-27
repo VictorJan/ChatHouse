@@ -43,3 +43,9 @@
     place-content: center;
     grid-template-columns: none;
 }
+
+.activity{
+	transition: .5s;
+	box-shadow: #fd4d4d 0px 0px 10px;
+	border-radius: 5px;
+}
