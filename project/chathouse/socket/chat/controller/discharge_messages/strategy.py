@@ -16,7 +16,7 @@ class Discharge_MessagesChatStrategy(Strategy):
 				headers with the help of authorized decorator. 
 				data with the help of a Template instance.
 			response:
-				based on the validation come up with a respected response.
+				based on the validation come up with a respective response.
 	'''
 
 	@authorized(token_type='access',location='Authorization')
@@ -27,7 +27,7 @@ class Discharge_MessagesChatStrategy(Strategy):
 		Arguments:headers:dict, data:dict, kwargs:key-word-argument.
 
 			headers : meant to contain all headers data , in this particular case - an Authorization field as a sign of authority, must contain a "Bearer <token> , which is the access_token:
-				access_token={user_id:int, token_type: "access":str, token_version:int , dnt:float}
+				access_token={user_id:int, token_type: "access":str, activity:int , dnt:float}
 			Note:
 				This argument is used in the authorized decorator - to perform proper authorization process, the result of which is stored in the kwargs.
 				To know more about the authorized decorator - view a separate documentation for the authorized method in the chathouse/utilities/security/validation/headers.py.
@@ -72,7 +72,7 @@ class Discharge_MessagesChatStrategy(Strategy):
 				Goal: set a generator of successfully discharged messages.
 				Arguments: service:UserService, chat_identification:int, identifications:list of int_s
 				Actions:
-					Iterate through the messsage identifications , and for each of them execute a method to remove the message, providing the chat identification and the respected message id.
+					Iterate through the messsage identifications , and for each of them execute a method to remove the message, providing the chat identification and the respective message id.
 					If the discharge has been successful - return the identification of the removed message.
 				Returns: generator
 

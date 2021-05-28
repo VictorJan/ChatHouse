@@ -36,7 +36,7 @@ class Field:
 	def validate(self,data):
 		'''
 		Goal: perform the validation for the initialized Field.
-		Arguments: data:the datatype is expected to suite the respected requirements.
+		Arguments: data:the datatype is expected to suite the respective requirements.
 		Actions:
 			Go through each of the implemented requirements and if any of them have been intialized - verify according to the requirement.
 			If at any point the verification has been unsuccessful - the validation shall return False
@@ -96,7 +96,7 @@ class Field:
 		Actions: Using recursion get each proposed nested required key and a required data type / content , and validate it against the Proper structure.
 			search:
 				If the required payload is a dictionary and everything seems to be valid ->:
-					Pop an item pair from the required payload : a (current) required key , a (current) required content , store it in a requirement tuple with respected indexes. 
+					Pop an item pair from the required payload : a (current) required key , a (current) required content , store it in a requirement tuple with respective indexes. 
 					If there is no required key is not a string or the datatype of the required datatype/content is neither a type or a dictionary , return False.
 					Otherwise a datatype of the key and the nested requirement seems to be valid ,so resume with the next steps:
 						If there is more nested required data - the required content is a dictionary itself - perform the search deeper , by validating the required content , or requirement[1].

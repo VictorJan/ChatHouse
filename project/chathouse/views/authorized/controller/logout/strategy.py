@@ -15,7 +15,7 @@ class LogoutStrategy(Strategy):
 			validation:
 				headers with the help of authorized decorator. 
 			response:
-				based on the validation come up with a respected response.
+				based on the validation come up with a respective response.
 	'''
 
 	@authorized(token_type='grant',location='Cookie')
@@ -75,8 +75,10 @@ class LogoutStrategy(Strategy):
 		assert all(map(lambda argument: isinstance(argument,dict),(headers,data))), TypeError('Arguments , such as : headers and data - must be dictionaries')
 
 		#Step 0.
-		status_code = 303 if (not kwargs['authorization']['grant']['valid'] or (owner:=kwargs['authorization']['grant']['owner']) is None) else 302
+		#Step 1.
+		status_code = 303 if (not kwargs['authorization']['grant']['valid'] or (owner:=kwargs['authorization']['grant']['owner']) is None or not owner.update_activity() ) else 302
 		response=make_response(redirect(url_for('public.start'),code=302))
+		#Step 2.
 		response.delete_cookie('grant_token')
 		
 		return response

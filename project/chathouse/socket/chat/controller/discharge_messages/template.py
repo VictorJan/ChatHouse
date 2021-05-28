@@ -5,7 +5,7 @@ from chathouse.utilities.security.validation.data.field import Field
 def create_a_template():
 
 	'''
-	Goal: create a template for validating data , depending on th initial event, aimed at the /chat [discharge_messages].
+	Goal: create a template for validating data , depending on the initial event, aimed at the /chat [discharge_messages].
 
 	Actions:
 		Using the TemplateBuilder class - create an instance of Discharge_MessagesTemplateBuilder.

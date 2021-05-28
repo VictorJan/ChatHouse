@@ -22,7 +22,7 @@ class MailService:
 
 		items = ( ('recipients',(list,tuple)) , ('body',str) , ('subject',str))
 
-		assert all(map(lambda item: (value:=payload.get(item[0]),None) is not None and isinstance(value,item[1]) ,items)) , ValueError('Invalid payload. The payload shall contain key with respected data types as such - recipients:list|tuple , body:str , subject:str.')
+		assert all(map(lambda item: (value:=payload.get(item[0]),None) is not None and isinstance(value,item[1]) ,items)) , ValueError('Invalid payload. The payload shall contain key with respective data types as such - recipients:list|tuple , body:str , subject:str.')
 		assert (app:=payload.pop('app',None)) is not None and hasattr(app,'app_context'), ValueError('The "app" agrument shall be present and contain a context attribute.')
 
 		try:

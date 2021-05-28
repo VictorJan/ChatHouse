@@ -77,13 +77,15 @@
 	font-weight: bolder;
 }
 .card_utilities{
-	display:grid;
-	padding: 10px;
-	grid-auto-flow:column;
-	justify-items: center;
-	grid-column-gap: 1px;
-	background-color: #292929;
-	border-radius: 0px 0px 20px 20px;
+	grid-gap: 10px;
+    display: grid;
+    padding: 10px;
+    justify-items: center;
+    grid-template:
+        "a b"
+        "c d";
+    background-color: #292929;
+    border-radius: 0px 0px 20px 20px;
 }
 
 .card_links{

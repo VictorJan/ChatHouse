@@ -15,6 +15,6 @@ class SignUpStrategy(Strategy):
 		response=make_response(render_template('/public/auth.html',route="signup"))
 		
 		if not (valid:=kwargs['authorization']['preaccess']['valid']) or kwargs['authorization']['preaccess']['token']['object']['route']!='signup' :
-			response.set_cookie('preaccess_token',Token(payload_data={'route':'signup','token_type':'preaccess','exp':{'minutes':30}}).value,httponly=True,samesite='Strict')
+			response.set_cookie('preaccess_token',Token(payload_data={'route':'signup','token_type':'preaccess','exp':current_app.config['PREACCESS_EXP']}).value,httponly=True,samesite='Strict')
 		
 		return response

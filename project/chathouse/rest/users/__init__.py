@@ -8,7 +8,7 @@ from chathouse.rest.users.controller.get import GetUsersController
 from flask_restful import Resource,request
 
 
-from chathouse.rest.users.identified import IdentifiedUserResource,IdentifiedUserParticipationsResource
+from chathouse.rest.users.identified import IdentifiedUserResource,IdentifiedUserParticipationsResource,IdentifiedUserKeyringResource
 
 class UsersResource(Resource):
 	'''

@@ -4,6 +4,7 @@ from chathouse.rest.tokens.grant.controller.post.template import create_a_templa
 from chathouse.utilities.security.token import Token
 from chathouse.service import UserService,KeyringService
 from flask import current_app
+from datetime import datetime
 
 class PostGrantStrategy(Strategy):
 	'''
@@ -17,7 +18,7 @@ class PostGrantStrategy(Strategy):
 			validation:
 				headers with the help of authorized decorator; data with the help of certain GrantTemplate. 
 			response:
-				based on the validation come up with a respected response.
+				based on the validation come up with a respective response.
 	'''
 
 	@authorized(token_type='verification',location='Authorization')
@@ -28,7 +29,7 @@ class PostGrantStrategy(Strategy):
 		Arguments:headers:dict, data:dict, kwargs:key-word-argument.
 
 			headers : meant to contain all headers data , in this particular case - an Authorization field as a sign of authority, must contain a Bearer token , which is the verification_token:
-				{identification_data:<identification_data>,token_type:"verification",dnt,preaccess:<preaccess_token>}.
+				{identification_data:<identification_data>,token_type:"verification",activity:int,dnt:float,preaccess:<preaccess_token>}.
 			Note:
 				This argument is used in the authorized decorator - to perform proper authorization process, the result of which is stored in the kwargs.
 				To know more about the authorized decorator - view a separate documentation for the authorized method in the chathouse/utilities/security/validation/headers.py.
@@ -78,7 +79,7 @@ class PostGrantStrategy(Strategy):
 	  			Otherwise resume with the next steps.
   			2.Having validated the preaccess , extract the route value and create a proper template.
   			3.Verify that the data is a dictionary an proceed to validate the data against the proper template.
-  			4.Resolove the appropriate user_service object (/w existing or non existing inner instance of the user) , using the resolve function , which returns a UserService|None, based on the route and <identification_data> 
+  			4.Resolve the appropriate user_service object (/w existing or non existing inner instance of the user) , using the resolve function , which returns a UserService|None, based on the route and <identification_data> 
   			
   			4.If the user_service has been resolved:
   				Then according to the route:
@@ -96,13 +97,19 @@ class PostGrantStrategy(Strategy):
   			5.L.1.
   				Otherwise if the route is login and user_service.login( established payload) has been successful:
   					Generate a grant_token, retrieve a private key from the keyring and DH parameters => inject them into the response, and respond with a 200.
-  					At this point the token_version has been incremented to avoid the usage of previously generated valid tokens.
+  					At this point the activity_dnt has been upgraded to avoid the usage of previously generated valid tokens.
   				Otherwise:
   					Respond with 401, message:"Invalid authentication data".
   			Otherwise:
   				Respond accordingly with 400, 'Invalid payload data'
 	   
 	   	Lambda functions:
+
+	   		activity_state:
+ 	 			Goal: convert provided activity datetime - into a timestamped value -> the activity state.
+ 	 			Arguments: dnt:datetime.
+ 	 			Returns: timestamp value:int of the provided datetime ~> activity_dnt , if the dnt is instance of datetime , otherwise 0.
+
 	   		map_cases: 
 	   			Goal:create a map object of iterated UserService instances for email and username cases. Iteration itself checks if the isntance has an id -> returns the UserService case if instance has an id else None.
 	   			Arguments: data:key word argument.
@@ -111,11 +118,11 @@ class PostGrantStrategy(Strategy):
 	   		resolve:
 	   			Goal: resolve email based on the identification data , by verify if the such data is appropriate according to a certain route.
 	   			If the route is signup:
-	   				Get respected map_cases, then :
+	   				Get respective map_cases, then :
 	   					If not even one case (not any function) is valid return then return a UserService instance with empty inner instance of the user.
 	   					Otherwise return None
 				Otherwise:
-					Get respected map_cases, then convert cases into a tuple:
+					Get respective map_cases, then convert cases into a tuple:
 						If any case isn't None - then return next element of the filtered cases , where every case must not be a None - thus returning an email.
 						Otherwise return None.
 				Returns: str|None , str - represents an email value.
@@ -134,7 +141,6 @@ class PostGrantStrategy(Strategy):
 						}
 					}
 
-
 			proper_payload:
 				Goal: construct a proper payload based on the incoming_route value and incoming_data.
 				Arguments: incoming_route:str,incoming_data:dict.
@@ -148,8 +154,14 @@ class PostGrantStrategy(Strategy):
 						return incoming_data.
 				Returns: a dictionary.
 
+			token_payload:
+				Goal: construct a proper payload_data for the Token, based on the provided service instance.
+				Arguments: service:UserService instance.
+				Returns: an empty dictionary if the service instance has no inner instance/state, otherwise poceed to create a dictionary of:
+				user_id:int(user's id), token_type:str('grant'), activity:int(activity_state of the UserService), exp:dict(configured expiration value for the grant_token - 30 minutes)
+
 		Generation:
-  			grant_token={user_id: value:int, token_type: "grant":str, token_version: UserService(id=value of user_id).token_version , dnt:float}
+  			grant_token={user_id: value:int, token_type: "grant":str, activity: timestamp of UserService(id=value of user_id).activity_dnt , dnt:float}
  
 		Returns:
 			If either verification token or preaccess token(from the verification token) is invalid or the preaccess token has no route value.
@@ -179,6 +191,8 @@ class PostGrantStrategy(Strategy):
 		assert all(map(lambda parameter: isinstance(parameter,int) ,current_app.config.get('DH_PARAMETERS',(None,)))), ValueError('Configuration of the current app must contain domain Diffie Hellman parameters.')
 
 		#Lambda functions:
+		activity_state = lambda dnt: int(datetime.timestamp(dnt)) if isinstance(dnt,datetime) else None
+
 		find_case = lambda cases: next(iter(tupled)) if (tupled:=tuple(filter(lambda case: case is not None,cases))) else None
 
 		map_cases = lambda **credentials: map(lambda identification: case if (case:=UserService(**{identification:credentials[identification]})).id else None,credentials)
@@ -195,6 +209,13 @@ class PostGrantStrategy(Strategy):
 			 	**incoming_data\
 			 }\
 			 } if incoming_route=='signup' else incoming_data
+
+
+		token_payload = lambda service: {'user_id':service.id,\
+		'token_type':'grant',\
+		'activity':activity_state(service.activity_dnt),\
+		'exp':current_app.config['GRANT_EXP']}\
+		if getattr(service,'id',None) is not None else {}
 
 
 		#Step 0.
@@ -219,7 +240,7 @@ class PostGrantStrategy(Strategy):
 				if user_service.signup(**(su_payload:=proper_payload(data,route))):
 				
 					return {'success':'True',\
-					'grant_token':Token(payload_data={'user_id':user_service.id,'token_type':'grant','token_version':user_service.token_version,'exp':{'minutes':30}}).value\
+					'grant_token':Token(payload_data=token_payload(user_service)).value\
 					},201
 
 				else:
@@ -230,7 +251,7 @@ class PostGrantStrategy(Strategy):
 		#Step 5.L.1
 			elif route=='login' and user_service.login(**proper_payload(data,route)):
 				return {'success':'True',\
-				'grant_token':Token(payload_data={'user_id':user_service.id,'token_type':'grant','token_version':user_service.token_version,'exp':{'minutes':30}}).value,\
+				'grant_token':Token(payload_data=token_payload(user_service)).value,\
 				'keyring':{ 'raw':{'private_key':user_service.keyring.private_key}, **dict(zip('gm',current_app.config['DH_PARAMETERS'])) }
 				},201
 			

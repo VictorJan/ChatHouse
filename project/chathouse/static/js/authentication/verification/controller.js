@@ -87,7 +87,7 @@ async function authorized_view_call(token){
 	
 	const response = await fetch(url,{
 		method:'GET',
-		credentials: 'same-origin',
+		credentials: 'include',
 		headers: headers_field
 	});
 	return response;

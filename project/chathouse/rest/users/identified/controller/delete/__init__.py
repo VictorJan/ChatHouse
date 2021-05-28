@@ -1,4 +1,4 @@
-from chathouse.rest.users.identified.controller.get.strategy import GetIdentifiedUserStrategy
+from chathouse.rest.users.identified.controller.delete.strategy import DeleteIdentifiedUserStrategy
 from chathouse.utilities.security.controller_strategy.controller import Controller
 
 '''
@@ -11,4 +11,4 @@ In this case the Controller is the - [Delete][IdentifiedUser]Controller.
 [Delete] - method DELETE.
 [IdentifiedUser] - REST endpoint - /users/<identification>.
 '''
-DeleteIdentifiedUserController=Controller(GetIdentifiedUserStrategy())
+DeleteIdentifiedUserController=Controller(DeleteIdentifiedUserStrategy())

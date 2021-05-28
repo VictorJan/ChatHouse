@@ -23,7 +23,7 @@ class User(db.Model):
 	name=db.Column(db.String(25),nullable=False)
 	password=db.Column(db.String(64),nullable=False)
 	about=db.Column(db.String,nullable=False)
-	token_version=db.Column(db.Integer,default=1,nullable=False)
+	activity_dnt=db.Column(db.DateTime,default=lambda:datetime.fromtimestamp(int(time())))
 
 	keyring=db.relationship('Keyring',backref='owner',cascade='all,delete',lazy=True,uselist=False)
 	participations=db.relationship('Participation',backref='participant',cascade='all,delete', lazy='dynamic')

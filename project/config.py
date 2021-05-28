@@ -18,6 +18,12 @@ class Config:
 	STATIC_KEY=os.environ.get('STATIC_KEY','')
 	DH_PARAMETERS=int(os.environ.get('DH_GENERATOR',2)),int(os.environ.get('DH_MODULUS',11))
 
+	PREACCESS_EXP={'minutes':30}
+	VERIFICATION_EXP={'minutes':2}
+	GRANT_EXP={'minutes':30}
+	ACCESS_EXP={'minutes':10}
+	CONFIRMATION_EXP={'minutes':3}
+
 class DevelopmentConfig(Config):
 	DEBUG=True
 	SQLALCHEMY_TRACK_MODIFICATIONS = False

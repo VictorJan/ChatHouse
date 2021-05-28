@@ -14,7 +14,7 @@ class GetIdentifiedUserParticipationsStrategy(Strategy):
 			validation:
 				headers with the help of authorized decorator. 
 			response:
-				based on the validation come up with a respected response.
+				based on the validation come up with a respective response.
 	'''
 
 	@authorized(token_type='access',location='Authorization')
@@ -25,7 +25,7 @@ class GetIdentifiedUserParticipationsStrategy(Strategy):
 		Arguments:headers:dict, data:dict, kwargs:key-word-argument.
 
 		headers : meant to contain all headers data , in this particular case - an Authorization field as a sign of authority, must contain a "Bearer <token> , which is the access_token:
-			access_token={user_id:int, token_type: "access":str, token_version:int , dnt:float}
+			access_token={user_id:int, token_type: "access":str, activity:int , dnt:float}
 		Note:
 			This argument is used in the authorized decorator - to perform proper authorization process, the result of which is stored in the kwargs.
 			To know more about the authorized decorator - view a separate documentation for the authorized method in the chathouse/utilities/security/validation/headers.py.

@@ -1,6 +1,8 @@
-from chathouse.models import db,User,Keyring,Chat,Participation
+from chathouse.models import db,User,Keyring,Chat,Participation,Message
 import chathouse.service as service
 from copy import deepcopy
+from datetime import datetime
+from time import time
 
 class UserService:
 	'''
@@ -12,21 +14,27 @@ class UserService:
 		'''
 		self.__instance=self.__identify(**identification) if identification else None
 
-	def remove(self):
+	def remove(self,password=None):
 		'''
 		Goal: remove the current instance of the User class.
+		Arguments:password:None|str.
+		Actions:
+			If the inner instance exists, and if the password has been provided -> verify the relation between the current and provided passwords. If equal proceed to delete the instance, thus removing each related instance.
+			Otherwise if the password wasn't provided -> proceed to delete the instance in either way.
 		Returns: True/False:bool.
 		Exceptions:
+			TyperError - if the password is provided and the data type of which is not a string.
 			In case of an arising exception , related to delete method, perform the session rollback.
 		'''
-		if self.__instance:
+		assert isinstance(password,str) if password is not None else True, TypeError('If submited, data type of the password argument shall be a string.')
+		
+		if self.__instance and (self.__instance.password==password if password is not None else True):
 			try:
 				db.session.delete(self.__instance)
 				db.session.commit()
 				return True
 			except:
 				db.session.rollback()
-				return False
 		return False
 
 	def refresh(self):
@@ -118,13 +126,13 @@ class UserService:
 		
 		Actions:
 			Verify existance of the instance in the database.
-			Check if the provided password matches the one in the database, incriment the token_version value : return True.
-			Otherwise : rollback the session for the update of the token_ and remove all of the instances : return False
+			Check if the provided password matches the one in the database, an upgrade of the activity state has been successful : return True.
+			Otherwise : return False
 
 		Returns: True/False : bool.
 
 		Exceptions:
-			Exception - raised when the provided payload doesn't consist of one necessary key.
+			ValueError - raised when the provided payload doesn't consist of one necessary key.
 			TypeError - raised when the payload doesn't contain required keys or the values are not of dictionary type.
 			In case of an arising exception , related to the incorrect payload , perform the session rollback.
 		'''
@@ -132,16 +140,72 @@ class UserService:
 		assert len(payload)==1 and payload.get('password'), ValueError('The login requires the payload to consist of only one key - "password".')
 		assert isinstance(payload.get('password',None),str) , TyperError('The payload must contain a password key, the value of which must be a string.')
 
-		if self.__instance is not None and self.__instance.password==payload['password']:
+		return True if self.__instance is not None and self.__instance.password==payload['password'] and self.update_activity() else False
+
+	def reset_password(self,**payload):
+		'''
+		Goal: perform a password reset, based on the provided payload.
+
+		Arguments: password - a dictionary key word argument , which shall consist of next 
+		Excpecting: {
+			password:{
+				current:str (already hashed),
+				new:str (already hashed)
+			}
+			private_key:{iv:str,data:str}
+		}
+		
+		Actions:
+			Verify existance of the instance in the database.
+			If the provided current password matches the one in the database, t an upgrade of the activity state has been successful, proceed to set new values for the password and the private_keyring.
+			Otherwise : rollback the session and proceed to return False
+
+		Returns: True/False : bool.
+
+		Exceptions:
+			KeyError - raised when the provided payload doesn't consist of two keys.
+			ValueErrors - raised when the each nested payload doesn't contain required keys or the values are not of excepted types.
+			In case of an arising exception , related to the incorrect assignment , perform the session rollback.
+		'''
+
+		assert len(payload)==2, KeyError('The reset requires the payload to consist of only two keys.')
+		assert all(map(lambda key: (value:=payload.get(key,None)) is not None and isinstance(value,dict),('password','private_key'))), ValueError('Payload shall contain keys: password:dict and private_key:dict.')
+		assert all(map(lambda key: (value:=payload['password'].get(key,None)) is not None and isinstance(value,str),('current','new'))), ValueError('Password shall contain keys: current:str and new:str.')
+		assert all(map(lambda key: (value:=payload['private_key'].get(key,None)) is not None and isinstance(value,str),('iv','data'))), ValueError('Private_key shall contain keys: iv:str and data:str.')
+		
+
+		if self.__instance is not None and self.__instance.password==payload['password']['current'] and self.update_activity():
 			try:
-				self.__instance.token_version+=1
+				self.__instance.password=payload['password']['new']
+				self.__instance.keyring.private_key=payload['private_key']
 				db.session.commit()
-				db.session.refresh(self.__instance)
 				return True
 			except:
 				db.session.rollback()
 		return False
 
+
+	def update_activity(self):
+		'''
+		Goal: update the current state of the activity_dnt value.
+		[Note this state is related to the security of the tokens , if you wish to learn more about this - view the /utilities/security/validation/headers.py]
+		Returns: True if the current inner instance exists , otherwise False. 
+		Exceptions:
+			In case of an arising exception , related to the database , perform the session rollback.
+		'''
+		if self.__instance:
+			
+			try:
+				self.__instance.activity_dnt=datetime.fromtimestamp(int(time()))
+		
+				db.session.commit()
+		
+				return True
+			
+			except:
+				db.session.rollback()
+		
+		return False
 
 
 	def establish_a_chat(self,name):

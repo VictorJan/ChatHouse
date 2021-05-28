@@ -9,7 +9,7 @@ def asynchronous(plea):
 	Actions:
 		prepare:
 			0.Get the app object using the current_app instance. Set an appropriate key for the current app object  - 'app'.
-			1.Then start a new thread providing the inital plea/request/funtion/method and respected arguments,key word arguments.
+			1.Then start a new thread providing the inital plea/request/funtion/method and respective arguments,key word arguments.
 	Raises:
 		KeyError - If the key word argument contains an app key.
 	Returns: prepare -> None.

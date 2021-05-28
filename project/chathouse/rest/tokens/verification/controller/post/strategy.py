@@ -3,7 +3,9 @@ from chathouse.utilities.security.validation.headers import authorized
 from chathouse.rest.tokens.verification.controller.post.template import create_a_template
 from chathouse.utilities.service.mail import MailService
 from chathouse.utilities.security.token import Token
-from chathouse.service import UserService,ChatService
+from chathouse.service import UserService
+from flask import current_app
+from datetime import datetime
 
 class PostVerificationStrategy(Strategy):
 	'''
@@ -17,7 +19,7 @@ class PostVerificationStrategy(Strategy):
 			validation:
 				headers with the help of authorized decorator; data with the help of certain VerificationTemplate. 
 			response:
-				based on the validation come up with a respected response.
+				based on the validation come up with a respective response.
 	'''
 
 	@authorized(token_type='preaccess',location='Cookie')
@@ -60,16 +62,21 @@ class PostVerificationStrategy(Strategy):
 	 			If invalid respond with 401;
 	  			Otherwise resume with the next steps.
   			1.Extract the route value from the token and create a proper template.
-  			2.Verify that the data is a dictionary an proceed to validate the data against the proper template.
-  			3.Resolve the user's email and token_version using the resolve function, which returns a : dictionary of {'email':str,'current_token_version':int} | None , based on the route and identification data.
-  			3.Resolve the user's email using the resolve function, which returns a str|None , based on the route and identification data.
-	  		If the email has been resolved :
+  			2.Validate the data against the proper template.
+  			3.Resolve the user's email and activity using the resolve function, which returns a : dictionary of {'email':str,'activity':int} | None , based on the route and identification data.
+  			If the email has been resolved :
 	  			Proceed to send the email and respond accordingly with 201.
 	  		Otherwise:
 				Respond accordingly with 400.
 	   
 	   	Lambda functions:
 	   		[Note each lambda function shall be called from bottom up.]
+
+	   		activity_state:
+ 	 			Goal: convert provided activity datetime - into a timestamped value -> the activity state.
+ 	 			Arguments: dnt:datetime.
+ 	 			Returns: timestamp value:int of the provided datetime ~> activity_dnt , if the dnt is instance of datetime , otherwise 0.
+
 
 			find_case:
 
@@ -88,19 +95,19 @@ class PostVerificationStrategy(Strategy):
 
 	   			Goal: resolve email based on the identification data , by verify if the such data is appropriate according to a certain route.
 	   			If the route is signup:
-	   				Get respected map_cases, then :
+	   				Get respective map_cases, then :
 	   					If not even one case (not any function) is valid return:
-	   						{'email':as email from the provided data, 'current_token_version': as 0}
+	   						{'email':as email from the provided data, 'activity': as 0}
 	   					Otherwise return None
 				Otherwise:
-					Get respected map_cases, then convert cases into a tuple:
+					Get respective map_cases, then convert cases into a tuple:
 						If there is a case, which isn't None - then return the very next element of the filtered cases , where every case must not be a None - thus returning:
-							{'email':resolved user's email, 'current_token_version':current token version of the resolved user}.
+							{'email':resolved user's email, 'activity':current activity_dnt state of the resolved user}.
 						Otherwise return None.
-				Returns: {email:str,current_token_version:int}|None.    
+				Returns: {email:str,activir:int}|None.    
 
 		Generation:
-	  		verification_token={identification_data:<identification_data>,token_type:"verification", current_token_version:<current_grant_token_version>, dnt,preaccess:<preaccess_token>}.
+	  		verification_token={identification_data:<identification_data>,token_type:"verification", activity:<current_activity_dnt_state>, dnt,preaccess:<preaccess_token>}.
 
 	 	Returns:
 	 		If verified: 201,{success:True,email_sent:True}
@@ -113,12 +120,15 @@ class PostVerificationStrategy(Strategy):
 		assert all(map(lambda argument:isinstance(argument,dict),(headers,data))), TypeError('Arguments , such as : headers and data - must be dictionaries')
 
 		#Lambda functions
+
+		activity_state = lambda dnt: int(datetime.timestamp(dnt)) if isinstance(dnt,datetime) else None
+
 		find_case = lambda cases: next(iter(tupled)) if (tupled:=(tuple(filter(lambda case:case is not None ,cases)))) else None
 
 		map_cases = lambda **credentials: map(lambda identification: case if (case:=UserService(**{identification:credentials[identification]})).id else None,credentials)
 
-		resolve = lambda route,data: ( {'email':data['email'],'current_token_version':0} if not any(map_cases(email=data['email'],username=data['username'])) else None ) if route=='signup' \
-	else ({'email':case.email, 'current_token_version':case.token_version} if any( (cases:=tuple( map_cases(email=data['identification'],username=data['identification']) ) ) ) and (case:=find_case(cases)) else None)
+		resolve = lambda route,data: ( {'email':data['email'],'activity':0} if not any(map_cases(email=data['email'],username=data['username'])) else None ) if route=='signup' \
+	else ({'email':case.email, 'activity': activity_state(case.activity_dnt) } if any( (cases:=tuple( map_cases(email=data['identification'],username=data['identification']) ) ) ) and (case:=find_case(cases)) else None)
 
 		
 		#Step 0.
@@ -135,9 +145,9 @@ class PostVerificationStrategy(Strategy):
 			verification_token=Token(payload_data={
 				'identification_data':data,
 				'token_type':'verification',
-				'current_token_version':resolution['current_token_version'],
+				'activity':resolution['activity'],
 				'preaccess':kwargs['authorization']['preaccess']['token']['object'].value,
-				'exp':{'minutes':2}
+				'exp':current_app.config['VERIFICATION_EXP']
 				})
 
 			MailService.send(recipients=[resolution['email']],body=f"There has been a request to {route}, using this email. If you wish to proceed with the verification , follow this url http://127.0.0.1:5000/verify/{verification_token.value} .\nOtherwise please ignore this email.",subject="Verification email.")

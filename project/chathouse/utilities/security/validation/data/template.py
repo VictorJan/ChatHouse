@@ -17,7 +17,7 @@ class Template:
 		'''
 		Goal:add a field to a template instance.
 		Arguments: field:Field.
-		Actions: having received the Field instance , update the current fields with incoming instance, assinging it to a respected self established key.
+		Actions: having received the Field instance , update the current fields with incoming instance, assinging it to a respective self established key.
 		Exceptions:
 			Raises:
 				TypeError - if the sumbitted <field> is not an instance of the Field class.
@@ -31,7 +31,7 @@ class Template:
 		Arguments:data - key word argument.
 		Actions:
 			First, iterate through all established fields -> based on a key of the field - find payload from the data according to the key.
-			If there is data related to the key and validation performed by the respected Field instance has been successful:
+			If there is data related to the key and validation performed by the respective Field instance has been successful:
 				Assign the validated value to the product data according to the key.
 			Otherwise, at this point such key,value pair wasn't found or the data was invalid according tot he Field instance.
 			[!However!] The Field itself could be required or not required , so the next step is to verify:

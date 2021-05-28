@@ -1,6 +1,6 @@
 '''
 [Endpoint]Resource
-This file shall contain defined Resource classes for this specific [Endpoint]=Users=/api/users/<identification>/participations:
+This file shall contain defined Resource classes for this specific [IdentifiedUserParticipantions]=Participations=/api/users/<identification>/participations:
 [IdentifiedUserParticipantions]Resource = /api/users/<identification>/participations
 '''
 from chathouse.rest.users.identified.participations.controller import GetIdentifiedUserParticipationsController
@@ -8,7 +8,7 @@ from flask_restful import Resource,request
 
 class IdentifiedUserParticipationsResource(Resource):
 	'''
-	IdentifiedUserParticipantionsResource - a class, meant to handle any get requests according to the endpoint /api/users/<identification>/participations.
+	IdentifiedUserParticipantionsResource - a class, meant to handle any get requests according to the protected endpoint /api/users/<identification>/participations.
 
 	Inherits: Resource.
 	
