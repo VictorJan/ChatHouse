@@ -1,4 +1,4 @@
-from chathouse.views.public.controller import SignUpController,StartController,LogInController,VerifyController
+from chathouse.views.public.controller import SignUpController,StartController,LogInController,VerifyController,ConfirmController
 from flask import Blueprint,request
 
 
@@ -20,4 +20,8 @@ def login():
 @public.route('/verify/<token>')
 def verify(token):
 	return VerifyController.handle(dict(request.headers,**{'transmited-verification_token':token}),request.data,verification_token=token)
+
+@public.route('/confirm/<token>')
+def confirm(token):
+	return ConfirmController.handle(dict(request.headers,**{'transmited-confirmation_token':token}),request.data,confirmation_token=token)
 

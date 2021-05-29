@@ -64,7 +64,7 @@ class GetUsersStrategy(Strategy):
 				Returns: a list of ( dictionaries for each user (id:<user.id:int>,username:<user.username:str>) | empty if the query couldn't resolve any users)
 
 	 	Full verification:
-	  		0.Verify the access_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided token_version with the current one related to the UserService :
+	  		0.Verify the access_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided activity with the current one related to the UserService :
   				If 0. is invalid respond with 401, reason:"Invalid access token.";
 				Otherwise proceed to the next step.
 			1.Verify that the identification filter is present

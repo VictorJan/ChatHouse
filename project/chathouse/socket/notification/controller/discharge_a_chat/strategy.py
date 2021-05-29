@@ -57,7 +57,7 @@ class Discharge_a_ChatNotificationStrategy(Strategy):
 			}
 
 	 	Full verification and actions:
-	  		0.Verify the access_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided token_version with the current one related to the UserService :
+	  		0.Verify the access_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided activity with the current one related to the UserService :
   				If 0. is invalid - disconnect the client.
   				[Note, on the response the user reconnects ,after they try to reestablish a new access_token]
 	  			Otherwise proceed to the next steps.

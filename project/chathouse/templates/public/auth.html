@@ -1,6 +1,7 @@
 {% extends "/public/start.html" %}
 
 {%set verify = route=='verify'%}
+{%set confirm = route=='confirm'%}
 
 {%block links%}
 <link type="text/css" rel="stylesheet" href="{{ url_for('static',filename='css/public/auth.css')}}">
@@ -8,15 +9,18 @@
 {%endblock%}
 
 {%block route%}
-{%if not verify%}
-	Enter the following data to identify yourself. Then an email shall be sent to you.
-{% else %}
-	Enter the password to proceed further.
+	{%if verify%}
+		Enter the password to proceed further.
+	{% elif confirm%}
+		{% set delete = action=='delete' %}
+		{{'Please enter the {} to confirm the {}.'.format('current and a new password' if not delete else 'password','termination of thy account' if delete else 'password reset')}}	
+	{% else %}
+		Enter the following data to identify yourself. Then an email shall be sent to you.
 {%endif%}
 {%endblock%}
 
 {%block content%}
-	{%if not verify %}
+	{%if not verify and not confirm %}
 		{%if route=='signup'%}
 			<input id="email" type="text" placeholder="Thy email">
 			<input id="username" type="text" placeholder="Thy username">
@@ -27,8 +31,11 @@
 		{%endif%}
 		<input id="identify" class="button identify" type="button" value="identify">
 	{%else%}
-		<input id="password" type="password" placeholder="Thy password">
-		<input id="verify" class="button verify" type="button" value="verify">
+		<input id="{{'{}password'.format('current_' if action=='put' else '')}}" type="password" placeholder="Thy password">
+		{% if confirm and action=="put" %}
+			<input id="new_password" type="password" placeholder="New password">	
+		{% endif %}
+		<input id={{route}} class="button verify" type="button" value="{{route}}">
 	{%endif%}
 	<div class="feedback"></div>
 {%endblock%}

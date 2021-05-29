@@ -65,7 +65,7 @@ class GetIdentifiedUserStrategy(Strategy):
 				Returns: a dictionary of (id:<user's id:int>,username:<user's username:str>, name:<user's name:str>, email:<user's email:str>, about:<user's about:str>, common_chats:<common_payload(requester.common_groud_with(id=other user's id)):list>)
 
 	 	Full verification:
-	  		0.Verify the access_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided token_version with the current one related to the UserService :
+	  		0.Verify the access_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided activity with the current one related to the UserService :
   				If 0. is invalid respond with 401, message:"Invalid access token.";
 	  			Otherwise head to the generation phase.
 	  		

@@ -26,7 +26,7 @@ class LogoutStrategy(Strategy):
 		Arguments:headers:dict, data:dict, kwargs:key-word-argument.
 
 			headers : meant to contain all headers data , in this particular case - Cookie field as a sign of authority, which is the grant_token:
-				grant_token = {user_id: value:int, token_type: "grant":str, token_version: UserService(id=value of user_id).token_version , dnt:float}
+				grant_token = {user_id: value:int, token_type: "grant":str, activity: UserService(id=value of user_id).activity , dnt:float}
 			Note:
 				This argument is used in the authorized decorator - to perform proper authorization process, the result of which is stored in the kwargs.
 				To know more about the authorized decorator - view a separate documentation for the authorized method in the chathouse/utilities/security/validation/headers.py.
@@ -49,7 +49,7 @@ class LogoutStrategy(Strategy):
 			}
 
 	 	Full actions:
-	  		0.Verify the grant_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided token_version with the current one related to the UserService :
+	  		0.Verify the grant_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided activity with the current one related to the UserService :
   				If 0. is invalid, set status_code to 303;
 	  		1.Otherwise set status_code to 302.
 			2.Clear cookies, return a redirect to /start with proper status_code. 

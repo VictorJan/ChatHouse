@@ -12,10 +12,17 @@ async function source_card_controller(e){
 			if ((response = await user_call(token.raw,identification.user) ).status == 200 ){
 				json_response = await response.json();
 			}
-			else{
+			else if (response.status==401){
 				//The access token has expired/invalid -> refresh it and reasign
 				token = await userInstance.refresh_access();
-				if ((response = await user_call(token.raw,identification.user) ).status == 200 ) json_response = await response.json(); else logout(); 
+				if ((response = await user_call(token.raw,identification.user) ).status == 200 ) json_response = await response.json();
+				
+				if (response.status==401) userInstance.logout();
+			}
+			
+			if (response.status==404){
+				//refresh the page
+				 window.location.replace(window.location.href);
 			}
 			
 			let data = {information:json_response.data,current_user: token.payload.user_id==json_response.data.id}
@@ -38,8 +45,8 @@ async function source_card_controller(e){
 				//If the status code isn't 200 - then the access_token is invalid or the access to the resource is not permitted
 				//So if the access is denied - refresh the page. Otherwise - perform a logout() ,as the token has expired/simply invalid.
 				if (response.status!=200){
-					if (json_response.reason=='Access has been denied.') window.location.replace(window.location.href);
-					logout(); 
+					if (json_response.reason=='Access has been denied.' || response.status == 404) window.location.replace(window.location.href);
+					userInstance.logout(); 
 				} 
 			}
 			

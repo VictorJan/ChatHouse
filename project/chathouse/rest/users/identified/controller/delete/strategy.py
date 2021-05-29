@@ -26,7 +26,7 @@ class DeleteIdentifiedUserStrategy(Strategy):
 		Arguments:headers:dict, data:dict, kwargs:key-word-argument.
 
 		headers : meant to contain all headers data , in this particular case - an Authorization field as a sign of authority, must contain a "Bearer <token> , which is the confirmation_token:
-			confirmation_token={user_id:int, token_type: "confirmation":str, activity:int , dnt:float}
+			confirmation_token={user_id:int, action:str("put"|"delete") token_type:str("confirmation"), activity:int , dnt:float}
 		Note:
 			This argument is used in the authorized decorator - to perform proper authorization process, the result of which is stored in the kwargs.
 			To know more about the authorized decorator - view a separate documentation for the authorized method in the chathouse/utilities/security/validation/headers.py.
@@ -53,7 +53,7 @@ class DeleteIdentifiedUserStrategy(Strategy):
 		}
 
 	 	Full verification:
-	  		0.Verify the confirmation_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided token_version with the current one related to the UserService :
+	  		0.Verify the confirmation_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided activity with the current one related to the UserService :
   			1.Make sure that the requester's/owner's id is the same as the provided identification and the action value of the confirmation token is delete , also.
   				If 0.|1. is invalid respond with 401, message:"Invalid confirmation token.";
 	  			Otherwise head to the following steps.

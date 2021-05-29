@@ -16,7 +16,8 @@ class GetIdentifiedUserKeyringStrategy(Strategy):
 			response:
 				based on the validation come up with a respective response.
 	'''
-
+	
+	@authorized(token_type='confirmation',location='Authorization')
 	@authorized(token_type='access',location='Authorization')
 	def accept(self,headers,data,**kwargs):
 		'''
@@ -24,8 +25,9 @@ class GetIdentifiedUserKeyringStrategy(Strategy):
 
 		Arguments:headers:dict, data:dict, kwargs:key-word-argument.
 
-		headers : meant to contain all headers data , in this particular case - an Authorization field as a sign of authority, must contain a "Bearer <token> , which is the access_token:
-			access_token={user_id:int, token_type: "access":str, activity:int , dnt:float}
+		headers : meant to contain all headers data , in this particular case - an Authorization field as a sign of authority, must contain a "Bearer <token> , which could be the access_token or the confirmation_token:
+			access_token={user_id:int, token_type:str("access"), activity:int , dnt:float}
+			confirmation_token={user_id:int, action:str("put"|"delete") token_type:str("confirmation"), activity:int , dnt:float}
 		Note:
 			This argument is used in the authorized decorator - to perform proper authorization process, the result of which is stored in the kwargs.
 			To know more about the authorized decorator - view a separate documentation for the authorized method in the chathouse/utilities/security/validation/headers.py.
@@ -34,9 +36,17 @@ class GetIdentifiedUserKeyringStrategy(Strategy):
 			
 		kwargs: meant to store any data passed into the accept method, from the initial requrest, up to the authorization steps. In particular stores :
 		The identification at : { identification:int }
-		In this instance the token_type is the access one - so kwargs shall store:{
+		In this instance the token_type is the access|confirmation one - so kwargs shall store:{
 			authorization:{
 				access:{
+					valid:bool,
+					status:int,
+					owner:UserService|None,
+					token:{
+						object:None|Token,
+						location:str|None
+					}
+				confirmation:{
 					valid:bool,
 					status:int,
 					owner:UserService|None,
@@ -57,13 +67,19 @@ class GetIdentifiedUserKeyringStrategy(Strategy):
 
 			data_payload:
 				Goal: structure and return a dictionary meant for the data key in the response.
-				Arguments: requester:UserService - the owner of the access token.
+				Arguments: requester:UserService - the owner of the access|confirmation token.
 				Returns: a dictionary of (keyring:<keyring_payload(requester.keyring):dict>)
 
+			resolve:
+				Goal: try to find a valid token (signature and ownership) , based on the implemented-allowed ones: access,confirmation.
+				Arguments: authorizations:tuple - meant to store the provided authorization resolutions for the access and the confirmation token.
+				Actions: iterate through the authorizations until any of them have been established as valid , with an existing proper owner , then return such case, otherwise provide a None as a feedback.
+				Returns: token:dict if any token(confirmation,access) has been fully valid otherwise None. 
+
 	 	Full verification:
-	  		0.Verify the access_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided token_version with the current one related to the UserService :
-  			1.Make sure that the requeter's/owner's id is the same as the provided identification.
-  				If 0.|1. is invalid respond with 401, message:"Invalid access token.";
+	  		0.Resolve the provided authority - the token, verifying the token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService,
+	  		and verifies the provided activity with the current one related to the UserService. Apart from that resolution - makes sure of the relation of the requester's id  and the requested user's id. 
+  				If 0. is invalid respond with 401, message:"Invalid access|confirmation token.";
 	  			Otherwise head to the generation phase.
 	  		
 		Generation:
@@ -81,8 +97,8 @@ class GetIdentifiedUserKeyringStrategy(Strategy):
 				}
  
 		Returns:
-			If the access_token(the ownership,signature) is invalid or the owner's id is not equal to the one provided in the URL:
-  				Return 401, message:"Unauthorized!","reason":"Invalid access token."
+			If the access|confirmation_token(the ownership,signature) is invalid or the owner's id is not equal to the one provided in the URL:
+  				Return 401, message:"Unauthorized!","reason":"Invalid access|confirmation token."
   			Otherwise:
   				Return 200, data:<data_payload>
 
@@ -97,7 +113,9 @@ class GetIdentifiedUserKeyringStrategy(Strategy):
 		assert isinstance(kwargs.get('identification',None),int), TypeError('The identification argument hasn\'t been submited or the data type is invalid.')
 		
 		#Lambda functions:
-	
+		
+		resolve = lambda *authorizations: token if any((token:=case) for case in authorizations if case['valid'] and case['owner'] is not None and case['owner'].id==kwargs['identification']) else None
+
 		keyring_payload = lambda keyring: {\
 		'keyring':{'private_key':keyring.private_key, 'public_key':keyring.public_key},\
 		'parameters': { **dict(zip('gm',current_app.config['DH_PARAMETERS']))\
@@ -106,7 +124,7 @@ class GetIdentifiedUserKeyringStrategy(Strategy):
 		data_payload = lambda requester: keyring_payload(requester.keyring)
 		
 		#Step 0.
-		if not kwargs['authorization']['access']['valid'] or (owner:=kwargs['authorization']['access']['owner']) is None or owner.id!=kwargs['identification']:
-			return {'success':'False','message':'Unauthorized!','reason':'Invalid access token.'},401
+		if (token:=resolve(kwargs['authorization']['access'],kwargs['authorization']['confirmation'])) is None:
+			return {'success':'False','message':'Unauthorized!','reason':f"Invalid access|confirmation token."},401
 
-		return {'success':'True','data':data_payload(owner)},200
+		return {'success':'True','data':data_payload(token['owner'])},200

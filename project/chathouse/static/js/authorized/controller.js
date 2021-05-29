@@ -106,3 +106,11 @@ async function head_controller(e){
 async function logout_controller(e){
 	await userInstance.logout();
 }
+
+async function terminate_controller(e){
+	await userInstance.request_confirmation('delete');
+}
+
+async function reset_password_controller(e){
+	await userInstance.request_confirmation('put');
+}

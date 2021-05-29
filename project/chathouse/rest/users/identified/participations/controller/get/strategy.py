@@ -65,7 +65,7 @@ class GetIdentifiedUserParticipationsStrategy(Strategy):
 				Returns: a dictionary of (participations:<participations_payload(requester.chats):list>)
 
 	 	Full verification:
-	  		0.Verify the access_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided token_version with the current one related to the UserService :
+	  		0.Verify the access_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided activity with the current one related to the UserService :
   			1.Make sure that the requeter's/owner's id is the same as the provided identification.
   				If 0.|1. is invalid respond with 401, message:"Invalid access token.";
 	  			Otherwise head to the generation phase.

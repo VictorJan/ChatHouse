@@ -38,12 +38,15 @@ async function verification_controller(e){
 					dh_key = await new DH_Key(login_keyring);
 				}
 				
-				//stores current keyring in the session storage
-				dh_key.store();
-				//call the authorized route to set the grant token as the cookie.
-
-				let view_call_response = await authorized_view_call(grant_token.raw);
-				window.location.replace(`${window.location.origin}/chat`);
+				//stores current keyring in the local storage
+				if(dh_key.store()){
+					//call the authorized route to set the grant token as the cookie.
+					let view_call_response = await authorized_view_call(grant_token.raw);
+					window.location.replace(`${window.location.origin}/chat`);
+				}
+				else{
+					document.querySelector(".feedback").innerHTML="Couldn't set up the keyring in the localStorage, please try again."
+				}
 
 			}
 			else{

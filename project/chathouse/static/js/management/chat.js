@@ -82,25 +82,23 @@ class Chat{
 
 			let chat_content = sentinel.parentNode;
 
-			messages.forEach((message_object)=>{
-				//retrieve/decrypt the message
-				this.receive(message_object.content).then((decrypted)=>{
-					if (decrypted){
-						//set the message payload
-						let message_payload = {id:message_object.id,sender:message_object.sender,content:decrypted,dnt:message_object.dnt.readable};
-						//proceed to build the message block , prepending it.
-						message(message_payload,false);
-					}
-					else{
-						//notify the user about the integrity alert.
-						if(!document.querySelector("#clear_invalid_button")) notification("Some messages couldn't be decrypted, due to invalid payload. These messages won't be displayed - do you wish to clear them?",true)
-						//Store the invalid messages.
-						this.#invalid.push(message_object.id)
-					}
-				});
-			});
+			for (const message_object of messages){
+				let decrypted;
+				if (decrypted = await this.receive(message_object.content)){
+					//set the message payload
+					let message_payload = {id:message_object.id,sender:message_object.sender,content:decrypted,dnt:message_object.dnt.readable};
+					//proceed to build the message block , prepending it.
+					message(message_payload,false);
+				}
+				else{
+					//notify the user about the integrity alert.
+					//Store the invalid messages.
+					this.#invalid.push(message_object.id)
+				}
+			}
 			//If the amount of the messages is less than the requested amount, set the last timestamp to a null , otherwise extract the timestamp of the last message in the list.
 			this.#last_timestamp = (messages.length<amount) ? null : messages[messages.length-1].dnt.timestamp;
+			if(this.#invalid.length!=0) notification("Some messages couldn't be decrypted, due to invalid payload. These messages won't be displayed - do you wish to clear them?",true)
  		}
 	}
 

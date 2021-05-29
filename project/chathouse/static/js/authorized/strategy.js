@@ -1,4 +1,4 @@
-if (!localStorage.getItem('keyring')) logout();
+if (!localStorage.getItem('keyring')) window.location.replace(`${window.origin}/logout`);
 const dh_keyring_promise = (async()=>{
 	return await new DH_Key( JSON.parse(localStorage.getItem('keyring')) );
 })();

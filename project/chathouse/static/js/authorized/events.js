@@ -6,6 +6,11 @@ function addGlobalEventListener(type,match,callback){
 
 addGlobalEventListener('click','#account_button',account_card_controller);
 addGlobalEventListener('click','#new_chat_button',new_chat_card_controller);
+addGlobalEventListener('click','#logout_button',logout_controller);
+addGlobalEventListener('click','#terminate_account_button',terminate_controller);
+addGlobalEventListener('click','#reset_password_button',reset_password_controller);
+
+
 addGlobalEventListener('click','#source_link',source_card_controller);
 
 addGlobalEventListener('click','#close_button',close_card_controller);
@@ -17,7 +22,6 @@ addGlobalEventListener('click','#clear_search_button',clear_search_controller);
 
 addGlobalEventListener('click','#head_to_source',head_controller);
 
-addGlobalEventListener('click','#logout_button',logout_controller);
 
 //Establish a chat
 //Selecet a participant event

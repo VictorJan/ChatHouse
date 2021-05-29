@@ -67,6 +67,23 @@ class User{
 		this.#accessTokenInstance = await this.#prepare_access();
 		return this.#accessTokenInstance;
 	}
+
+	async request_confirmation(action){
+		//Call the confirmation endpoint and if successful, notify the user about the update of the activity state -> request to logout after 3 seconds.
+		let body={'action':action};
+		let response = await confirmation_call(this.#accessTokenInstance.raw,body);
+		if (response.status == 401) {
+			//refresh the access token and try again
+			this.#accessTokenInstance = await this.#prepare_access();
+			if ((response =  await confirmation_call(this.#accessTokenInstance.raw,body)).status == 401 ) this.logout(); 
+		}
+
+		if (response.status == 201){
+			notification(`The request to ${ (action=='put')?'reset the password':'terminate the account'} has been sent. Please check your inbox to proceed with the confirmation. You will be logged out in a few seconds.`)
+			new Promise( resolve=> setTimeout(resolve,5000)).then(()=>{ this.logout() })
+		}
+		else if (response.status == 401) this.logout(); else notification('The request contained invalid payload, please try again.');
+	}
 	
 	get accessTokenInstance(){
 		return this.#accessTokenInstance;

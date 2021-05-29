@@ -48,7 +48,7 @@ class ConnectNotificationStrategy(Strategy):
 			}
 
 	 	Full verification and actions:
-	  		0.Verify the access_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided token_version with the current one related to the UserService :
+	  		0.Verify the access_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided activity with the current one related to the UserService :
   				If 0. is invalid - disconnect the client.
 	  			Otherwise join the client to a room - which is the id of the client/owner of the token.
 
