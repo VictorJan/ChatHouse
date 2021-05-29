@@ -2,7 +2,7 @@ from chathouse.utilities.security.controller_strategy.strategy import Strategy
 
 class Controller:
 	def __init__(self,strategy):
-		assert issubclass(strategy.__class__,Strategy),TypeError('Class of a strategy argument must be a subclass of the Strategy class.')
+		assert isinstance(strategy,Strategy),TypeError('Instance of the strategy argument shall be derived from the Strategy class.')
 		self.__strategy=strategy
 
 	def handle(self,headers,data,**kwargs):

@@ -151,7 +151,7 @@ class UserService:
 			password:{
 				current:str (already hashed),
 				new:str (already hashed)
-			}
+			},
 			private_key:{iv:str,data:str}
 		}
 		

@@ -1,6 +1,6 @@
 async function confirmation_controller(e){
 		/*call requires either:
-		PUT:{current_password:str,new_password:str,private_key:object}
+		PUT:{password:{current:str,new:str},private_key:{iv:str,data:str}}
 		DELETE:{password:str}
 		*/
 		let data={};
@@ -43,8 +43,15 @@ async function confirmation_controller(e){
 					data=null;
 				}
 				else{
-					//Exports the private key, encrypting the private key with the new password.
-					data['private_key'] = (await dh_key.export(clear['new'])).private_key;
+					//Exports the private key, encrypting the private key with the new password. Also reset the payload
+					data={'reset':{
+							'password':{
+								'current':data['current_password'],
+								'new':data['new_password']
+							}
+						}
+					}
+					data['reset']['private_key'] = (await dh_key.export(clear['new'])).private_key;
 				}
 
 			}

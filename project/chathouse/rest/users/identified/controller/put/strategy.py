@@ -32,14 +32,13 @@ class PutIdentifiedUserStrategy(Strategy):
 			To know more about the authorized decorator - view a separate documentation for the authorized method in the chathouse/utilities/security/validation/headers.py.
 
 		data : meant to store any data that's passed into the request - json body:
-			{
-				current_password:str,
-				new_password:str,
-				private_key:{
-					iv:str,
-					data:str
-				}
-			}
+		{
+			password:{
+				current:str (already hashed),
+				new:str (already hashed)
+			},
+			private_key:{iv:str,data:str}
+		}
 
 		kwargs: meant to store any data passed into the accept method, from the initial requrest, up to the authorization steps. In particular stores :
 		The identification at : { identification:int }
@@ -56,13 +55,6 @@ class PutIdentifiedUserStrategy(Strategy):
 				}
 			}
 		}
-
-		Lambda functions:
-
-			reset_payload:
-				Goal: return a dictionary, which contains required payload for the reset tool/method provided to an instance of a UserService class.
-				Arguments: payload:dict. Expecting to contain keys such as : "current_password","new_password" and a "private_key"
-				Returns: dict(password:dict(current:str(current_password),new:str(new_password)),private_key:dict(iv:str,new:str))
 
 	 	Full verification:
 	  		0.Verify the confirmation_token , which on it's own - verifies ownership - makes sure of the existance of a user with the user_id - establishing a UserService, and verifies the provided activity with the current one related to the UserService :
@@ -103,12 +95,6 @@ class PutIdentifiedUserStrategy(Strategy):
 		assert all(map(lambda argument: isinstance(argument,dict),(headers,data))), TypeError('Arguments , such as : headers and data - must be dictionaries')
 		assert isinstance(kwargs.get('identification',None),int), TypeError('The identification argument hasn\'t been submited or the data type is invalid.')
 		
-		#Lambda functions:
-	
-		reset_payload = lambda payload: {'password':\
-			{'current':payload.pop('current_password'),'new':payload.pop('new_password')},\
-			**payload\
-			}
 		
 		#Step 0.
 		if not kwargs['authorization']['confirmation']['valid'] or kwargs['authorization']['confirmation']['token']['object']['action']!="put" or (owner:=kwargs['authorization']['confirmation']['owner']) is None or owner.id!=kwargs['identification']:
@@ -120,11 +106,7 @@ class PutIdentifiedUserStrategy(Strategy):
 			
 			data=template.data
 
-			reset_payload = lambda payload: {'password':\
-			{'current':payload.pop('current_password'),'new':payload.pop('new_password')},\
-			**payload\
-			}
-			if owner.reset_password(**reset_payload(data)):
+			if owner.reset_password(**data['reset']):
 				return {'success':'True','message':'The password has been reset and the activity has been updated, please proceed to login using new credentials.'},200	
 			else:
 				return {'success':'False','message':'Unauthorized!','reason':'Invalid authentication data.'},401

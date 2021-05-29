@@ -1,5 +1,6 @@
-from chathouse.utilities.security.validation.data.builder import TemplateBuilder
-from chathouse.utilities.security.validation.data.field import Field
+from chathouse.utilities.security.validation.data.template.builder import TemplateBuilder
+from chathouse.utilities.security.validation.data.field.builder import FieldBuilder
+from chathouse.utilities.security.validation.data.requirement import Nested,String,DataType
 
 
 def create_a_template():
@@ -8,24 +9,40 @@ def create_a_template():
 	Goal: create a template for validating data , depending on the initial request, aimed at the PUT /api/users/<identification>.
 
 	Actions:
-		Using the TemplateBuilder class - create an instance of PutIdentifiedUserTemplateBuilder.
-		Add neccessary fields "current_password","new_password" with proper requirements : strings of at least 64 characters long - expecting hex digest of sha256. 	
-		Add a neccessary field "private_key" with proper requirements : a dictionary with following structure of keys and datatypes:
-			{
-				iv:<str>,
-				data:<str>
-			}
+		According to the BuilderPattern proceed to build the Fields and the Template:
+			Using the TemplateBuilder class - create an instance of PutIdentifiedUserTemplateBuilder.
+			Using the FieldBuilder class - create an instance of PutIdentifiedUserFieldBuilder.
+
+		Build a ResetField - set proper requisites, using a Nested requirement, provide nested (key:Requiremnt)s:
+			password : a Nested requirement, shall contain (key:Requiremnt)s:
+				current: with String Requirement of 64 characters - sha256 hexdigested;
+				new: with String Requirement of 64 characters - sha256 hexdigested;
+			private_key : a Nested requirement, shall contain (key:Requiremnt)s:
+				iv: with DataType Requirement of a string;
+				data: with DataType Requirement of a string.
+
+
 		Return the instance of the Template class from the builder, thus reseting the PutIdentifiedUserTemplateBuilder.
 
-	Returns: instance of the Template class from the builder, using a property of the TemplateBuilder - template.
+	Returns: instance of the Template class from the builder, using a property of the TemplateBuilder - product.
 	'''
 	
 	PutIdentifiedUserTemplateBuilder=TemplateBuilder()
-	PutIdentifiedUserTemplateBuilder.add(Field('current_password',regex='^\w{64}$',data_type=str))
-	PutIdentifiedUserTemplateBuilder.add(Field('new_password',regex='^\w{64}$',data_type=str))
+	PutIdentifiedUserFieldBuilder=FieldBuilder()
 	
-	required_keys_n_types={'iv':str,'data':str}
+	nested_requirement=Nested(**{
+		'password':Nested(**{
+			'current':String('^\w{64}$'),
+			'new':String('^\w{64}$')
+		}),
+		'private_key':Nested(**{
+			'iv':DataType(str),
+			'data':DataType(str)
+		})
+	})
 
-	PutIdentifiedUserTemplateBuilder.add(Field('private_key',keys=required_keys_n_types,data_type=dict))
+	PutIdentifiedUserFieldBuilder.requisites={'key':'reset','required':True}
+	PutIdentifiedUserFieldBuilder.add(nested_requirement)
+	PutIdentifiedUserTemplateBuilder.add(PutIdentifiedUserFieldBuilder.product)
 
-	return PutIdentifiedUserTemplateBuilder.template
+	return PutIdentifiedUserTemplateBuilder.product
