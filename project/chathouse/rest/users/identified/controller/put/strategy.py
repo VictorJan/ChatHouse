@@ -1,7 +1,6 @@
 from chathouse.utilities.security.controller_strategy.strategy import Strategy
 from chathouse.utilities.security.validation.headers import authorized
 from chathouse.rest.users.identified.controller.put.template import create_a_template
-from flask import current_app
 
 class PutIdentifiedUserStrategy(Strategy):
 	'''

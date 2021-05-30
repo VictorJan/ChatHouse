@@ -72,7 +72,7 @@ class PostConfirmationStrategy(Strategy):
  	 			Returns: timestamp value:int of the provided datetime ~> activity_dnt , if the dnt is instance of datetime , otherwise 0. 
 
 		Generation:
-	  		confirmation_token={user_id:int(request's/owner's id)action:str(requested action),token_type:str("confirmation"), activity:int(current user's activity state), dnt:float }.
+	  		confirmation_token={user_id:int(request's/owner's id), action:str(requested action),token_type:str("confirmation"), activity:int(current user's activity state), dnt:float }.
 
 	 	Returns:
 	 		If verified: 201,{success:True,email_sent:True}

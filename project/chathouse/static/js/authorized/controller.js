@@ -63,6 +63,7 @@ async function discharge_message_controller(e){
 
 async function clear_invalid_controller(e){
 	chatInstance.sanitize();
+	if (block=e.target.parentNode) block.parentNode.removeChild(block);
 }
 
 async function cancel_discharge_message_controller(e){

@@ -1,7 +1,7 @@
 .message_block{
 	display: grid;
 	grid-template-rows: auto auto;
-	grid-row-gap:20px;
+	grid-row-gap:5px;
 	box-shadow: 0px 5px 10px #222123;
 	border-radius: 10px;
 	padding: 5px;

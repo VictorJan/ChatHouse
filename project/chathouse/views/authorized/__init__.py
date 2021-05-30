@@ -5,8 +5,18 @@ authorized=Blueprint('authorized',__name__)
 
 @authorized.route('/chat')
 def chat():
-	return ChatController.handle(dict(request.headers),dict(request.data),chat_id=request.args.get('id',None))
+	'''
+	Goal: accept requests aimed at the '/chat' route.
+	Actions: handling is executed by a respective view controller - ChatContoller, by providing modified incoming headers and an empty dictionary - for the data, due to acception of only GET requests.
+	Returns:render_template|redirect|make_response - result of the respective handling.
+	'''
+	return ChatController.handle(dict(request.headers),{},chat_id=request.args.get('id',None,int))
 
 @authorized.route('/logout')
 def logout():
-	return LogoutController.handle(dict(request.headers),dict(request.data))
+	'''
+	Goal: accept requests aimed at the '/logout' route.
+	Actions: handling is executed by a respective view controller - LogoutContoller, by providing modified incoming headers and an empty dictionary - for the data, due to acception of only GET requests.
+	Returns:redirect|make_response - result of the respective handling.
+	'''
+	return LogoutController.handle(dict(request.headers),{})

@@ -5,7 +5,7 @@ from flask import redirect,url_for,make_response
 
 class LogoutStrategy(Strategy):
 	'''
-	GetLogoutStrategy - a class, meant to be used to perform the required actions according to the defined strategy in the accept method.
+	LogoutStrategy - a class, meant to be used to perform the required actions according to the defined strategy in the accept method.
 
 	Inherits: Strategy class.
 	

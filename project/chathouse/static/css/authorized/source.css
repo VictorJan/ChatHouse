@@ -19,6 +19,7 @@
 	overflow-x: auto;
 	max-width: 90%;
 }
+
 .left_source_block:hover{
 	color:#f74037;
 	cursor: pointer;
@@ -42,6 +43,10 @@
     grid-auto-flow: column;
     place-content: center;
     grid-template-columns: none;
+}
+
+.participant{
+	cursor: pointer;
 }
 
 .activity{

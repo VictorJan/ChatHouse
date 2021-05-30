@@ -1,3 +1,11 @@
+'''
+This file shall contain all of the imported - implemeted [Route]Controllers for a public view:
+[Start]Controller
+[SignUp]Controller
+[LogIn]Controller
+[Verify]Controller
+[Confirm]Controller
+'''
 from chathouse.views.public.controller.start import StartController
 from chathouse.views.public.controller.signup import SignUpController
 from chathouse.views.public.controller.login import LogInController

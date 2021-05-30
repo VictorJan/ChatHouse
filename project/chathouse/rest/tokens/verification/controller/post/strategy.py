@@ -133,7 +133,7 @@ class PostVerificationStrategy(Strategy):
 		
 		#Step 0.
 		if not kwargs['authorization']['preaccess']['valid']:
-			return {'success':'False','message':'Unauthorized!','reason':'Invalid preaccess_token'},401
+			return {'success':'False','message':'Unauthorized!','reason':'Invalid preaccess token.'},401
 		
 		#Step 1.
 		template = create_a_template(route:=kwargs['authorization']['preaccess']['token']['object']['route'])

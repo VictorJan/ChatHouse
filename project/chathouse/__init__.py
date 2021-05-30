@@ -3,10 +3,10 @@ from flask import Flask
 
 
 
-def create_app():
+def create_app(config=None):
 	app = Flask(__name__)
 	try:
-		app.config.from_object(f"config.{os.environ['ENVIRONMENT']}Config")
+		app.config.from_object(f"config.{os.environ['ENVIRONMENT'] if config is None else config}Config")
 	except:
 		app.config.from_object('config.Config')
 
@@ -31,10 +31,9 @@ def create_app():
 	from chathouse.rest import api
 	api.init_app(app)
 	
+	#socket namespaces
 	from chathouse.socket import socket
 	socket.init_app(app)
-	#socket namespaces
-	#socket.on_namespace(Namespace('/'))
 	return app
 
 def create_db(app,db):
