@@ -7,7 +7,7 @@ import time
 class AccessTestCase(BaseTestCase):
 
 	'''
-	GrantTestCase - class aimed at testing different requests aimed at the REST endpoint : /api/tokens/grant.
+	AccessTestCase - class aimed at testing different requests aimed at the REST endpoint : /api/tokens/access.
 	'''
 
 	def setUp(self):

@@ -1,9 +1,0 @@
-{
-	 "SECRET_KEY":"0dc68955e35a6a0a881cab9d0c2befbb1cee2dba",
-	 "STATIC_KEY":"e7ad66204a66942b14669b5a28a4855856271302e46b9931b2ffacce53c5",
-	 "SQLALCHEMY_DATABASE_URI":"sqlite:///sql/database.db",
-	 "MAIL_USERNAME":"idlechathouse@gmail.com",
-	 "MAIL_PASSWORD":"e41c8f615c09495794e51000e1acd4cc0a64d9eb",
-	 "DH_GENERATOR":"9055",
-	 "DH_MODULUS":"9059"
-}
