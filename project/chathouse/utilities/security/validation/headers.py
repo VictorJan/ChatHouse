@@ -31,12 +31,7 @@ def authorized(token_type,location=None):
 
  	Lambda functions:
  	 
- 	 activity_state:
- 	 	Goal: convert provided activity datetime - into a timestamped value -> the activity state.
- 	 	Arguments: dnt:datetime.
- 	 	Returns: timestamp value:int of the provided datetime ~> activity_dnt , if the dnt is instance of datetime , otherwise 0.
-
- 	 Step 1:
+  	 Step 1:
 	 	locate:
 	 		Goal find a token raw data based on the location, using the lambda search function, then having found the raw data - create an instance of a Token, based on that raw data.
 	 	 	Arguments: l - location ; h - headers.
@@ -81,6 +76,15 @@ def authorized(token_type,location=None):
 	 		With the help of map_cases - map each possible case for the UserService , then find the very first case, which matches the identification , with the find_case.
 	 		Returns: UserService|None
 
+		valid_preaccess:
+			Goal: verify the expected structure of a preaccess token,based on the initial route value.
+			Arguments: t:dict(location:<location field:str|None>,object:<object instance:Token|None>)
+			Actions:
+				Extract the neccessary route key, make sure that the value assinged to such key is 'signup'/'login'.
+				If neither case has turned out to be true , establish the token as invalid.
+				Otherwise set the validity to True
+			Returns: True|False:bool.
+		
 		valid_verification:
 			Goal: verify the activity in the provided verification token, based on the verification data. In other words : the activity must be equal to the last assigned one - the one in the database(login) | 0 (signup).
 			[At this point the signature is valid - the validation in this instance, solves the problem of reusing the verification tokens, by denying the already used ones - using the activity value and provided identification_data]
@@ -117,19 +121,10 @@ def authorized(token_type,location=None):
 	Validation:
  		1.Look for a token in a location. If location is set - direct the search at the <location>, otherwise search in Authorization/Cookie. If the token is present and valid , set authorization={token:<token>} proceed to the next step.
  		[-]If token object is invalid or doesn't correspond to the passed token_type - set authorization={'valid':False,status_code:401,'token':<token>} - resume to the Return Phase.
- 		2.If the token_type is in ('access','grant') -> proceed to step 3.1
- 		[-]Otherwise  if the token_type is the 'verification' one -> proceed to step 3.2
+ 		2.If the token_type is in ('access','grant','confirmation') -> proceed valid_ownership.
+ 		[-]Otherwise if the token_type is the 'verification' one -> proceed to valid_verification.
+ 		[-]Otherwise if the token_type is the 'preaccess' one -> proceed to valid_preaccess.
  		[-]Otherwise set authorization={'valid':True,status_code:200,'token':<token>} and proceed to the Return Phase.
-
- 		3.1.Validate the existance of the "user_id" (owner), "activity" (latest activity state) keys in the token's dictionary, according to the user_id, find the assumed owner ~> using UserService instance , where (id=token[user_id])
- 		Then if the owner exists , check the accord of the activity state in the token with the one in the Data Base. if the ownership matches insert another key 'owner' and assign a UserService instance 
- 		[-]Otherwise set authorization={'valid':False,status_code:401}
-
- 		3.2.Extract the preaccess_token, and establish the initial_route = "signup/login":
- 			If the initial_route is "signup" -> verify that there is no existing user with such identification data, if there is, set condition for a failure, otherwise set condition to verify with a 0.
- 			Otherwise the initial_route must be 'login' -> then there must be a legal user , perform a search for them. Then if the user exists , verify that activity from the verification_token is equal to the one that legal user posesses.
- 		[-]If any conditions turns out to be false - set authorization={'valid':False,status_code:401}
-
 
  	 Exceptions:
  	 	If the <token_type> is not a string , raise TypeError
@@ -158,8 +153,6 @@ def authorized(token_type,location=None):
 
 			#Validation
 
-			activity_state = lambda dnt: int(datetime.timestamp(dnt)) if isinstance(dnt,datetime) else None
-
 			#Initialize lambda functions for the 1.:
 			search = lambda head,raw: match.group() if (match:=re.search(f'(?<={head})([^\s]+)',raw)) else None
 			token_raw_data = lambda l,d: search('Bearer ',d) if l=='Authorization' else (search(f'{token_type}_token=',d) if l=='Cookie' else d)
@@ -174,25 +167,28 @@ def authorized(token_type,location=None):
 			#Validation:1.
 			if (token:=locate(location,headers) if location else either)['object'] and token['object'].is_valid and token['object']['token_type']==token_type:
 				#Validation:2.
-				#Validation:3 ~> valid_ownership|valid_verification.
+				#Validation:3 ~> valid_ownership|valid_verification|valid_preaccess.
+
+				valid_preaccess = lambda t : {'valid':True,'status_code':200} if any(True for route in ('signup','login') if t['object']['route']==route) else {'valid':False,'status_code':401}
 
 				valid_verification = lambda t : {'valid':True,'status_code':200} if \
 				( None!=t['object']['activity'] ==\
 					( (None if (resolve_user(username=(identification:=t['object']['identification_data'])['username'],email=identification['email'])) else 0 )\
 					if (preaccess:=Token(raw_data=t['object']['preaccess']))['route']=='signup' else\
-					(activity_state(resolved_user.activity_dnt) if (resolved_user:=resolve_user(username=(identification:=t['object']['identification_data']['identification']),email=identification)) else None) ) \
+					(resolved_user.activity_state if (resolved_user:=resolve_user(username=(identification:=t['object']['identification_data']['identification']),email=identification)) else None) ) \
 				)\
 				else {'valid':False,'status_code':401}
 
 
 				valid_ownership = lambda t: {'valid':True,'status_code':200, 'owner':owner} if\
-				None != activity_state((owner:=UserService(id=t['object']['user_id'])).activity_dnt) == t['object']['activity']\
+				None != (owner:=UserService(id=t['object']['user_id'])).activity_state == t['object']['activity']\
 				else {'valid':False,'status_code':401, 'owner':None}
 				
 				authorization[token_type] = {'token':token,\
 				**(valid_ownership(token) if token_type in ('grant','access','confirmation')\
 				else (valid_verification(token) if token_type=='verification'\
-				else {'valid':True,'status_code':200} ) )}
+				else (valid_preaccess(token) if token_type=='preaccess'\
+				else {'valid':True,'status_code':200}) ) )}
 
 			else:
 				authorization[token_type] = {'valid':False,'status_code':401,'token':token}

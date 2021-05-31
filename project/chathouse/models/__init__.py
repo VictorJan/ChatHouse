@@ -1,3 +1,11 @@
+'''
+This file shall contain initialization of each table in the database:
+User;
+Chat;
+Message;
+Participation;
+Keyring.
+'''
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from datetime import datetime

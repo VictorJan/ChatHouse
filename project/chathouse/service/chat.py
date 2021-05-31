@@ -4,6 +4,27 @@ from copy import deepcopy
 import time,datetime
 
 class ChatService:
+	'''
+	The ChatService defines required methods and properties, necessary to perform any CRUD and other actions related to the Chat instances.
+
+	Methods:
+		create(self,**payload) - estalishes/create an inner chat instance , based on the provided payload.
+		remove(self) - remove the inner instance.
+		refresh(self) - refreshes the inner state of the instance.
+		get_message(self,**query) - gets any messages that fit the provided query, which involves searching for message based on the date n time - retrieving a provided amount, provided in the query.
+	Dunder methods:
+		init(self,**identification) - initializes the current chat service instance, based on the provided identificaiton payload.
+		getattr(self,attr) - searches the inner instance attribute for the provided attr argument.
+		contains(self,other) - verifies if the a user|message is related to the current chat. 
+	Properties:
+		creator - returns a user service object of a chat creator.
+		participations - returns a tuple of participation services, related to the current chat.
+		participants - returns a tuple of user services - of users related to a the chat, via a participation links.
+		messages - returns a tuple of message services - of messages , that are contained in the chat.
+	Static methods:
+		__identify(**identification) - identifies a current chat instance based on the provided unique identification payload.
+		
+	'''
 	def __init__(self,**identification):
 		'''
 		Parameters: identification is a key word argument, that shall only include proper unique keys.

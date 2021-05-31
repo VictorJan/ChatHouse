@@ -7,13 +7,38 @@ from time import time
 class UserService:
 	'''
 	The  UserService defines required methods and properties, necessary to perform the Authenticaion,CRUD and other actions.
+	
+	Methods:
+		remove(self,password=None) - remove the inner instance, performing a password verification, if submited.
+		refresh(self) - refreshes the inner state of the instance.
+		signup(self,**payload) - serves as a registration/signup tool, based on the provided payload.
+		login(self,**payload) - performs a user login steps, based on the provided payload.
+		password_reset(self,**payload) - serves as a password reset tool, based on the respective payload.
+		update_activity(self) - updates the inner "activity state" - of the user.
+		establish_a_chat(self,name) - creates a chat with a provided name.
+		join_a_chat(self,identification) - executes steps, required to join a chat, based on the provided identification.
+		dischage_a_chat(self,identification) - executes actions related to removing a chat, in cases when the current user is a participant of such chat.
+		establish_a_message(self,**payload) - performs creation of a message, based on the provided payload.
+		discharge_a_message(self,**payload) - removes a message (based on the provided data), in cases when the message exists in a chat - where user is stated as a participant.
+		get_a_chat(self,identification) - searches for a chat ,with a certain identification, to which user is related/connected as a participant.
+		common_ground_with(self,**identification) - looks up for common chats between the current user, and a user identified based on the provided identification key-word-argument.
+	Dunder methods:
+		init(self,**identification) - initializes the current user service instance, based on the provided identificaiton payload.
+		getattr(self,attr) - searches the inner instance attribute for the provided attr argument.
+	Properties:
+		activity_state - returns current "activity state".
+		keyring - returns a keyring service object of a related keyring instance.
+		chats - returns a tuple of chat service objects, which are connected to a user , via participations.
+	Static methods:
+		__identify(**identification) - identifies a current user instance based on the provided unique identification payload.
+		get(**query) - searches for a user based on the requested query - which would involve finding a user based on their username/name.
 	'''
 	def __init__(self,**identification):
 		'''
 		Arguments: identification is a key word argument, that shall only include proper unique keys.
 		'''
 		self.__instance=self.__identify(**identification) if identification else None
-
+		
 	def remove(self,password=None):
 		'''
 		Goal: remove the current instance of the User class.
@@ -58,9 +83,10 @@ class UserService:
 
 		Arguments: payload - a dictionary key word argument , which shall consist of 2 dictionaries: user_data and a key_data.
 		Excpecting: user_data:{
-			"username":<str>
-			"email":<str>
-			"name":<str>
+			"username":<str>,
+			"email":<str>,
+			"name":<str>,
+			"about":<str>,
 			"password":<str>
 		}
 		key_data:{
@@ -339,6 +365,16 @@ class UserService:
 		'''
 		get = lambda attribute: deepcopy(value) if (value:=self.__instance.__dict__.get(attribute,None)) else None
 		return ( get(attr) if (value:=get(attr)) is None and self.refresh() else value ) if self.__instance else None
+
+	@property
+	def activity_state(self):
+		'''
+		Goal: retreive the inner "activity state" of the current user.
+		[Note: activity state - a timestamped value of the activity_dnt value]
+		Returns: activity state:int if inner instance exists Otherwise None
+		'''
+		return int(datetime.timestamp(self.__instance.activity_dnt)) if self.__instance else None
+	
 
 	@property
 	def keyring(self):

@@ -5,6 +5,23 @@ from time import time
 from copy import deepcopy
 
 class MessageService:
+	'''
+	The  MessageService defines required methods and properties, necessary to perform any CRUD and other actions related to the Message instances.
+
+	Methods:
+		create(self,**payload) - estalishes/create an inner message instance , based on the provided payload.
+		remove(self) - remove the inner instance.
+		refresh(self) - refreshes the inner state of the instance.
+	Dunder methods:
+		init(self,**identification) - initializes the current message service instance, based on the provided identificaiton payload.
+		getattr(self,attr) - searches the inner instance attribute for the provided attr argument.
+	Properties:
+		chat - returns a chat service object of a related chat.
+		sender - returns a user service object of a sender.
+	Static methods:
+		__identify(**identification) - identifies a current participant instance based on the provided unique identification payload.
+		
+	'''
 	def __init__(self,**identification):
 		'''
 		Arguments: identification is a key word argument, that shall only include proper unique keys. 

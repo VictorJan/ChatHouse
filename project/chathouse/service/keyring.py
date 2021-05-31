@@ -2,6 +2,22 @@ from chathouse.models import db,Keyring
 from copy import deepcopy
 
 class KeyringService:
+	'''
+	The  KeyringService defines required methods and properties, necessary to perform any CRUD and other actions related to the Keyring instances.
+
+	Methods:
+		create(self,**payload) - estalishes/create an inner keyring instance , based on the provided payload.
+		remove(self) - remove the inner instance.
+		refresh(self) - refreshes the inner state of the instance.
+	Dunder methods:
+		init(self,**identification) - initializes the current keyring service instance, based on the provided identificaiton payload.
+		getattr(self,attr) - searches the inner instance attribute for the provided attr argument.
+	Properties:
+		owner - returns a user service object of an keyring owner.
+	Static methods:
+		__identify(**identification) - identifies a current participant instance based on the provided unique identification payload.
+		
+	'''
 	def __init__(self,**identification):
 		'''
 		Parameters: identification is a key word argument, that shall only include proper unique keys.

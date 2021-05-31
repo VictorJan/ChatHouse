@@ -104,12 +104,6 @@ class PostGrantStrategy(Strategy):
   				Respond accordingly with 400, 'Invalid payload data'
 	   
 	   	Lambda functions:
-
-	   		activity_state:
- 	 			Goal: convert provided activity datetime - into a timestamped value -> the activity state.
- 	 			Arguments: dnt:datetime.
- 	 			Returns: timestamp value:int of the provided datetime ~> activity_dnt , if the dnt is instance of datetime , otherwise 0.
-
 	   		map_cases: 
 	   			Goal:create a map object of iterated UserService instances for email and username cases. Iteration itself checks if the isntance has an id -> returns the UserService case if instance has an id else None.
 	   			Arguments: data:key word argument.
@@ -191,8 +185,6 @@ class PostGrantStrategy(Strategy):
 		assert all(map(lambda parameter: isinstance(parameter,int) ,current_app.config.get('DH_PARAMETERS',(None,)))), ValueError('Configuration of the current app must contain domain Diffie Hellman parameters.')
 
 		#Lambda functions:
-		activity_state = lambda dnt: int(datetime.timestamp(dnt)) if isinstance(dnt,datetime) else None
-
 		find_case = lambda cases: next(iter(tupled)) if (tupled:=tuple(filter(lambda case: case is not None,cases))) else None
 
 		map_cases = lambda **credentials: map(lambda identification: case if (case:=UserService(**{identification:credentials[identification]})).id else None,credentials)
@@ -213,7 +205,7 @@ class PostGrantStrategy(Strategy):
 
 		token_payload = lambda service: {'user_id':service.id,\
 		'token_type':'grant',\
-		'activity':activity_state(service.activity_dnt),\
+		'activity':service.activity_state,\
 		'exp':current_app.config['GRANT_EXP']}\
 		if getattr(service,'id',None) is not None else {}
 

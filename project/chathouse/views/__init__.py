@@ -2,13 +2,13 @@
 This file shall contain implemented Blueprint views : public and authorized.
 
 Structure for each View and routes:
-|-View
+|-Blueprint
 | |-controller
-| | |-route
+| | |-view/route
 | | | |-strategy.py - contains a respective custom Strategy class.
 | | | |-__init__.py - contains fully configured Controller - using the implemented Strategy.
 | | |-__init__.py - contains imported controllers from each initialized route
-| |-__init__.py - contains initialized routes for the view.
+| |-__init__.py - contains initialized routes for a blueprint.
 Note:
 For the Strategy pattern - each controller [handle]s the request -> based on a respective Strategy , which [accept]s the data and using the explicitly enacted custom Template validates the data.
 For the Builder pattern - each Template is constructed of Fields, which on its own are built using the Requirements.

@@ -17,30 +17,38 @@ class Token:
 		Arguments:incoming_data:key-word-argument:dict.
 		Actions:
 			Token shall be initialized in two ways:
-			- providing raw data , thus requiring a raw_data key , of value:str.
+			- providing raw data , thus requiring a raw_data key , of value:str|None.
 			- providing payload data, requiring a payload_data key /w value:dict, which would initiate a generation & signing of a token.
-			[Note raw_data - could happen to contain a None - in such instances , value is assigned as None also]
+			[Note raw_data - could happen to contain a None - in such instances , value is assigned as None also.]
 		Returns: None.
 		Exceptions:
 			Raises:
+				ValueError - in case if the incoming_data payload couldn't be resolved to initialize a Token - the key-word-argument didn't follow the guidelines raw_data:str|None or payload_data:dict.
 				Exception - if the configuration of the app doesn't contain a STATIC_KEY.
+
 		'''
+		guidelines = ( ('raw_data',(str,type(None))), ('payload_data',dict) )
+
 		assert (key:=current_app.config.get('STATIC_KEY',None)) is not None, Exception('The configuration must contain a STATIC_KEY.')
+
+		assert len(incoming_data)==1 and any( (resolved:={case[0]:value}) for case in guidelines if (value:=incoming_data.get(case[0],False)) is not False and  isinstance(value,case[1]) ),\
+		ValueError('Invalid incoming_data key-word-argument. The key-word-argument shall contain one key at a time and such key must follow the guidelines: raw_data:str|None , payload_data:dict.')
+
+		self.__static_key = key
 		
-		self.__static_key=key
-		
-		self.__value = raw if (raw:=incoming_data.get('raw_data',None)) is not None else (self.__generate(**payload) if (payload:=incoming_data.get('payload_data',None)) is not None and isinstance(payload,dict) else None )
+		self.__value = raw if (raw:=resolved.get('raw_data',False)) is not False else self.__generate(**resolved['payload_data'])
 
 	def __generate(self,**payload):
 		'''
 		Goal: encode and sign a token, which shall contain provided payload.
 		Arguments:payload - key-word-argument.
 		Actions:
-			First get the current utc time, which is an integral part of signing a token - the dnt of Token request.
-			Then If the payload contains an 'exp' key - set up the expiration as current time + requested expiration amount.
-			[Note that the value for the provided expiration has to be a dictionary of {minutes/hours/seconds:[value]} - that shall be valid for the datetime.timedelta(**exp)]
+			1.Get the current utc time, which then shall be converted to a float timestamp - the dnt of Token request/appeal.
+			[Note: an integral part of signing a Token]
+			2.If the payload contains an 'exp' key - set up the expiration as current dnt time + requested expiration amount.
+			[Note: the value for the provided expiration has to be a dictionary of {minutes/hours/seconds:[value]} - that shall be valid for the datetime.timedelta(**exp)]
 			Otherwise, set expiration to current time + 5 minutes.
-			Then proceed to derive a unique symmetric key (based on the timestamp of the current date and time - the dnt value) to sign the payload, usign the HS256 algorithm.
+			3.Then proceed to derive a unique symmetric key (based on the timestamp of the current date and time - the dnt value) to sign the payload, usign the HS256 algorithm.
 		Returns: a signed JWT token:str.
 		Exceptions:
 			Raises:
@@ -50,7 +58,7 @@ class Token:
 		try:
 			payload['exp']=(dnt:=datetime.datetime.utcnow())+datetime.timedelta(**(payload.get('exp',{'minutes':5})))
 		except Exception as exception:
-			raise ValueError(f'The expiration value shall follow the timedelta guidelines. Precise/Exact exception - {exception}')
+			raise ValueError(f'The expiration value shall follow the timedelta guidelines. Precise/Exact reason - {exception}')
 
 		payload['dnt']=datetime.datetime.timestamp(dnt)
 		
@@ -67,7 +75,7 @@ class Token:
 			digest:
 				Goal:sha256 digest the provided argument
 				Argument: x:str
-				Returns hex digest of sha256 function.
+				Returns hex digest of sha256 function:str.
 
 			combine:
 				Goal:perform the conjuntion of provided arguments:
@@ -105,7 +113,7 @@ class Token:
 		Actions:
 			Doesn't require the use of the signature key -> no need to derive a key.
  			Tries to : decode the payload part of the JWT structure , using urlsafe base64 and appropriate padding, then convert the data to a dictionary , using json.loads().
- 			After that get a value from the dictionary using the attr as a key.
+ 			After that, get a value from the dictionary using the attr as a key.
  		Returns: value according to the key in the payload of the JWT token, if exists and structure of the token is appropriate, otherwise None
 		'''
 		try:

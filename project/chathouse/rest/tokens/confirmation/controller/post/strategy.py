@@ -65,13 +65,7 @@ class PostConfirmationStrategy(Strategy):
   			[-]If either 2.|3. has been unsuccessful - respond with 400
   			[+]Otherwise proceed to the generate a confirmation token and send it to the requester/access token owner as an email. Responding with 201 and a proper message.
   			
-	   	Lambda functions:
-	   		activity_state:
- 	 			Goal: convert provided activity datetime - into a timestamped value -> the activity state.
- 	 			Arguments: dnt:datetime.
- 	 			Returns: timestamp value:int of the provided datetime ~> activity_dnt , if the dnt is instance of datetime , otherwise 0. 
-
-		Generation:
+  		Generation:
 	  		confirmation_token={user_id:int(request's/owner's id), action:str(requested action),token_type:str("confirmation"), activity:int(current user's activity state), dnt:float }.
 
 	 	Returns:
@@ -83,10 +77,6 @@ class PostConfirmationStrategy(Strategy):
 	#Code
 		#Exceptions
 		assert all(map(lambda argument:isinstance(argument,dict),(headers,data))), TypeError('Arguments , such as : headers and data - must be dictionaries')
-
-		#Lambda functions
-
-		activity_state = lambda dnt: int(datetime.timestamp(dnt)) if isinstance(dnt,datetime) else None
 
 		#Step 0.
 		if not kwargs['authorization']['access']['valid'] or (owner:=kwargs['authorization']['access']['owner']) is None:
@@ -105,7 +95,7 @@ class PostConfirmationStrategy(Strategy):
 				'user_id':owner.id,
 				'action':data['action'],
 				'token_type':'confirmation',
-				'activity':activity_state(owner.activity_dnt),
+				'activity':owner.activity_state,
 				'exp':current_app.config['CONFIRMATION_EXP']
 				})
 

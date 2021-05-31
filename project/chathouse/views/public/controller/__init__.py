@@ -1,5 +1,5 @@
 '''
-This file shall contain all of the imported - implemeted [Route]Controllers for a public view:
+This file shall contain all of the imported - implemeted [Route]Controllers for a public Blueprint:
 [Start]Controller
 [SignUp]Controller
 [LogIn]Controller

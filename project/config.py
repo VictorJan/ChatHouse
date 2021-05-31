@@ -35,6 +35,7 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
 	TESTING=True
 	SQLALCHEMY_TRACK_MODIFICATIONS = True
+	SQLALCHEMY_DATABASE_URI="sqlite:///sql/testing_database.db"
 	DEBUG=True
 
 class ProductionConfig(Config):

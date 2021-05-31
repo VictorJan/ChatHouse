@@ -54,13 +54,7 @@ class GetAccessStrategy(Strategy):
   				If 0. is invalid respond with 401, message:"Invalid grant token.";
 	  			Otherwise head to the generation phase.
   			
-  		Lambda functions:
-  			activity_state:
- 	 			Goal: convert provided activity datetime - into a timestamped value -> the activity state.
- 	 			Arguments: dnt:datetime.
- 	 			Returns: timestamp value:int of the provided datetime ~> activity_dnt , if the dnt is instance of datetime , otherwise 0.
-
-		Generation:
+  ss		Generation:
   			access_token={user_id: <owner.id>:int, token_type: "access":str, activity: <timestamp of owner.actiivity_dnt>:int , dnt:float}
  
 		Returns:
@@ -77,11 +71,8 @@ class GetAccessStrategy(Strategy):
 		#Exceptions:
 		assert all(map(lambda argument: isinstance(argument,dict),(headers,data))), TypeError('Arguments , such as : headers and data - must be dictionaries')
 
-		#Lambda functions:
-		activity_state = lambda dnt: int(datetime.timestamp(dnt)) if isinstance(dnt,datetime) else None
-
 		#Step 0.
 		if not kwargs['authorization']['grant']['valid'] or (owner:=kwargs['authorization']['grant']['owner']) is None:
 			return {'success':'False','message':'Unauthorized!','reason':'Invalid grant token.'},401
 		
-		return {'success':'True','access_token':Token(payload_data={'user_id':owner.id,'token_type':'access','activity':activity_state(owner.activity_dnt),'exp':current_app.config['ACCESS_EXP']}).value},200
+		return {'success':'True','access_token':Token(payload_data={'user_id':owner.id,'token_type':'access','activity':owner.activity_state,'exp':current_app.config['ACCESS_EXP']}).value},200

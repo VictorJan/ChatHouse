@@ -13,6 +13,7 @@ class MailService:
 		Arguments: payload - key-word-argument. Expecting: recipients:list|tuple , body:str , subject:str , app:app instance.
 		Actions:
 			Having set the app instance - proceed to send an email , using the Message instance in the app context.
+		Returns None;
 		Excpetions:
 			Raises:
 				ValueError - if the payload doesn't follow the established guidelines for the arguments.

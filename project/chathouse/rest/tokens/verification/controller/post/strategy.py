@@ -70,13 +70,7 @@ class PostVerificationStrategy(Strategy):
 				Respond accordingly with 400.
 	   
 	   	Lambda functions:
-	   		[Note each lambda function shall be called from bottom up.]
-
-	   		activity_state:
- 	 			Goal: convert provided activity datetime - into a timestamped value -> the activity state.
- 	 			Arguments: dnt:datetime.
- 	 			Returns: timestamp value:int of the provided datetime ~> activity_dnt , if the dnt is instance of datetime , otherwise 0.
-
+	   		[Note each lambda function shall be called from bottom up.]s
 
 			find_case:
 
@@ -121,14 +115,12 @@ class PostVerificationStrategy(Strategy):
 
 		#Lambda functions
 
-		activity_state = lambda dnt: int(datetime.timestamp(dnt)) if isinstance(dnt,datetime) else None
-
 		find_case = lambda cases: next(iter(tupled)) if (tupled:=(tuple(filter(lambda case:case is not None ,cases)))) else None
 
 		map_cases = lambda **credentials: map(lambda identification: case if (case:=UserService(**{identification:credentials[identification]})).id else None,credentials)
 
 		resolve = lambda route,data: ( {'email':data['email'],'activity':0} if not any(map_cases(email=data['email'],username=data['username'])) else None ) if route=='signup' \
-	else ({'email':case.email, 'activity': activity_state(case.activity_dnt) } if any( (cases:=tuple( map_cases(email=data['identification'],username=data['identification']) ) ) ) and (case:=find_case(cases)) else None)
+	else ({'email':case.email, 'activity': case.activity_state } if any( (cases:=tuple( map_cases(email=data['identification'],username=data['identification']) ) ) ) and (case:=find_case(cases)) else None)
 
 		
 		#Step 0.

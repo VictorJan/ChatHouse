@@ -3,6 +3,22 @@ import chathouse.service as service
 from copy import deepcopy
 
 class ParticipationService:
+	'''
+	The  PaticipationService defines required methods and properties, necessary to perform any CRUD and other actions related to the Participation instances.
+
+	Methods:
+		create(self,**payload) - estalishes/create an inner participation instance , based on the provided payload.
+		remove(self) - remove the inner instance.
+		refresh(self) - refreshes the inner state of the instance.
+	Dunder methods:
+		init(self,**identification) - initializes the current user service instance, based on the provided identificaiton payload.
+		getattr(self,attr) - searches the inner instance attribute for the provided attr argument.
+	Properties:
+		participant - returns a user service object of a related user-participant.
+	Static methods:
+		__identify(**identification) - identifies a current participant instance based on the provided unique identification payload.
+		
+	'''
 	def __init__(self,**identification):
 		'''
 		Arguments: identification is a key word argument, that shall only include proper unique keys. 
