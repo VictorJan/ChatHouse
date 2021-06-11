@@ -3,6 +3,7 @@ from chathouse.utilities.security.validation.headers import authorized
 from chathouse.socket.notification.controller.discharge_a_chat.template import create_a_template
 from chathouse.service import UserService
 from flask_socketio import emit,disconnect
+from flask import request
 
 class Discharge_a_ChatNotificationStrategy(Strategy):
 	'''

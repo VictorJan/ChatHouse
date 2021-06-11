@@ -110,7 +110,6 @@ class UserService:
 	
 		assert len(payload)==2, Exception('The signup requires the payload to consist of two keys.')
 		assert all(map( lambda key: key in payload and isinstance(payload[key],dict), ('user_data','key_data'))) , ValueError('The payload must contain keys for "user_data" and "key_data" , which have to be dictionaries.')
-
 		if self.__instance is None:
 			try:
 				self.__instance=User(**payload['user_data'])

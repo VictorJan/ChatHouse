@@ -12,7 +12,7 @@ class VerificationTestCase(BaseTestCase):
 
 
 	def setUp(self):
-		self.dummy_payload={'signup':{
+		self.dummy_identification_payload={'signup':{
 				'email':'chathousetestclient@gmail.com',
 				'username':'test_username',
 				'name':'Testname',
@@ -24,20 +24,44 @@ class VerificationTestCase(BaseTestCase):
 		}
 
 	def prepare_user(self):
+		'''
+		Goal: prepare a user service instance - by creating one.
+		Returns user:UserInstance
+		Exceptions:
+			Raises:
+				ValueError:
+					"Coudn't prepare a test user." is caught in cases when one tries to create a user, which already exists -> excepted with a discharge of a user and a resubmission.
+					"Still cound't preare a test user." - raised when the discharge,resubmission hasn't helped.
+
+		'''
 		user=UserService()
 		payload={
 			'user_data':{
 				'password':'9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08',
-				**self.dummy_payload['signup']
+				**self.dummy_identification_payload['signup']
 			},
 			'key_data':{
 				'public_key':5,
 				'private_key':{'iv':'str','data':'str'}
 			}
 		}
-		assert user.signup(**payload), ValueError('Couldn\'t prepare a test user.')
+
+		try:
+			assert user.signup(**payload), ValueError('Couldn\'t prepare a test user.')
+		except:
+			self.discharge_user()
+			assert user.signup(**payload), ValueError('Still couldn\'t prepare a test user.')
+
+		return user
 
 	def discharge_user(self):
+		'''
+		Goal: remove/delete a test user instance.
+		Returns:None
+		Exceptions:
+			Raises:
+				ValueError - in cases,when one tries to discharge a user instance, which is not related to any user. 
+		'''
 		user=UserService(username='test_username')
 		assert user.remove(), ValueError('Coudn\'t find a test user to remove.')
 
@@ -50,7 +74,7 @@ class VerificationTestCase(BaseTestCase):
 
 		valid_preaccess_token = Token(payload_data={'route':'signup','token_type':'preaccess','exp':current_app.config['PREACCESS_EXP']})
 		client.set_cookie('','preaccess_token',valid_preaccess_token.value)
-		response=client.post('/api/tokens/verification',json=self.dummy_payload['signup'])
+		response=client.post('/api/tokens/verification',json=self.dummy_identification_payload['signup'])
 		self.assertEqual(response.status_code,201)
 
 
@@ -65,7 +89,7 @@ class VerificationTestCase(BaseTestCase):
 
 		valid_preaccess_token = Token(payload_data={'route':'signup','token_type':'preaccess','exp':current_app.config['PREACCESS_EXP']})
 		client.set_cookie('','preaccess_token',valid_preaccess_token.value)
-		invalid_payload=copy.deepcopy(self.dummy_payload['signup'])
+		invalid_payload=copy.deepcopy(self.dummy_identification_payload['signup'])
 		invalid_payload['name']=['name']
 		response=client.post('/api/tokens/verification',json=invalid_payload)
 		self.assertEqual(response.status_code,400)
@@ -79,7 +103,7 @@ class VerificationTestCase(BaseTestCase):
 
 		valid_preaccess_token = Token(payload_data={'route':'signup','token_type':'preaccess','exp':current_app.config['PREACCESS_EXP']})
 		client.set_cookie('','preaccess_token',valid_preaccess_token.value)
-		invalid_payload=copy.deepcopy(self.dummy_payload['signup'])
+		invalid_payload=copy.deepcopy(self.dummy_identification_payload['signup'])
 		invalid_payload.pop('name')
 		response=client.post('/api/tokens/verification',json=invalid_payload)
 		self.assertEqual(response.status_code,400)
@@ -94,7 +118,7 @@ class VerificationTestCase(BaseTestCase):
 
 		invalid_preaccess_token=Token(payload_data={'route':'signup','token_type':'access','exp':current_app.config['PREACCESS_EXP']})
 		client.set_cookie('','preaccess_token',invalid_preaccess_token.value)
-		response=client.post('/api/tokens/verification',json=self.dummy_payload['signup'])
+		response=client.post('/api/tokens/verification',json=self.dummy_identification_payload['signup'])
 		self.assertEqual(response.status_code,401)
 	
 	def test_unauthorized_verification_signup_preaccess_token_type_absent(self):
@@ -106,7 +130,7 @@ class VerificationTestCase(BaseTestCase):
 
 		invalid_preaccess_token=Token(payload_data={'route':'signup','exp':current_app.config['PREACCESS_EXP']})
 		client.set_cookie('','preaccess_token',invalid_preaccess_token.value)
-		response=client.post('/api/tokens/verification',json=self.dummy_payload['signup'])
+		response=client.post('/api/tokens/verification',json=self.dummy_identification_payload['signup'])
 		self.assertEqual(response.status_code,401)
 	
 	def test_unauthorized_verification_signup_preaccess_route_invalid(self):
@@ -118,7 +142,7 @@ class VerificationTestCase(BaseTestCase):
 
 		invalid_preaccess_token=Token(payload_data={'route':'invalid','token_type':'preaccess','exp':current_app.config['PREACCESS_EXP']})
 		client.set_cookie('','preaccess_token',invalid_preaccess_token.value)
-		response=client.post('/api/tokens/verification',json=self.dummy_payload['signup'])
+		response=client.post('/api/tokens/verification',json=self.dummy_identification_payload['signup'])
 		self.assertEqual(response.status_code,401)
 
 	def test_unauthorized_verification_signup_preaccess_route_absent(self):
@@ -130,7 +154,7 @@ class VerificationTestCase(BaseTestCase):
 
 		invalid_preaccess_token=Token(payload_data={'token_type':'preaccess','exp':current_app.config['PREACCESS_EXP']})
 		client.set_cookie('','preaccess_token',invalid_preaccess_token.value)
-		response=client.post('/api/tokens/verification',json=self.dummy_payload['signup'])
+		response=client.post('/api/tokens/verification',json=self.dummy_identification_payload['signup'])
 		self.assertEqual(response.status_code,401)
 
 	def test_unauthorized_verification_signup_preaccess_signature_expired(self):
@@ -143,7 +167,7 @@ class VerificationTestCase(BaseTestCase):
 		invalid_preaccess_token=Token(payload_data={'route':'signup','token_type':'preaccess','exp':{'seconds':0}})
 		time.sleep(1)
 		client.set_cookie('','preaccess_token',invalid_preaccess_token.value)
-		response=client.post('/api/tokens/verification',json=self.dummy_payload['signup'])
+		response=client.post('/api/tokens/verification',json=self.dummy_identification_payload['signup'])
 		self.assertEqual(response.status_code,401)
 
 #Login
@@ -158,7 +182,7 @@ class VerificationTestCase(BaseTestCase):
 
 		valid_preaccess_token = Token(payload_data={'route':'login','token_type':'preaccess','exp':current_app.config['PREACCESS_EXP']})
 		client.set_cookie('','preaccess_token',valid_preaccess_token.value)
-		response=client.post('/api/tokens/verification',json=self.dummy_payload['login'])
+		response=client.post('/api/tokens/verification',json=self.dummy_identification_payload['login'])
 		self.assertEqual(response.status_code,201)
 
 		self.discharge_user()
@@ -178,7 +202,7 @@ class VerificationTestCase(BaseTestCase):
 
 		valid_preaccess_token = Token(payload_data={'route':'login','token_type':'preaccess','exp':current_app.config['PREACCESS_EXP']})
 		client.set_cookie('','preaccess_token',valid_preaccess_token.value)
-		invalid_payload=copy.deepcopy(self.dummy_payload['login'])
+		invalid_payload=copy.deepcopy(self.dummy_identification_payload['login'])
 		invalid_payload['identification']=1
 		response=client.post('/api/tokens/verification',json=invalid_payload)
 		self.assertEqual(response.status_code,400)
@@ -194,7 +218,7 @@ class VerificationTestCase(BaseTestCase):
 
 		valid_preaccess_token = Token(payload_data={'route':'login','token_type':'preaccess','exp':current_app.config['PREACCESS_EXP']})
 		client.set_cookie('','preaccess_token',valid_preaccess_token.value)
-		invalid_payload=copy.deepcopy(self.dummy_payload['login'])
+		invalid_payload=copy.deepcopy(self.dummy_identification_payload['login'])
 		response=client.post('/api/tokens/verification',json=invalid_payload)
 		
 		self.assertEqual(response.status_code,400)
@@ -212,7 +236,7 @@ class VerificationTestCase(BaseTestCase):
 
 		invalid_preaccess_token=Token(payload_data={'route':'login','token_type':'access','exp':current_app.config['PREACCESS_EXP']})
 		client.set_cookie('','preaccess_token',invalid_preaccess_token.value)
-		response=client.post('/api/tokens/verification',json=self.dummy_payload['login'])
+		response=client.post('/api/tokens/verification',json=self.dummy_identification_payload['login'])
 		self.assertEqual(response.status_code,401)
 
 		self.discharge_user()
@@ -228,7 +252,7 @@ class VerificationTestCase(BaseTestCase):
 
 		invalid_preaccess_token=Token(payload_data={'route':'login','exp':current_app.config['PREACCESS_EXP']})
 		client.set_cookie('','preaccess_token',invalid_preaccess_token.value)
-		response=client.post('/api/tokens/verification',json=self.dummy_payload['login'])
+		response=client.post('/api/tokens/verification',json=self.dummy_identification_payload['login'])
 		self.assertEqual(response.status_code,401)
 		
 		self.discharge_user()
@@ -244,7 +268,7 @@ class VerificationTestCase(BaseTestCase):
 
 		invalid_preaccess_token=Token(payload_data={'route':'invalid','token_type':'preaccess','exp':current_app.config['PREACCESS_EXP']})
 		client.set_cookie('','preaccess_token',invalid_preaccess_token.value)
-		response=client.post('/api/tokens/verification',json=self.dummy_payload['login'])
+		response=client.post('/api/tokens/verification',json=self.dummy_identification_payload['login'])
 		self.assertEqual(response.status_code,401)
 
 		self.discharge_user()
@@ -261,7 +285,7 @@ class VerificationTestCase(BaseTestCase):
 
 		invalid_preaccess_token=Token(payload_data={'token_type':'preaccess','exp':current_app.config['PREACCESS_EXP']})
 		client.set_cookie('','preaccess_token',invalid_preaccess_token.value)
-		response=client.post('/api/tokens/verification',json=self.dummy_payload['login'])
+		response=client.post('/api/tokens/verification',json=self.dummy_identification_payload['login'])
 		self.assertEqual(response.status_code,401)
 
 		self.discharge_user()
@@ -278,7 +302,7 @@ class VerificationTestCase(BaseTestCase):
 		invalid_preaccess_token=Token(payload_data={'route':'login','token_type':'preaccess','exp':{'seconds':0}})
 		time.sleep(1)
 		client.set_cookie('','preaccess_token',invalid_preaccess_token.value)
-		response=client.post('/api/tokens/verification',json=self.dummy_payload['login'])
+		response=client.post('/api/tokens/verification',json=self.dummy_identification_payload['login'])
 		self.assertEqual(response.status_code,401)
 
 		self.discharge_user()
