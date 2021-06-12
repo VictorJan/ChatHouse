@@ -115,13 +115,12 @@ class Discharge_MessagesChatStrategy(Strategy):
 		if not kwargs['authorization']['access']['valid'] or (owner:=kwargs['authorization']['access']['owner']) is None or not isinstance(kwargs['chat_id'],int) or (chat:=owner.get_a_chat(kwargs['chat_id'])) is None:
 			disconnect()
 			return None
-
+		
 		template = create_a_template()
 		#Step 2.
 		if template.validate(**data):
 			
 			validated=template.data
-
 			#Step 3.
 			if (discharged:=list(discharges(owner,chat.id,validated['messages'])))!=validated['messages']:
 				emit('error',{'message':"Invalid payload - not all provided messages have been discharged."}, namespace='/socket/notification', to=owner.id)

@@ -41,7 +41,7 @@ class ChatNamespace(Namespace):
 		'''
 		DisconnectChatController.handle(dict(request.headers), {} , chat_id=request.args.get('chat_id',None,int))
 
-	def on_establish_a_message(self,data):
+	def on_establish_a_message(self,data={}):
 		'''
 		Goal: control the handling of the establish_a_message event.
 		Arguments:data:dict.
@@ -53,7 +53,7 @@ class ChatNamespace(Namespace):
 		'''
 		Establish_a_MessageChatController.handle(dict(request.headers),data if isinstance(data,dict) else {}, chat_id=request.args.get('chat_id',None,int))
 
-	def on_discharge_messages(self,data):
+	def on_discharge_messages(self,data={}):
 		'''
 		Goal: control the handling of the establish_a_chat event.
 		Arguments:data:dict.
@@ -64,5 +64,3 @@ class ChatNamespace(Namespace):
 		Returns: None
 		'''
 		Discharge_MessagesChatController.handle(dict(request.headers),data if isinstance(data,dict) else {}, chat_id=request.args.get('chat_id',None,int))
-
-

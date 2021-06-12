@@ -294,7 +294,7 @@ class NotificationTestCase(BaseTestCase):
 		other_user.join_a_chat(chat_id)
 
 		#Any participant discharges a chat
-		other_client.emit('discharge_a_chat',{'id':chat_id},namespace=self.namespace,to=6423)
+		other_client.emit('discharge_a_chat',{'id':chat_id},namespace=self.namespace)
 
 		#Store the responses for both sides
 		current_response=current_client.get_received(self.namespace)

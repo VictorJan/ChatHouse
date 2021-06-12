@@ -41,7 +41,7 @@ class NotificationNamespace(Namespace):
 		'''
 		DisconnectNotificationController.handle(dict(request.headers),{})
 
-	def on_establish_a_chat(self,data):
+	def on_establish_a_chat(self,data={}):
 		'''
 		Goal: control the handling of the establish_a_chat event.
 		Arguments:data:dict.
@@ -53,7 +53,7 @@ class NotificationNamespace(Namespace):
 		'''
 		Establish_a_ChatNotificationController.handle(dict(request.headers), data if isinstance(data,dict) else {} )
 
-	def on_discharge_a_chat(self,data):
+	def on_discharge_a_chat(self,data={}):
 		'''
 		Goal: control the handling of the discharge_a_chat event.
 		Arguments:data:dict.

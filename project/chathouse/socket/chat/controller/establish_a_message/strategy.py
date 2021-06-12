@@ -2,6 +2,7 @@ from chathouse.utilities.security.controller_strategy.strategy import Strategy
 from chathouse.utilities.security.validation.headers import authorized
 from chathouse.socket.chat.controller.establish_a_message.template import create_a_template
 from chathouse.service import UserService
+from chathouse.models import User
 from flask_socketio import emit,disconnect
 from datetime import datetime
 
@@ -130,7 +131,6 @@ class Establish_a_MessageChatStrategy(Strategy):
 		if not kwargs['authorization']['access']['valid'] or (owner:=kwargs['authorization']['access']['owner']) is None or not isinstance(kwargs['chat_id'],int) or (chat:=owner.get_a_chat(kwargs['chat_id'])) is None:
 			disconnect()
 			return None
-
 		template = create_a_template()
 		#Step 2.
 		if template.validate(**data):

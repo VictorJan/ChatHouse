@@ -20,7 +20,9 @@ metadata = MetaData( naming_convention = {
     "pk": "pk_%(table_name)s"
 })
 
-db=SQLAlchemy(metadata=metadata)
+db=SQLAlchemy(metadata=metadata, session_options = {
+	'expire_on_commit': False
+	} )
 
 class User(db.Model):
 	__table_args__=(db.UniqueConstraint('username','email'),)
