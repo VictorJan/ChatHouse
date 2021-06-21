@@ -10,7 +10,7 @@ def authorized(token_type,location=None):
  	Verify the signature, token_type - for certain tokens take into consideration : ownership and activity state (the timestamp of assigned activity_dnt).
 
  	Chained Authorization:
- 		The decorater shall accept other authorization keys, present in the Key word argument, and move along with them, only IF:
+ 		The decorator shall accept other authorization keys, present in the Key word argument, and move along with them, only IF:
 			Each <token_type> is unique , creating the following structure:
 			'authorization':{
 				<token_type1>:{
