@@ -1,5 +1,5 @@
 # ChatHouse
-A web application for secure end-to-end encrypted real time conversations , with storing capabilities. Moreover the app supports a secure authentication (which is token based) process - which involves 2 factor authentication ,as for creating an account/logging in. Moreover a user is to be allowed to safely change the state of the account - the password, or even discharge/delete the account - by relying on the additional verification step , mentioned before.
+A web application for secure end-to-end encrypted real time conversations , with storing capabilities. Moreover the app supports a secure authentication (which is token based) process - which involves 2 factor authentication ,as for creating an account/logging in. Apart from that, a user is to be allowed to safely change the state of the account - the password, or even discharge/delete the account - by relying on the additional verification step , mentioned before.
 
 Running on your own.
 In order to run this application one would have to provide necessary configuration details for the config.json - regarding the STATIC_KEY - a static key for signing the JWT tokens  , then MAIL_USERNAME and MAIL_PASSWORD - email credentials , and DH_GENERATOR,DH_MODULUS - Diffie Hellman protocol parameters.
